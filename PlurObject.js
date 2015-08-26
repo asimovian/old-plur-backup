@@ -15,7 +15,7 @@ var PlurObject = function() {};
 
 // Standardize PlurObject
 PlurObject.namepath = 'plur/PlurObject';
-PlurObject.prototype.namepath = namepath;
+PlurObject.prototype.namepath = PlurObject.namepath;
 
 /**
  * Creates a new prototype object.
