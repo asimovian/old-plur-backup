@@ -28,21 +28,21 @@ PlurObject.prototype.namepath = namepath;
  * @return {}
  */
 PlurObject.prototype.create = function(namepath, constructor, parentConstructor) {
-	var prototype = constructor.prototype;
+    var prototype = constructor.prototype;
 
-	if (typeof parentConstructor !== 'undefined') {
+    if (typeof parentConstructor !== 'undefined') {
         prototype = Object.create(parentConstructor.prototype);
         prototype.constructor = constructor;
-	}
+    }
 
-	constructor.namepath = namepath;
-	prototype.namepath = namepath;
+    constructor.namepath = namepath;
+    prototype.namepath = namepath;
 
-	return prototype;
+    return prototype;
 };
 
 /**
- * @var plur/PlurObject.singleton
+ * @var PlurObject plur/PlurObject.singleton
  */
 PlurObject.singleton = new PlurObject();
 
