@@ -1,6 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
- * @license https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject plur/directive/Directive
  */
 define(['plur/PlurObject', 'plur/directive/Directive'], function(PlurObject, Directive) {
 
@@ -10,6 +11,7 @@ define(['plur/PlurObject', 'plur/directive/Directive'], function(PlurObject, Dir
  * @var plur/service/ServiceDirective
  * @extends plur/directive/Directive
  **
+ * @function plur/service/ServiceDirective
  * @param {} options Configuration parameters {
  *     plur/service/Directive[] | undefined requirements Sub-component services
  *     { string key: value } | undefined performanceExpectations Minimum/maximums for various performance criterion
@@ -29,7 +31,7 @@ ServiceDirective.prototype = PlurObject.create('plur/service/ServiceDirective', 
  * Retrieves performance expectations in terms of ranges and solid values; transaction speed, timeouts, etc.
  * These relate to more abstract concepts of service configuration.
  *
- * @function plur/service/ServiceDirective.getPerformanceExpectations
+ * @function plur/service/ServiceDirective.prototype.getPerformanceExpectations
  * @returns { string key: value }
  */
 ServiceDirective.prototype.getPerformanceExpectations = function() {
@@ -39,7 +41,7 @@ ServiceDirective.prototype.getPerformanceExpectations = function() {
 /**
  * Retrieves specific configuration requirements peculiar to the service that must be set; crypto cyphers, db type, etc.
  *
- * @function plur/service/ServiceDirective.getServiceConfiguration
+ * @function plur/service/ServiceDirective.prototype.getServiceConfiguration
  * @returns { string key: value }
  */
 ServiceDirective.prototype.getServiceConfiguration = function() {

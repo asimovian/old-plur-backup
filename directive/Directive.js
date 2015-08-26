@@ -1,6 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
- * @license https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
  */
 define(['plur/PlurObject'], function(PlurObject) {
 
@@ -11,6 +12,7 @@ define(['plur/PlurObject'], function(PlurObject) {
  * @var plur/directive/Directive
  * @abstract
  **
+ * @function plur/directive/Directive
  * @param {} options Configuration parameters {
  *     plur/directive/Directive[] | undefined requirements Sub-component directives
  * }
@@ -24,7 +26,7 @@ Directive.prototype = PlurObject.create('plur/directive/Directive', Directive);
 /**
  * Retrieves the child component directives that must be operable for this directive to succeed.
  *
- * @function plur/directive/Directive.getRequirements
+ * @function plur/directive/Directive..prototype.getRequirements
  * @returns Directive[]
  */
 Directive.prototype.getRequirements = function() {
