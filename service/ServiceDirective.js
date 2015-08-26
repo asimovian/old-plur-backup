@@ -17,7 +17,7 @@ define(['plur/PlurObject', 'plur/directive/Directive'], function(PlurObject, Dir
  * }
  */
 var ServiceDirective = function(options) {
-    Directive.prototype.constructor.apply(options);
+    Directive.call(this, options);
 
     this._performanceExpectations = ( typeof options.performanceExpectations !== 'undefined' ? options.performanceExpectations : [] );
     this._serviceConfiguration = ( typeof options._serviceConfiguration !== 'undefined' ? options._serviceConfiguration : [] );
