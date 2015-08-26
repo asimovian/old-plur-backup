@@ -22,7 +22,7 @@ var ServiceDirective = function(options) {
     this._serviceConfiguration = ( typeof options._serviceConfiguration !== 'undefined' ? options._serviceConfiguration : [] );
 };
 
-ServiceDirective.prototype = PlurObject.create('plur/service/ServiceDirective', ServiceDirective);
+ServiceDirective.prototype = PlurObject.create('plur/service/ServiceDirective', ServiceDirective, Directive);
 
 /**
  * Retrieves performance expectations in terms of ranges and solid values; transaction speed, timeouts, etc.
