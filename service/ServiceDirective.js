@@ -13,6 +13,7 @@ define(['plur/PlurObject', 'plur/directive/Directive'], function(PlurObject, Dir
  * @param {} options Configuration parameters {
  *     plur/service/Directive[] | undefined requirements Sub-component services
  *     { string key: value } | undefined performanceExpectations Minimum/maximums for various performance criterion
+ *     { string key: value } | undefined serviceConfiguration Specific configuration parameters necessary
  * }
  */
 var ServiceDirective = function(options) {
