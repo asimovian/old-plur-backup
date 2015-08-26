@@ -10,7 +10,6 @@ define(['plur/PlurObject', 'lib/broofa/node-uuid/uuid.js'], function(PlurObject,
  * Currently uses broofa/node-uuid internally.
  *
  * @var plur/
- * @singleton
  **
  * @function plur/UUID
  */
