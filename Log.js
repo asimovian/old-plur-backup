@@ -6,14 +6,26 @@
 define(['plur/event/Emitter'], function(Emitter) {
 
 /**
- * A simple logging interface. Intended to be used a singleton.
+ * A simple logging interface. Intended to be used a singleton. Loggers can attach to this object's emitter to
+ * catch logging messages.
  *
  * @var plur/Log
  **
  * @function plur/Log
  */
 var Log = function() {
-	this.emitter = new Emitter();
+	this._emitter = new Emitter();
+};
+
+/**
+ * Logs a typical information message.
+ *
+ * @function plur/Log.prototype.info
+ * @param string message
+ * @param {} data
+ */
+Log.prototype.info = function(message, data) {
+	this._emitter.emit('info', { type: 'info', message: message, data: data });
 };
 
 /**
@@ -24,7 +36,39 @@ var Log = function() {
  * @param {} data
  */
 Log.prototype.debug = function(message, data) {
-	this.emitter.emit('debug', { type: 'debug', message: message, data: data });
+	this._emitter.emit('debug', { type: 'debug', message: message, data: data });
+};
+
+/**
+ * Logs a warning message.
+ *
+ * @function plur/Log.prototype.warning
+ * @param string message
+ * @param {} data
+ */
+Log.prototype.warning = function(message, data) {
+	this._emitter.emit('warning', { type: 'warning', message: message, data: data });
+};
+
+/**
+ * Logs an error message.
+ *
+ * @function plur/Log.prototype.error
+ * @param string message
+ * @param {} data
+ */
+Log.prototype.error = function(message, data) {
+	this._emitter.emit('error', { type: 'error', message: message, data: data });
+} ;
+
+/**
+ * Returns the log's emitter, which can be used to catch logging messages.
+ *
+ * @function Log.prototype.emitter
+ * @returns plur/event/Emitter
+ */
+Log.prototype.emitter = function() {
+    return this._emitter;
 };
 
 /**
