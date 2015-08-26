@@ -9,7 +9,7 @@ define(['plur/PlurObject', 'lib/broofa/node-uuid/uuid.js'], function(PlurObject,
  * Provides UUIDs using the best RNGs available.
  * Currently uses broofa/node-uuid internally.
  *
- * @var plur/
+ * @var plur/UUID
  **
  * @function plur/UUID
  */
