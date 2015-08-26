@@ -2,7 +2,7 @@
  * @copyright 2015 Asimovian LLC
  * @license https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
-define(['plur/PlurObject', function(PlurObject) {
+define(['plur/PlurObject'], function(PlurObject) {
 
 /**
  * The Directive abstract class represents service operations that are required to succeed at a given level within a
