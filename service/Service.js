@@ -2,7 +2,7 @@ define(['plur/PlurObject', 'plur/event/Emitter'], function(PlurObject, Emitter) 
 	
 var Service = function(plurNode, options) {
 	if (typeof plurNode === 'undefined')
-		throw Error('PlurNode not specified for new: ' + this.CLASSPATH);
+		throw Error('PlurNode not specified for new: ' + this.namepath);
 	
 	options = ( typeof options === 'undefined' ? {} : options );
 	
@@ -20,14 +20,14 @@ Service.prototype.start = function() {
 		return;
 	
 	this._emitter.on();
-	this._emitter.emit('plur.service.start', { classpath: this.CLASSPATH });
+	this._emitter.emit('plur.service.start', { classpath: this.namepath });
 };
 
 Service.prototype.stop = function() {
 	if (!this.running())
 		return;
 	
-	this._emitter.emit('plur.service.stop', { classpath: this.CLASSPATH });
+	this._emitter.emit('plur.service.stop', { classpath: this.namepath });
 	this._emitter.off();
 };
 

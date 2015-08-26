@@ -35,10 +35,10 @@ PlurNode.prototype.getHashId = function() {
  * Starts the node. Initiates all sessions necessary.
  */
 PlurNode.prototype.start = function() {
-	for (var classpath in this._serviceMap) {
-		var service = this._serviceMap[classpath];
+	for (var namepath in this._serviceMap) {
+		var service = this._serviceMap[namepath];
 		if (service.shouldAutostart())
-			this._serviceMap[classpath].start();
+			this._serviceMap[namepath].start();
 	}
 
 	this._emitter.emit('plur.node.start', { hashId: this._hashId });
@@ -48,32 +48,32 @@ PlurNode.prototype.start = function() {
  * Registers a service with the node.
  */
 PlurNode.prototype.registerService = function(service) {
-	this._serviceMap[service.CLASSPATH] = service;
-	this._emitter.emit('plur.node.service.register', { classpath: service.CLASSPATH });
+	this._serviceMap[service.namepath] = service;
+	this._emitter.emit('plur.node.service.register', { namepath: service.namepath });
 };
 
 /**
  * Retrieves a service registered to the node.
  * @throws Error if not found
  */
-PlurNode.prototype.getService = function(classpath) {
-	if (typeof this._serviceMap[classpath] === 'undefined')
-		throw new Error('Service not registered: ' + classpath);
+PlurNode.prototype.getService = function(namepath) {
+	if (typeof this._serviceMap[namepath] === 'undefined')
+		throw new Error('Service not registered: ' + namepath);
 	
-	return this._serviceMap[classpath];
+	return this._serviceMap[namepath];
 };
 
-PlurNode.prototype.hasService = function(classpath) {
-	return ( typeof this._serviceMap[classpath] !== 'undefined' && this._serviceMap[classpath] !== null);
+PlurNode.prototype.hasService = function(namepath) {
+	return ( typeof this._serviceMap[namepath] !== 'undefined' && this._serviceMap[namepath] !== null);
 };
 
 /**
  * Withdraws a service registered to the node.
  */
-PlurNode.prototype.withdrawService = function(classpath) {
-	var service = this._serviceMap[classpath];
-	delete this._serviceMap[classpath];
-	this._emitter.emit('plur.node.service.withdraw', { classpath: classpath, service: service });
+PlurNode.prototype.withdrawService = function(namepath) {
+	var service = this._serviceMap[namepath];
+	delete this._serviceMap[namepath];
+	this._emitter.emit('plur.node.service.withdraw', { namepath: namepath, service: service });
 };
 
 /**

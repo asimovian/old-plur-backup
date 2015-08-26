@@ -7,11 +7,11 @@ var WebsocketServerService = function(plurNode) {
 	this._serverWebsocket = null;
 	this._sessionMap = {};
 	
-	if (!plurNode.hasService(WebsocketService.CLASSPATH)) // lazy-load websocket service, which aggregates emit()
+	if (!plurNode.hasService(WebsocketService.namepath)) // lazy-load websocket service, which aggregates emit()
 		plurNode.registerService(new WebsocketService(plurNode));
 	
 	var self = this;
-	var websocketServiceEmitter = plurNode.getService(WebsocketService.CLASSPATH).emitter();
+	var websocketServiceEmitter = plurNode.getService(WebsocketService.namepath).emitter();
 	websocketServiceEmitter.on('plur.websocket.send', function(event, data) {
 		if (typeof self._sessionMap[data.sessionId] !==  'undefined')
 			self.send(data.sessionId, data.event, data.data);
@@ -49,7 +49,7 @@ WebsocketServerService.prototype._open = function(options) {
 	wss.on('connection', function(websocket) {
 		console.log('Websocket client open');
 		
-		var websocketService = self.getNode().getService(WebsocketService.CLASSPATH);
+		var websocketService = self.getNode().getService(WebsocketService.namepath);
 		
 		var session = new WebsocketSession('localhost', self);
 		var sessionId = session.getId();

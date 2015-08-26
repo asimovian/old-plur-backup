@@ -12,10 +12,10 @@ function(
 var NodeCommService = function(plurNode) {
 	Service.call(this, plurNode);
 	
-	if (!plurNode.hasService(WebsocketService.CLASSPATH)) // lazy-load websocket service, which aggregates emit()
+	if (!plurNode.hasService(WebsocketService.namepath)) // lazy-load websocket service, which aggregates emit()
 		plurNode.registerService(new WebsocketService(plurNode));
 	
-	var websocketService = plurNode.getService(WebsocketService.CLASSPATH);
+	var websocketService = plurNode.getService(WebsocketService.namepath);
 	
 	// the node introduces itself as soon as a websocket opens
 	websocketService.emitter().on('plur.websocket.open', function(event, data) {
@@ -66,7 +66,7 @@ NodeCommService.prototype.start = function() {
 	if (this.running())
 		return;
 	
-	var websocketService = this.getNode().getService(WebsocketService.CLASSPATH);
+	var websocketService = this.getNode().getService(WebsocketService.namepath);
 	websocketService.start();
 	
 	Service.prototype.start.call(this);
