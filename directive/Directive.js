@@ -26,7 +26,7 @@ Directive.prototype = PlurObject.create('plur/directive/Directive', Directive);
 /**
  * Retrieves the child component directives that must be operable for this directive to succeed.
  *
- * @function plur/directive/Directive..prototype.getRequirements
+ * @function plur/directive/Directive.prototype.getRequirements
  * @returns Directive[]
  */
 Directive.prototype.getRequirements = function() {
