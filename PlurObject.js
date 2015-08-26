@@ -13,6 +13,10 @@ define([], function() {
  */
 var PlurObject = function() {};
 
+// Standardize PlurObject
+PlurObject.namepath = 'plur/PlurObject';
+PlurObject.prototype.namepath = namepath;
+
 /**
  * Creates a new prototype object.
  *
@@ -27,8 +31,8 @@ PlurObject.prototype.create = function(namepath, constructor, parentConstructor)
 	var prototype = constructor.prototype;
 
 	if (typeof parentConstructor !== 'undefined') {
-		prototype = Object.create(parentConstructor.prototype);
-	    prototype.constructor = constructor;
+        prototype = Object.create(parentConstructor.prototype);
+        prototype.constructor = constructor;
 	}
 
 	constructor.namepath = namepath;
@@ -36,9 +40,6 @@ PlurObject.prototype.create = function(namepath, constructor, parentConstructor)
 
 	return prototype;
 };
-
-// Standardize PlurObject
-PlurObject.prototype = PlurObject.create('plur/PlurObject', PlurObject);
 
 /**
  * @var plur/PlurObject.singleton
