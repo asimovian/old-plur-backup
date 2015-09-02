@@ -1,21 +1,21 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject lib/broofa/node-uuid/uuid.js
+ * @requires plur/PlurObject plur/lib/broofa/node-uuid/uuid.js
  */
-define(['plur/PlurObject', 'lib/broofa/node-uuid/uuid.js'], function(PlurObject, broofaUUID) {
+define(['plur/PlurObject', 'plur/lib/broofa/node-uuid/uuid.js'], function(PlurObject, broofaUUID) {
 
 /**
  * Provides UUIDs using the best RNGs available.
  * Currently uses broofa/node-uuid internally.
  *
- * @var plur/UUID
+ * @var plur/rng/UUID
  **
- * @function plur/UUID
+ * @function plur/rng/UUID
  */
 var UUID = function() {};
 
-UUID.prototype = PlurObject.create('plur/UUID', UUID);
+UUID.prototype = PlurObject.create('plur/rng/UUID', UUID);
 
 /**
  * Creates an RFC4122 Version 4 UUID.
@@ -28,7 +28,7 @@ UUID.prototype.create = function() {
 };
 
 /**
- * @var UUID plur/UUID.singleton
+ * @var UUID plur/rng/UUID.singleton
  */
 UUID.singleton = new UUID();
 

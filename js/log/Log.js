@@ -1,21 +1,23 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/event/Emitter
+ * @requires plur/PlurObject plur/event/Emitter
  */
-define(['plur/event/Emitter'], function(Emitter) {
+define(['plur/PlurObject', 'plur/event/Emitter'], function(PlurObject, Emitter) {
 
 /**
  * A simple logging interface. Intended to be used a singleton. Loggers can attach to this object's emitter to
  * catch logging messages.
  *
- * @var plur/Log
+ * @var plur/log/Log
  **
- * @function plur/Log
+ * @function plur/log/Log
  */
 var Log = function() {
 	this._emitter = new Emitter();
 };
+
+Log.prototype = PlurObject.create('plur/log/Log', Log);
 
 /**
  * Logs a typical information message.
