@@ -1,21 +1,20 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject plur/UUID
  */
-define(function() { // no-indent
+define(['PlurObject', 'UUID'], function (PlurObject, UUID) {
 
 /**
  * A simple abstract base class for all forms of requests.
- * @var class plur/request/Request #abstract
+ * @var plur/request/Request
+ * @abstract
  */
 var Request = function() {
-    this._token = ++Request._nextToken;
+    this._token = UUID.create();
 };
 
-Request._nextToken = 0;
-Request.CLASSPATH = 'plur/request/Request';
-
-PlurObject.createClass('plur/request/Request', Request, PlurObject {});
+PlurObject.create('plur/request/Request', Request, PlurObject);
 
 return Request;
-}); // no-indent
+});

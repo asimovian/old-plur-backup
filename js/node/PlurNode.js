@@ -1,16 +1,17 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires lib/crypto-js plur/event/Emitter plur/node/NodeNetwork plur/session/Session plur/UUID
  */
-define(['crypto-js', 'plur/event/Emitter', 'plur/node/NodeNetwork', 'plur/session/Session'],
-function(CryptoJS, Emitter, NodeNetwork, Session) {
+define(['crypto-js', 'plur/event/Emitter', 'plur/node/NodeNetwork', 'plur/session/Session', 'plur/UUID'],
+function(CryptoJS, Emitter, NodeNetwork, Session, UUID) {
 	
 /**
  * Application class for the Plur Server-Side Node.
  * Node is generic, can process any form of input.
  */
 var PlurNode = function() {
-	this._hashId = PlurNode.calculateRuntimeHash();
+	this._hashId = UUID.create();;
 	this._emitter = new Emitter();
 	this._serviceMap = {};
 	this._sessionMap = {};
@@ -20,15 +21,6 @@ var PlurNode = function() {
 	};
 	
 	this._networkHashMap[localnet.getHashId()] = localnet;
-};
-
-PlurNode.calculateRuntimeHash = function() {
-	var data = Date.now();
-	data = 11 + (data * Math.random());
-	data = 23 + (data * Math.random());
-	data = 41 + (data * Math.random());
-	var hash = CryptoJS.SHA3(''+data, { outputLength: 224 }).toString();
-	return hash;
 };
 
 PlurNode.prototype.getHashId = function() {

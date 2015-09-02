@@ -2,21 +2,26 @@
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
-define(function() { // no indent
+define(['plur/PlurObject', function(PlurObject) {
 
-var QueryBuilder = function() { };
-QueryBuilder.CLASSPATH = 'plur/db/request/find/QueryBuilder';
+/**
+ * @var plur/db/message/FindRequestQueryBuilder
+ */
+var QueryBuilder = function() {
+};
 
 QueryBuilder.Query = function(sql, values) {
 	this.sql = sql;
 	this.values = values;
 };
 
+QueryBuilder.prototype = PlurObject.create('plur/db/message/FindRequestQueryBuilder', QueryBuilder);
+
 /**
  * @param PlurDbFindRequest request
  * @return PlurDbFindRequestQueryBuilder.Query
  */
-QueryBuilder.build = function(request) {
+QueryBuilder.prototype.build = function(request) {
 	var selectSql = request.getColumns().join(', ');
 	var fromSql = QueryBuilder.getTableForClasspath(request.getTargetClasspath());
 	var orderSql = request.getOrder().join(', ');
@@ -31,7 +36,7 @@ QueryBuilder.build = function(request) {
 	return new QueryBuilder.Query(sql, values);
 }
 
-QueryBuilder._buildCondition = function(condition, values) {
+QueryBuilder.prototype._buildCondition = function(condition, values) {
 	var v = values.length + 1;
 	var sql = '';
 
@@ -60,9 +65,12 @@ QueryBuilder._buildCondition = function(condition, values) {
 	return sql;
 }
 
-QueryBuilder.getTableForClasspath = function(classpath) {
+QueryBuilder.prototype.getTableForClasspath = function(classpath) {
 	return classpath.replace(/\//g, '_').toLowerCase();
 }
+
+
+QueryBuilder.singleton = new QueryBuilder();
 	
-return QueryBuilder;
-}); // no indent
+return QueryBuilder.singleton;
+});

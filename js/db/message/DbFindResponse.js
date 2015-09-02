@@ -1,25 +1,27 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject plur/response/Response
  */
+define(['plur/PlurObject', 'plur/response/Response'], function(PlurObject, Response) { // no indent
 
-define(['plur/response/Response'], function(Response) { // no indent
-
+/**
+ * @var plur/db/message/DbFindResponse
+ **
+ * @param [] objects
+ * @param string[] columnNames
+ */
 var DbFindResponse = function(objects, columnNames) {
 	this._objects = objects;
 	this._columnNames = columnNames;
 };
-
-Find.CLASSPATH = 'plur/db/response/DbFindResponse';
 
 DbFindResponse.fromObj = function(obj, instance) {
 	var f = new Find(obj.objects, obj.columnNames);
 	return f;
 };
 
-DbFindResponse.prototype = new Response();
-DbFindResponse.prototype.constructor = DbFindResponse;
-DbFindResponse.prototype.CLASSPATH = DbFindResponse.CLASSPATH;
+DbFindResponse.prototype = PlurObject.create('plur/db/message/DbFindResponse', DbFindResponse, Response);
 
 DbFindResponse.prototype.getColumnNames = function() {
 	return this._columnNames;
@@ -39,4 +41,4 @@ DbFindResponse.prototype.toObj = function(obj) {
 	return o;
 };
 
-}); // no indent
+});
