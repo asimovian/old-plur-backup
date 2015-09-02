@@ -1,4 +1,8 @@
-define(['plur/obj/Parser'], function(PlurObjParser) { // no indent
+/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ */
+define(['plur/obj/Parser'], function(PlurObjParser) {
 	
 var Config = function(configuredClasspath, baseConfig) {
 	this._configuredClasspath = configuredClasspath;
@@ -82,4 +86,4 @@ PlurObject.createClass('plur/config/Config', Config, PlurObject, {
 });
 
 return Config;
-}); // no indent
+});

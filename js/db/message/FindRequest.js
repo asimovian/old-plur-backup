@@ -1,3 +1,7 @@
+/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ */
 define(['plur/db/Request', 'plur/obj/Parser'], function(PlurDbRequest, PlurObjParser) { // begin class
 
 var Find = function(classpath, columnNames, orderBy, limit) {

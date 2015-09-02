@@ -1,3 +1,7 @@
+/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ */
 define(['fs', 'plur/config/Config', 'plur/file/System', 'plur/obj/Parser'], function(fs, PlurConfig, PlurFileSystem, PlurObjParser) { // no indent
 	
 var NodeJs = function(configuredClasspath, baseConfig) {

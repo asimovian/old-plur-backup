@@ -1,3 +1,7 @@
+/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ */
 define(['jquery', 'plur/request/Client'], function(jQuery, PlurRequestClient) { // begin
 
 var Jquery = function(url) {

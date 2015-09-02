@@ -1,9 +1,8 @@
 /**
- * PlurDbResponseFind <plur/db/response/Find>
- * @copyright 2013 binaryCult
- * @license https://github.com/binarycult/plur/blob/master/LICENSE.txt
- * @author Roy Laurie <roy.laurie@gmail.com>
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
+
 define(['plur/response/Response'], function(Response) { // no indent
 
 var DbFindResponse = function(objects, columnNames) {

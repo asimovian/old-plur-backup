@@ -1,3 +1,7 @@
+/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ */
 define(['ws', 'plur/PlurObject', 'plur/service/Service', 'plur/websocket/WebsocketService',
         'plur/websocket/WebsocketSession'],
 function(ws, PlurObject, Service, WebsocketService, WebsocketSession) {

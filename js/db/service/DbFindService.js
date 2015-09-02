@@ -1,10 +1,6 @@
 /**
- * PlurDbFindService <plur/db/service/Find>
- * Responds to PlurDbRequestFind requests with PlurDbFindResponse responses.
- * Requesting client must have ACL rights for table/row queried.
- * @copyright 2013 binaryCult
- * @license https://github.com/binarycult/plur/blob/master/LICENSE.txt
- * @author Roy Laurie <roy.laurie@gmail.com>
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
 define(['pg', 'plur/service/Service', 'plur/db/response/Find', 'plur/db/request/find/QueryBuilder', 'plur/db/request/Find'], function(pg, PlurService, PlurDbFindResponse, QueryBuilder, PlurDbFindRequest) { // no indent
 

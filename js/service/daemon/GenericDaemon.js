@@ -1,3 +1,7 @@
+/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ */
 define(['requirejs', 'http', 'plur/service/Daemon', 'plur/config/Config', 'plur/config/NodeJs', 'plur/obj/Parser', 'plur/exception/Exception'],
 function(requirejs, http, PlurServiceDaemon, PlurConfig, PlurNodeJsConfig, PlurObjParser, PlurException) { // no indent
 	
