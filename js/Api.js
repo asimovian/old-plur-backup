@@ -6,8 +6,8 @@ define(function() {
 
 var Api = {
     CLASSPATH: 'plur/Api',
-    VERSION: '2.0.0-SNAPSHOT',
-    SCM_URL: 'git://github.com/binarycult/plur.git',
+    VERSION: '0.0.0',
+    SCM_URL: 'git://github.com/asimovian/plur.git',
     BRANCH: 'master'
 };
 
