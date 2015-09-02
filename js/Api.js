@@ -5,10 +5,10 @@
 define(function() {
 
 var Api = {
-    CLASSPATH: 'plur/Api',
-    VERSION: '0.0.0',
-    SCM_URL: 'git://github.com/asimovian/plur.git',
-    BRANCH: 'master'
+    namepath: 'plur/Api',
+    version: '0.0.0',
+    scmUrl: 'git://github.com/asimovian/plur.git',
+    branch: 'master'
 };
 
 return Api;
