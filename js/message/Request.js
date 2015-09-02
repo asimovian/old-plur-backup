@@ -14,7 +14,7 @@ var Request = function() {
     this._token = UUID.create();
 };
 
-PlurObject.create('plur/request/Request', Request, PlurObject);
+PlurObject.create('plur/request/Request', Request);
 
 return Request;
 });
