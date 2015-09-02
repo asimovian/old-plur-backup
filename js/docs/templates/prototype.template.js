@@ -7,16 +7,14 @@ define(['plur/PlurObject'], function(PlurObject) {
 
 /**
  * ${PROTOTYPE.DESCRIPTION}$
- * @var ${NAMESPACE}$/${PROTOTYPE.NAME}$
+ * @var ${PATHNAME}$/${PROTOTYPE.NAME}$
  **
- * @function ${NAMESPACE}$/${PROTOTYPE.NAME}$
- * @param {} options Configuration parameters {
- * }
+ * @function ${PATHNAME}$/${PROTOTYPE.NAME}$
  */
-var ${PROTOTYPE.NAME}$ = function(options) {
+var ${PROTOTYPE.NAME}$ = function() {
 };
 
-${PROTOTYPE.NAME}$.prototype = PlurObject.create('${NAMESPACE}$/${PROTOTYPE.NAME}$', ${PROTOTYPE.NAME}$);
+${PROTOTYPE.NAME}$.prototype = PlurObject.create('${PATHNAME}$/${PROTOTYPE.NAME}$', ${PROTOTYPE.NAME}$);
 
 return ${PROTOTYPE.NAME}$;
 });
