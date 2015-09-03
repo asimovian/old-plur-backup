@@ -8,10 +8,10 @@ var Jquery = function(url) {
     this._url = url;
 };
 
-Jquery.CLASSPATH = 'plur/request/client/Jquery';
+Jquery.namepath = 'plur/request/client/Jquery';
 Jquery.prototype = new PlurRequestClient();
 Jquery.prototype.constructor = Jquery;
-Jquery.prototype.CLASSPATH = Jquery.CLASSPATH;
+Jquery.prototype.namepath = Jquery.namepath;
 
 Jquery.prototype.send = function(request, callback) {
     var json = JSON.stringify(request.toObj());

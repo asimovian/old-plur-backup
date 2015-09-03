@@ -33,7 +33,7 @@ DbFindResponse.prototype.getObjects = function() {
 
 DbFindResponse.prototype.toObj = function(obj) {
 	var o = {
-		classpath: this.CLASSPATH,
+		namepath: this.namepath,
 		objects: this._objects,
 		columnNames: this._columnNames
 	};

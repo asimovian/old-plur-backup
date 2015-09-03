@@ -23,7 +23,7 @@ QueryBuilder.prototype = PlurObject.create('plur/db/message/FindRequestQueryBuil
  */
 QueryBuilder.prototype.build = function(request) {
 	var selectSql = request.getColumns().join(', ');
-	var fromSql = QueryBuilder.getTableForClasspath(request.getTargetClasspath());
+	var fromSql = QueryBuilder.getTableForNamepath(request.getTargetNamepath());
 	var orderSql = request.getOrder().join(', ');
 	var limitSql = request.getLimit();
 	var values = [];
@@ -65,8 +65,8 @@ QueryBuilder.prototype._buildCondition = function(condition, values) {
 	return sql;
 }
 
-QueryBuilder.prototype.getTableForClasspath = function(classpath) {
-	return classpath.replace(/\//g, '_').toLowerCase();
+QueryBuilder.prototype.getTableForNamepath = function(namepath) {
+	return namepath.replace(/\//g, '_').toLowerCase();
 }
 
 

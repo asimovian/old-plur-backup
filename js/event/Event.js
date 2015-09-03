@@ -13,7 +13,7 @@ var Event = function(topic, data) {
 PlurObject.createClass('plur/event/Event', Event, PlurObject, {
     toObj: function() {
     	o = this.prototype.toObj();
-    	o.CLASSPATH = this.CLASSPATH;
+    	o.namepath = this.namepath;
 		o.topic = this.topic;
 		o.timestamp = this.timestamp;
 		o.data = PlurObject.toObj(data);

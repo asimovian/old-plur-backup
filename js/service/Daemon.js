@@ -8,11 +8,11 @@ var Daemon = function() {
 	
 };
 
-Daemon.CLASSPATH = 'plur/service/Daemon.js';
-Daemon.prototype.CLASSPATH = Daemon.CLASSPATH;
+Daemon.namepath = 'plur/service/Daemon.js';
+Daemon.prototype.namepath = Daemon.namepath;
 
 Daemon.prototype = {
-	CLASSPATH: Daemon.CLASSPATH,
+	namepath: Daemon.namepath,
 	
 	/**
 	 * Starts the daemon

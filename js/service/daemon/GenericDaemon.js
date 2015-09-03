@@ -12,49 +12,49 @@ var Generic = function(parameters) {
 	for (var i = 0; i < parameters.length; ++i) {
 		var p = parameters[i];
 		if (p instanceof PlurConfig) {
-			if (p.getConfiguredClasspath() === Generic.CLASSPATH) {
+			if (p.getConfiguredNamepath() === Generic.namepath) {
 				this._CONFIG.merge(p);
 			}
 		}
 	}
 
 	this._serviceClasses = []; // services
-	this._requestMap = {}; // key (classpath) -> value ([services])
+	this._requestMap = {}; // key (namepath) -> value ([services])
 };
 
-Generic.CLASSPATH = 'plur/service/daemon/Generic';
-Generic._CONFIG = new PlurNodeJsConfig(Generic.CLASSPATH);
+Generic.namepath = 'plur/service/daemon/Generic';
+Generic._CONFIG = new PlurNodeJsConfig(Generic.namepath);
 
 Generic.prototype = new PlurServiceDaemon();
-Generic.prototype.CLASSPATH = Generic.CLASSPATH;
+Generic.prototype.namepath = Generic.namepath;
 
 /**
  * Starts the daemon
  */
 Generic.prototype.start = function() {
 	var self = this;
-	var numWaiting = this._CONFIG.serviceClasspaths.length;
-	for (var i = 0; i < this._CONFIG.serviceClasspaths.length; ++i) {
-		requirejs([this._CONFIG.serviceClasspaths[i]], function(Service) {
+	var numWaiting = this._CONFIG.serviceNamepaths.length;
+	for (var i = 0; i < this._CONFIG.serviceNamepaths.length; ++i) {
+		requirejs([this._CONFIG.serviceNamepaths[i]], function(Service) {
 			numWaiting--;
 			
 			// contract checking
-			if (typeof(Service.REQUEST_CLASSPATHS.length) === 'undefined') {
-				throw new PlurException('Service `' + Service.CLASSPATH + '` is valid. It lacks a REQUEST_CLASSPATHS static property');
+			if (typeof(Service.REQUEST_namepathS.length) === 'undefined') {
+				throw new PlurException('Service `' + Service.namepath + '` is valid. It lacks a REQUEST_namepathS static property');
 			}
 			
 			// map requests to this service
-			for (var j = 0; j < Service.REQUEST_CLASSPATHS.length; ++j) {
-				var classpath = Service.REQUEST_CLASSPATHS[j];
-				if (typeof(self._requestMap[classpath]) === 'undefined') {
-					self._requestMap[classpath] = [Service];
+			for (var j = 0; j < Service.REQUEST_namepathS.length; ++j) {
+				var namepath = Service.REQUEST_namepathS[j];
+				if (typeof(self._requestMap[namepath]) === 'undefined') {
+					self._requestMap[namepath] = [Service];
 				} else {
-					self._requestMap[classpath].push(Service);
+					self._requestMap[namepath].push(Service);
 				}
 			}
 
 			self._serviceClasses.push(Service);
-			console.log('Loaded service: ' + Service.CLASSPATH);
+			console.log('Loaded service: ' + Service.namepath);
 			
 			if (numWaiting == 0) {
 				self._listen();
@@ -73,11 +73,11 @@ Generic.prototype._listen = function() {
 
 		req.on('end', function() {
 			var obj = JSON.parse(data);
-			var classpath = obj.classpath;
-			var serviceClasses = self._requestMap[classpath];
+			var namepath = obj.namepath;
+			var serviceClasses = self._requestMap[namepath];
 			if (typeof(serviceClasses) === 'undefined') {
 				res.writeHead(500, {'Content-Type': 'application/json'});
-				var e = new PlurException('Unsupported service request: ' + classpath);
+				var e = new PlurException('Unsupported service request: ' + namepath);
 				res.end(JSON.stringify(e.toObj()) + "\n");
 				return;
 			}

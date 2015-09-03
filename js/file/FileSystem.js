@@ -15,16 +15,16 @@ var System = function() {
 	this._nodeJsAppPath = this._homePath + '/' + System.NODEJS_APP_PATH;
 };
 
-System.CLASSPATH = 'plur/service/daemon/System.js';
+System.namepath = 'plur/service/daemon/System.js';
 System.CONFIG_PATH = 'config';
 System.RESOURCES_PATH = 'src/main/resources';
 System.NODEJS_APP_PATH = 'src/app/js/plur/nodejs';
 
 System.parseObj = PlurConfig.parseObj;
-PlurObjParser.get().registerParser(System.CLASSPATH, System.parseObj);
+PlurObjParser.get().registerParser(System.namepath, System.parseObj);
 
 System.prototype = new PlurConfig();
-System.prototype.CLASSPATH = System.CLASSPATH;
+System.prototype.namepath = System.namepath;
 
 System.get = function() {
 	if (typeof(System._instance) === 'undefined') {
@@ -35,7 +35,7 @@ System.get = function() {
 }
 
 System.prototype = {
-	CLASSPATH: System.CLASSPATH,
+	namepath: System.namepath,
 
 	getHomePath: function(path) {
 		return this.createPath(this._homePath, path);

@@ -4,15 +4,15 @@
  */
 define(['plur/db/Request', 'plur/obj/Parser'], function(PlurDbRequest, PlurObjParser) { // begin class
 
-var Find = function(classpath, columnNames, orderBy, limit) {
-    this._targetClasspath = ( typeof(classpath) === 'undefined' ? null : classpath );
+var Find = function(namepath, columnNames, orderBy, limit) {
+    this._targetNamepath = ( typeof(namepath) === 'undefined' ? null : namepath );
     this._columnNames = ( typeof(columnNames) === 'undefined' ? null : columnNames );
     this._orderBy = ( typeof(orderBy) === 'undefined' ? null : orderBy );
     this._limit = ( typeof(limit) === 'undefined' ? null : limit );
     this._rootCondition = null;
 }
 
-Find.CLASSPATH = 'plur/db/request/Find';
+Find.namepath = 'plur/db/request/Find';
 Find.OR = 'OR';
 Find.AND = 'AND';
 Find.EQUAL = '=';
@@ -28,11 +28,11 @@ console.log(find._rootCondition._leafConditions);
 	return find;
 }
 
-PlurObjParser.get().registerParser(Find.CLASSPATH, Find.parseObj);
+PlurObjParser.get().registerParser(Find.namepath, Find.parseObj);
 
 Find.prototype = new PlurDbRequest();
 Find.prototype.constructor = Find;
-Find.prototype.CLASSPATH = Find.CLASSPATH;
+Find.prototype.namepath = Find.namepath;
 Find.prototype.AND = Find.AND;
 Find.prototype.OR = Find.OR;
 Find.prototype.EQUAL = Find.EQUAL;
@@ -49,13 +49,13 @@ Find.prototype.getColumns = function() {
     return this._columnNames;
 };
 
-Find.prototype.from = function(classpath) {
-    this._targetClasspath = classpath;
+Find.prototype.from = function(namepath) {
+    this._targetNamepath = namepath;
     return this;
 };
 
-Find.prototype.getTargetClasspath = function() {
-    return this._targetClasspath;
+Find.prototype.getTargetNamepath = function() {
+    return this._targetNamepath;
 };
 
 Find.prototype.where = function(conditionOrColumn, op, value) {
@@ -88,8 +88,8 @@ Find.prototype.getOrder = function() {
 
 Find.prototype.toObj = function() {
     var o = {
-        classpath: Find.CLASSPATH,
-        from: this._targetClasspath,
+        namepath: Find.namepath,
+        from: this._targetNamepath,
     };
 
     if (this._columnNames != null) {

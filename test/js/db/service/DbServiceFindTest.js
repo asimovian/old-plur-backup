@@ -5,21 +5,21 @@ var Test = function(callback) {
 	PlurTest.call(this, callback);
 };
 
-Test.CLASSPATH = 'plurtest/db/service/Find';
-Test.SUBJECT_CLASSPATH = 'plur/db/service/Find';
+Test.namepath = 'plurtest/db/service/Find';
+Test.SUBJECT_namepath = 'plur/db/service/Find';
 Test._SERVICE_DAEMON_APP = 'service-daemon.js';
-Test._DAEMON_CLASSPATH = 'plur/service/daemon/Generic';
+Test._DAEMON_namepath = 'plur/service/daemon/Generic';
 
 Test.prototype = new PlurTest();
 Test.prototype.constructor = Test;
-Test.prototype.CLASSPATH = Test.CLASSPATH;
-Test.prototype.SUBJECT_CLASSPATH = Test.SUBJECT_CLASSPATH;
+Test.prototype.namepath = Test.namepath;
+Test.prototype.SUBJECT_namepath = Test.SUBJECT_namepath;
 
 Test.prototype.testProcess = function() {
 	// start a service daemon
 	var daemonPath = PlurFileSystem.get().getNodeJsAppPath(Test._SERVICE_DAEMON_APP);
-	var runtimeConfig = new PlurNodeJsConfig(Test._DAEMON_CLASSPATH);
-	runtimeConfig.serviceClasspathes = [PlurDbFindRequest.CLASSPATH];
+	var runtimeConfig = new PlurNodeJsConfig(Test._DAEMON_namepath);
+	runtimeConfig.serviceNamepathes = [PlurDbFindRequest.namepath];
 	runtimeConfig.port = 1337;
 	var runtimeConfigArg = JSON.stringify(runtimeConfig);
 	var daemon = child_process.spawn('nodejs', [daemonPath, runtimeConfigArg]);
@@ -29,7 +29,7 @@ Test.prototype.testProcess = function() {
 	var self = this;
 	function sendRequest() {
 		// attempt to send a db request to the service daemon via http
-		var request = new PlurDbFindRequest(self.CLASSPATH, ['id', 'name'], ['name ASC'], 2);
+		var request = new PlurDbFindRequest(self.namepath, ['id', 'name'], ['name ASC'], 2);
 		request.where('id', request.GREATER, '0')
 		.and('id', request.LESS, '20');	
 	

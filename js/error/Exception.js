@@ -24,7 +24,7 @@ PlurException.fromObj = function(obj, instance) {
 PlurObject.createClass('plur/exception/PlurException', PlurException, PlurObject, {
     toObj: function() {
     	o = this.prototype.toObj();
-    	o.CLASSPATH = this.CLASSPATH;
+    	o.namepath = this.namepath;
 		o.message = this.message;
     	return o;
     },

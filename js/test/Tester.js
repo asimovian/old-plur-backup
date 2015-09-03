@@ -8,17 +8,17 @@ var Tester = function() {
 
 };
 
-Tester.CLASSPATH = 'plur/test/Tester';
+Tester.namepath = 'plur/test/Tester';
 
 Tester.prototype = {
-    CLASSPATH: Tester.CLASSPATH,
+    namepath: Tester.namepath,
     _TARGET_CLASS: /^[a-zA-Z0-9_\-\/]+$/,
     _TARGET_METHOD: /^[a-zA-Z0-9_\-\/]+\.[a-zA-Z0-9_\-]+$/,
     
     test: function(targets) {
     	var self = this;
     	
-    	function onComplete(classpath, method, result) {
+    	function onComplete(namepath, method, result) {
     		if (result === 'pass') {
 				console.log('Test passed: ' + target + '.' + method + '()');
     		} else {
@@ -30,10 +30,10 @@ Tester.prototype = {
     		var target = targets[t];
     		if (target.match(this._TARGET_METHOD)) {
     			var parts = target.split('.');
-    			var classpath = parts[0];
+    			var namepath = parts[0];
     			var method = parts[1];
-    			console.log('Testing: ' + classpath + '.' + method);
-    			requirejs([classpath], function(TargetClass) {
+    			console.log('Testing: ' + namepath + '.' + method);
+    			requirejs([namepath], function(TargetClass) {
     				var obj = new TargetClass(onComplete);
     				obj[method]();
     			});

@@ -8,19 +8,19 @@ var Test = function(callback) {
 	this._callback = callback;
 };
 
-Test.CLASSPATH = 'plur/test/Test';
+Test.namepath = 'plur/test/Test';
 Test.PASS = 'pass';
 Test.FAIL = 'fail';
 
 Test.prototype = {
-    CLASSPATH: Test.CLASSPATH,
+    namepath: Test.namepath,
     
     pass: function(method) {
-    	this._callback(this.CLASSPATH, method, Test.PASS);
+    	this._callback(this.namepath, method, Test.PASS);
     },
     
     fail: function(method) {
-    	this._callback(this.CLASSPATH, method, Test.FAIL);
+    	this._callback(this.namepath, method, Test.FAIL);
     }
 };
 

@@ -8,12 +8,12 @@ var Find = function() {
 	
 };
 
-Find.CLASSPATH = 'plur/db/service/Find';
-Find.REQUEST_CLASSPATHS = ['plur/db/request/Find'];
+Find.namepath = 'plur/db/service/Find';
+Find.REQUEST_namepathS = ['plur/db/request/Find'];
 
 Find.prototype = new PlurService();
 Find.prototype.constructor = Find;
-Find.prototype.CLASSPATH = Find.CLASSPATH;
+Find.prototype.namepath = Find.namepath;
 
 /**
  * @param PlurDbRequestFind request
@@ -41,8 +41,8 @@ Find.prototype.process = function(request, response, callback) {
 	});
 };
 
-Find.prototype.getRequestClasspathes = function() {
-	return Find.REQUEST_CLASSPATHES;
+Find.prototype.getRequestNamepathes = function() {
+	return Find.REQUEST_namepathES;
 }
 	
 return Find;

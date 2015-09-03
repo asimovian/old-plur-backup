@@ -4,8 +4,8 @@
  */
 define(['plur/obj/Parser'], function(PlurObjParser) {
 	
-var Config = function(configuredClasspath, baseConfig) {
-	this._configuredClasspath = configuredClasspath;
+var Config = function(configuredNamepath, baseConfig) {
+	this._configuredNamepath = configuredNamepath;
 	if (typeof 'baseConfig' !== 'undefined') {
 		this.merge(baseConfig);
 	}
@@ -15,7 +15,7 @@ Config._environment = {};
 
 Config.fromObj = function(obj, instance) {
 	if (!instance) {
-		instance = new Config(obj.configuredClasspath);
+		instance = new Config(obj.configuredNamepath);
 	}
 
 	return instance.merge(obj);
@@ -28,10 +28,10 @@ Config.mergeEnvironment = function(configs) {
 	
 	for (var i = 0; i < configs.length; ++i) {
 		var config = configs[i];
-		if (typeof this._environment[config.configuredClasspath] === 'undefined') {
-			this._environment[config.configuredClasspath] = config;
+		if (typeof this._environment[config.configuredNamepath] === 'undefined') {
+			this._environment[config.configuredNamepath] = config;
 		} else {
-			this._environment[config.configuredClasspath].merge(config);
+			this._environment[config.configuredNamepath].merge(config);
 		}
 	}
 };
@@ -47,13 +47,13 @@ PlurObject.createClass('plur/config/Config', Config, PlurObject, {
 		return this;
 	},
 	
-	getConfiguredClasspath: function() {
-		return this._configuredClasspath;
+	getConfiguredNamepath: function() {
+		return this._configuredNamepath;
 	},
 	
 	toObj: function() {
 		var o = this.prototype.fromObj();
-		o.configuredClasspath = this._configuredClasspath;
+		o.configuredNamepath = this._configuredNamepath;
 		// config keys
 		for (var key in this) {
 			if (this._isConfigField(key, this[key])) {
@@ -65,7 +65,7 @@ PlurObject.createClass('plur/config/Config', Config, PlurObject, {
 	},
 	
 	_isConfigField: function(name, value) {
-		if (name.match(/^_/) || name === 'CLASSPATH') {
+		if (name.match(/^_/) || name === 'namepath') {
 			return false;
 		}
 		
