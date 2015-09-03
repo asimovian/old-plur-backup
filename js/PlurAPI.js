@@ -1,12 +1,13 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
  */
 define(['plur/PlurObject', function(PlurObject) {
 
 /**
  * API version information
- * @var plur/PlurAPI
+ * @constructor plur/PlurAPI
  */
 var PlurAPI = function() {
     this.namepath = 'plur/PlurAPI';
@@ -18,9 +19,9 @@ var PlurAPI = function() {
 PlurAPI.prototype = PlurObject.create('plur/PlurAPI', PlurAPI);
 
 /**
- * @var PlurAPI plur/PlurAPI.singleton
+ * @var plur/PlurAPI plur/PlurAPI.singleton
  */
 PlurAPI.singleton = new PlurAPI();
 
-return PlurAPI;
+return PlurAPI.singleton;
 });
