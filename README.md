@@ -1,6 +1,6 @@
 plur
 ====
-[ This project is in early development ]
+[ This project is in an early development stage ]
 
 Plur is a federated application platform that is designed to scale across
 servers, web browsers, mobile devices, and drone devices.
