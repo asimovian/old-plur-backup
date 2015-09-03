@@ -1,18 +1,29 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject plur/db/message/DbRequest plur/obj/ObjParser
  */
-define(['plur/db/Request', 'plur/obj/Parser'], function(PlurDbRequest, PlurObjParser) { // begin class
+define(['plur/PlurObject', 'plur/db/message/DbRequest', 'plur/obj/Parser'], function(PlurObject, DbRequest, ObjParser) {
 
+/**
+ * Represents a DB request for querying data.
+ *
+ * @constructor plur/db/message/FindRequest
+ * @param namepath
+ * @param columnNames
+ * @param orderBy
+ * @param limit
+ */
 var Find = function(namepath, columnNames, orderBy, limit) {
     this._targetNamepath = ( typeof(namepath) === 'undefined' ? null : namepath );
     this._columnNames = ( typeof(columnNames) === 'undefined' ? null : columnNames );
     this._orderBy = ( typeof(orderBy) === 'undefined' ? null : orderBy );
     this._limit = ( typeof(limit) === 'undefined' ? null : limit );
     this._rootCondition = null;
-}
+};
 
-Find.namepath = 'plur/db/request/Find';
+Find.prototype = PlurObject.create('plur/db/message/FindRequest', Find);
+
 Find.OR = 'OR';
 Find.AND = 'AND';
 Find.EQUAL = '=';
@@ -30,9 +41,7 @@ console.log(find._rootCondition._leafConditions);
 
 PlurObjParser.get().registerParser(Find.namepath, Find.parseObj);
 
-Find.prototype = new PlurDbRequest();
-Find.prototype.constructor = Find;
-Find.prototype.namepath = Find.namepath;
+
 Find.prototype.AND = Find.AND;
 Find.prototype.OR = Find.OR;
 Find.prototype.EQUAL = Find.EQUAL;
@@ -199,4 +208,4 @@ Find.Condition.prototype = {
 };
 
 return Find;
-}); // EOF
+});

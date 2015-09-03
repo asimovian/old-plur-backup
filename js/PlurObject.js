@@ -25,7 +25,7 @@ PlurObject.prototype.namepath = PlurObject.namepath;
  * @param Function constructor
  * @param Function parentConstructor
  * @param {string:string} properties
- * @return {}
+ * @returns {}
  */
 PlurObject.prototype.create = function(namepath, constructor, parentConstructor) {
     var prototype = constructor.prototype;

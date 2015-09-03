@@ -1,11 +1,14 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
  */
 define(['plur/PlurObject', function(PlurObject) {
 
 /**
- * @var plur/db/message/FindRequestQueryBuilder
+ * Creates a SQL queries for DB Find Requests conditions.
+ *
+ * @constructor plur/db/message/FindRequestQueryBuilder
  */
 var QueryBuilder = function() {
 };
@@ -18,8 +21,22 @@ QueryBuilder.Query = function(sql, values) {
 QueryBuilder.prototype = PlurObject.create('plur/db/message/FindRequestQueryBuilder', QueryBuilder);
 
 /**
+ * Determines the DB table name for the given namepath.
+ *
+ * @function plur/db/message/FindRequestQueryBuilder.prototype.getTableForNamepath.
+ * @param string namepath
+ * @returns string
+ */
+QueryBuilder.getTableForNamepath = function(namepath) {
+	return namepath.replace(/\//g, '_').toLowerCase();
+};
+
+/**
+ * Creates a SQL query for the provided DB Find Request.
+ *
+ * @function plur/db/message/FindRequestQueryBuilder.prototype.build
  * @param PlurDbFindRequest request
- * @return PlurDbFindRequestQueryBuilder.Query
+ * @returns PlurDbFindRequestQueryBuilder.Query
  */
 QueryBuilder.prototype.build = function(request) {
 	var selectSql = request.getColumns().join(', ');
@@ -34,8 +51,16 @@ QueryBuilder.prototype.build = function(request) {
 	+ ' ORDER BY ' + orderSql
 	+ ' LIMIT ' + limitSql;
 	return new QueryBuilder.Query(sql, values);
-}
+};
 
+/**
+ * Builds SQL queries for a condition and any of its components.
+ *
+ * @function plur/db/message/FindRequestQueryBuilder.prototype.build
+ * @param plur/db/message/FindRequest.Condition condition
+ * @param string[] values
+ * @returns string
+ */
 QueryBuilder.prototype._buildCondition = function(condition, values) {
 	var v = values.length + 1;
 	var sql = '';
@@ -53,7 +78,7 @@ QueryBuilder.prototype._buildCondition = function(condition, values) {
 	sql += condition.getColumn() + ' ' + condition.getOperator() + ' $' + v++;
 	values.push(condition.getValue());
 	var leaves = condition.getLeafConditions();
-	for (var l = 0; l < leaves.length; ++l) {
+	for (let l = 0; l < leaves.length; ++l) {
 		var leaf = leaves[l];
 		sql += QueryBuilder._buildCondition(leaf, values);
 	}
@@ -65,11 +90,9 @@ QueryBuilder.prototype._buildCondition = function(condition, values) {
 	return sql;
 }
 
-QueryBuilder.prototype.getTableForNamepath = function(namepath) {
-	return namepath.replace(/\//g, '_').toLowerCase();
-}
-
-
+/**
+ * @var plur/db/message/FindQueryQueryBuilder plur/db/message/FindRequestQueryBuilder.singleton
+ */
 QueryBuilder.singleton = new QueryBuilder();
 	
 return QueryBuilder.singleton;

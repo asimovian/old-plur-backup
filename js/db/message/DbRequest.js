@@ -1,16 +1,20 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject plur/request/Request
  */
-define(['plur/request/Request'], function(PlurRequest) { // begin class
+define(['plur/PlurObject', 'plur/request/Request'], function(PlurObject, Request) {
 
-var Request = function() {};
+/**
+ * ABC for DB requests.
+ *
+ * @constructor plur/db/message/DbRequest
+ * @abstract
+ */
+var DbRequest = function() {
+};
 
-Request.namepath = 'plur/db/Request';
+DbRequest.prototype = PlurObject.create('plur/db/message/DbRequest', DbRequest);
 
-Request.prototype = new PlurRequest();
-Request.prototype.constructor = Request;
-Request.prototype.namepath = Request.namepath;
-
-return Request;
-}); //EOF
+return DbRequest;
+});

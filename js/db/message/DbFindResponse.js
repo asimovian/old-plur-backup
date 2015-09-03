@@ -8,6 +8,7 @@ define(['plur/PlurObject', 'plur/response/Response'], function(PlurObject, Respo
 /**
  * @var plur/db/message/DbFindResponse
  **
+ * @function plur/db/message/DbFindResponse
  * @param [] objects
  * @param string[] columnNames
  */

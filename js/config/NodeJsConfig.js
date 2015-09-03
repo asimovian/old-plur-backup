@@ -1,11 +1,19 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @require fs plur/config/Config plur/file/System plur/obj/Parser
+ * @require fs plur/PlurObject plur/config/Config plur/file/System plur/obj/Parser
  */
 define(['fs', 'plur/PlurObject', 'plur/config/Config', 'plur/file/System', 'plur/obj/Parser'],
 	function(fs, PlurObject, PlurConfig, FileSystem, ObjParser) {
-	
+
+/**
+ * Maintains file-based JSON configuration within the Node.js platform.
+ * @var plur/config/NodeJsConfig
+ **
+ * @function plur/config/NodeJsConfig
+ * @param subjectNamepath
+ * @param baseConfig
+ */
 var NodeJsConfig = function(subjectNamepath, baseConfig) {
 	PlurConfig.call(this, subjectNamepath, baseConfig);
 
@@ -30,6 +38,12 @@ var NodeJsConfig = function(subjectNamepath, baseConfig) {
 
 NodeJsConfig.prototype = PlurObject.create('plur/config/NodeJsConfig', NodeJsConfig);
 
+/**
+ * Writes the current configuration to file in JSON.
+ * @function plur/config/NodeJsConfig.prototype.write
+ * @param filepath
+ * @param callback
+ */
 NodeJsConfig.prototype.write = function(filepath, callback) {
 	if (typeof filepath === 'undefined') {
 		filepath = FileSystem.getResourcePath(this._jsonNamepath);

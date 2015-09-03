@@ -1,5 +1,7 @@
 plur
-======================
+====
+[ This project is in early development ]
+
 Plur is a federated application platform that is designed to scale across
 servers, web browsers, mobile devices, and drone devices.
 
@@ -26,12 +28,12 @@ directly or indirectly.
 
 
 Contributors
--------
-* Roy Laurie, Asimovian LLC
+------------
+* Roy Laurie <roy.laurie@gmail.com>, Asimovian LLC
 
 
 Core Stack
------
+----------
 Javascript is the primary programming language used for both server-side and client-side API.
 
 HTML5/CSS is used for presentation on client-side applications.
@@ -55,7 +57,6 @@ Bitcoin is used to purchase service contracts.
 
 License (MIT)
 --------------
-
 Copyright (c) 2015 Asimovian LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
