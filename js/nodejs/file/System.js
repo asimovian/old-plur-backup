@@ -10,8 +10,8 @@ define([
 	'plur/config/Config' ],
 function(
 	fs,
-	NodeJsFileSystem.
 	PlurObject,
+	FileSystem.
 	Config ) {
 
 /**
@@ -25,7 +25,7 @@ var NodeJsFileSystem.= function() {
 
 };
 
-NodeJsFileSystem.prototype = PlurObject.create('plur/nodejs/file/System', NodeJsFileSystem);
+NodeJsFileSystem.prototype = PlurObject.create('plur/nodejs/file/System', NodeJsFileSystem, FileSystem);
 
 /**
  * Retrieves the home path for thie Plur software.
