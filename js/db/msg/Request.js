@@ -8,13 +8,13 @@ define(['plur/PlurObject', 'plur/request/Request'], function(PlurObject, Request
 /**
  * ABC for DB requests.
  *
- * @constructor plur/db/message/DbRequest
+ * @constructor plur/db/msg/Request
  * @abstract
  */
 var DbRequest = function() {
 };
 
-DbRequest.prototype = PlurObject.create('plur/db/message/DbRequest', DbRequest);
+DbRequest.prototype = PlurObject.create('plur/db/msg/Request', DbRequest);
 
 return DbRequest;
 });

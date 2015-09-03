@@ -9,10 +9,9 @@ define(['plur/PlurObject'], function(PlurObject) {
  * The Directive abstract class represents service operations that are required to succeed at a given level within a
  * Plur Cloud.
  *
- * @var plur/directive/Directive
+ * @constructor plur/directive/Directive
  * @abstract
  **
- * @function plur/directive/Directive
  * @param {} options Configuration parameters {
  *     plur/directive/Directive[] | undefined requirements Sub-component directives
  * }
