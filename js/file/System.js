@@ -28,7 +28,7 @@ FileSystem.DirNames = {
  *
  * @function plur/file/System.prototype.joinPaths
  * @virtual
- * @param ... string paths
+ * @param ... string[] paths
  * @returns string
  */
 FileSystem.prototype.joinPaths = function(/* ... */) {
@@ -88,7 +88,7 @@ FileSystem.prototype.getBinPath = function(/* ... */) {
  *
  * @function plur/file/System.prototype._getHomePath
  * @virtual
- * @param ... string path
+ * @param ... string[] paths
  * @returns string
  */
 FileSystem.prototype._getHomePath = PlurObject.pureVirtualFunction;
