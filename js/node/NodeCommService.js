@@ -33,7 +33,7 @@ var NodeCommService = function(plurNode) {
 
 NodeCommService.prototype = PlurObject.create('plur/node/NodeCommService', NodeCommService, Service);
 
-NodeCommService.prototype._handshake: function(websocketService) {
+NodeCommService.prototype._handshake = function(websocketService) {
 	// the node introduces itself as soon as a websocket opens
 	websocketService.emitter().on('plur.websocket.open', function(event, data) {
 		console.log('Sending node hello to session: ' + data.sessionId);
