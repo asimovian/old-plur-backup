@@ -11,7 +11,7 @@ define([
     'plur/db/response/Find',
     'plur/db/request/find/QueryBuilder',
     'plur/db/request/Find' ],
-    function(
+function(
     pg,
     PlurObject,
     Service,

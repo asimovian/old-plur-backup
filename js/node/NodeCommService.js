@@ -1,6 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject plur/service/Service plur/websocket/WebsocketService plur/session/Session
  */
 define([
 	'plur/PlurObject',
@@ -13,6 +14,13 @@ function(
 	WebsocketService,
 	Session) {
 
+/**
+ * Handles core node-to-node communication, including handshakes.
+ *
+ * @constructor plur/node/NodeCommService
+ * @extends plur/service/Service
+ * @param plur/node/PlurNode
+ */
 var NodeCommService = function(plurNode) {
 	Service.call(this, plurNode);
 	
@@ -20,7 +28,12 @@ var NodeCommService = function(plurNode) {
 		plurNode.registerService(new WebsocketService(plurNode));
 	
 	var websocketService = plurNode.getService(WebsocketService.namepath);
-	
+    this._handshake(plurNode, websocketService);
+};
+
+NodeCommService.prototype = PlurObject.create('plur/node/NodeCommService', NodeCommService, Service);
+
+NodeCommService.prototype._handshake: function(websocketService) {
 	// the node introduces itself as soon as a websocket opens
 	websocketService.emitter().on('plur.websocket.open', function(event, data) {
 		console.log('Sending node hello to session: ' + data.sessionId);
@@ -30,25 +43,26 @@ var NodeCommService = function(plurNode) {
 			networkId: plurNode.getLocalNetwork().getHashId(),
 		});
 	});
-	
-	// once the node receives, begin authentication
+
+	//todo: once the node receives, begin authentication
+
 	// once the node receives authentication, finalize and announce
 	websocketService.emitter().on('plur.node.comm.hello', function(event, data) {
 		console.log('Received hello from session #' + data.sessionId);
-		
+
 		console.log('Authenticating with session #' + data.sessionId);
 		//todo: authentication messages :/
 		plurNode.authenticateSession(data.sessionId);
 		console.log('Authenticated with session #' + data.sessionId);
 	});
-	
+
 	// relay all capabilities messages from authenticated sessions
 	// allow responders to either emit immediately or in their own time. immediate responses will be aggregated
 	websocketService.emitter().on('plur.capability.request', function(event, msg) {
 		var session = plurNode.getSession(msg.sessionId);
 		if (session.getState() != Session.State.AUTHENTICATED)
 			return;
-		
+
 		console.log('Received capabilities request for capabilities: ', msg.data.capabilities);
 		var d = {};
 		for (var field in msg)
@@ -56,15 +70,13 @@ var NodeCommService = function(plurNode) {
 
 		d.responses = [];
 		plurNode.emitter().emit(event, d);
-		
+
 		if (d.responses.length === 0)
 			return;
-		
+
 		session.io.emit(d.responses[0].e, d.responses[0].d);
 	});
 };
-
-NodeCommService.prototype = PlurObject.create('plur/node/NodeCommService', NodeCommService, Service);
 
 NodeCommService.prototype.start = function() {
 	if (this.running())
