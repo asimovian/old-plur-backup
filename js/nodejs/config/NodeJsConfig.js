@@ -8,9 +8,9 @@ define(['fs', 'plur/PlurObject', 'plur/config/Config', 'plur/file/System', 'plur
 
 /**
  * Maintains file-based JSON configuration within the Node.js platform.
- * @var plur/config/NodeJsConfig
+ *
+ * @constructor plur/nodejs/config/NodeJsConfig
  **
- * @function plur/config/NodeJsConfig
  * @param subjectNamepath
  * @param baseConfig
  */
@@ -36,11 +36,11 @@ var NodeJsConfig = function(subjectNamepath, baseConfig) {
 	}
 };
 
-NodeJsConfig.prototype = PlurObject.create('plur/config/NodeJsConfig', NodeJsConfig);
+NodeJsConfig.prototype = PlurObject.create('plur/nodejs/config/NodeJsConfig', NodeJsConfig);
 
 /**
  * Writes the current configuration to file in JSON.
- * @function plur/config/NodeJsConfig.prototype.write
+ * @function plur/nodejs/config/NodeJsConfig.prototype.write
  * @param filepath
  * @param callback
  */
