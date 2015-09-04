@@ -2,36 +2,56 @@
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
-define(['requirejs', 'http', 'plur/service/Daemon', 'plur/config/Config', 'plur/config/NodeJs', 'plur/obj/Parser', 'plur/exception/Exception'],
-function(requirejs, http, PlurServiceDaemon, PlurConfig, PlurNodeJsConfig, PlurObjParser, PlurException) { // no indent
-	
-var Generic = function(parameters) {
-	this._CONFIG = Generic._CONFIG;
+define([
+    'requirejs',
+    'http',
+    'plur/service/Daemon',
+    'plur/config/Config',
+    'plur/config/NodeJs',
+    'plur/obj/Parser',
+    'plur/exception/Exception' ],
+function(
+    requirejs,
+    http,
+    PlurServiceDaemon,
+    PlurConfig,
+    PlurNodeJsConfig,
+    PlurObjParser,
+    PlurException ) {
+
+//todo: There is overlap between Service, Daemon, and Generic Daemon. They need to be broken apart properly.
+//There is nothing Generic about this Service daemon, it's opening a websocket service up.
+
+/**
+ * A generic daemon that handles Request messages for any number of registered Services, routing them once validated.
+ *
+ * @constructor plur/service/daemon/Generic
+ **
+ * @param {PlurConfig[]} parameters
+ */
+var GenericDaemon = function(parameters) {
+	this._CONFIG = GenericDaemon._CONFIG;
+	this._serviceClasses = []; // services
+	this._requestMap = {}; // key (namepath) -> value ([services])
+
 	var configs = [];
 
 	for (var i = 0; i < parameters.length; ++i) {
 		var p = parameters[i];
 		if (p instanceof PlurConfig) {
-			if (p.getConfiguredNamepath() === Generic.namepath) {
+			if (p.getConfiguredNamepath() === GenericDaemon.namepath) {
 				this._CONFIG.merge(p);
 			}
 		}
 	}
-
-	this._serviceClasses = []; // services
-	this._requestMap = {}; // key (namepath) -> value ([services])
 };
 
-Generic.namepath = 'plur/service/daemon/Generic';
-Generic._CONFIG = new PlurNodeJsConfig(Generic.namepath);
-
-Generic.prototype = new PlurServiceDaemon();
-Generic.prototype.namepath = Generic.namepath;
+GenericDaemon.prototype = PlurObject.create('plur/service/daemon/GenericDaemon', GenericDaemon);
 
 /**
  * Starts the daemon
  */
-Generic.prototype.start = function() {
+GenericDaemon.prototype.start = function() {
 	var self = this;
 	var numWaiting = this._CONFIG.serviceNamepaths.length;
 	for (var i = 0; i < this._CONFIG.serviceNamepaths.length; ++i) {
@@ -63,8 +83,9 @@ Generic.prototype.start = function() {
 	}
 };
 
-Generic.prototype._listen = function() {
+GenericDaemon.prototype._listen = function() {
 	var self = this;
+
 	http.createServer(function(req, res) {
 		var data = '';
 		req.on('data', function(chunk) {
@@ -113,14 +134,14 @@ Generic.prototype._listen = function() {
 /**
  * Stops the daemon.
  */
-Generic.prototype.stop = function() {
+GenericDaemon.prototype.stop = function() {
 };
 
 /**
  * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
  */
-Generic.prototype.heartbeat = function() {
+GenericDaemon.prototype.heartbeat = function() {
 };
 
-return Generic;
-}); // no indent
+return GenericDaemon;
+});
