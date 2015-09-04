@@ -21,8 +21,8 @@ function(
  *
  * @constructor plur/nodejs/Config
  **
- * @param subjectNamepath
- * @param baseConfig
+ * @param string subjectNamepath
+ * @param {} baseConfig
  */
 var NodeJsConfig = function(subjectNamepath, baseConfig) {
 	PlurConfig.call(this, subjectNamepath, baseConfig);
@@ -46,11 +46,11 @@ var NodeJsConfig = function(subjectNamepath, baseConfig) {
 	}
 };
 
-NodeJsConfig.prototype = PlurObject.create('plur/nodejs/config/NodeJsConfig', NodeJsConfig);
+NodeJsConfig.prototype = PlurObject.create('plur/nodejs/Config', NodeJsConfig);
 
 /**
  * Writes the current configuration to file in JSON.
- * @function plur/nodejs/config/NodeJsConfig.prototype.write
+ * @function plur/nodejs/Config.prototype.write
  * @param filepath
  * @param callback
  */
