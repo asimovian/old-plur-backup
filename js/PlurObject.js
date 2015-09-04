@@ -7,9 +7,7 @@ define([], function() {
 /**
  * Utility for prototype object construction.
  *
- * @var plur/PlurObject
- **
- * @function PlurObject
+ * @constructor plur/PlurObject
  */
 var PlurObject = function() {};
 
@@ -17,25 +15,32 @@ var PlurObject = function() {};
 PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
+PlurObject.implements = function(interfaceConstructor) {
+    return ( typeof this.prototype.implements !== 'undefined' &&
+            && typeof this.prototype.implements[interfaceConstructor.namepath] !== 'undefined' );
+};
+
 /**
  * Meant to be assigned to abstract prototype functions that require overriding in child classes.
  *
- * @function plur/PlurObject.pureVirtualFunction
+ * @function plur/PlurObject.prototype.pureVirtualFunction
  * @throws Error
  */
-PlurObject.pureVirtualFunction = function() {
+PlurObject.prototype.pureVirtualFunction = function() {
     throw new Error('Unimplmeneted pure virtual function');
 };
 
 /**
- * Creates a new prototype object.
+ * Creates a prototype object; extending it from a parent constructor if provided via Object.create().
+ * Injects a namepath variable to the constructor and prototype that provided the namespace + partial file name.
+ * Injects an implemented assoc array into the constructor that maintains namepaths of all interfaces implemented.
+ * Injects an implements() method into the prototype to check for interface inheritance.
  *
- * @function plur/PlurObject.create
+ * @function plur/PlurObject.prototype.create
  * @param string namepath
  * @param Function constructor
  * @param Function parentConstructor
- * @param {string:string} properties
- * @returns {}
+ * @returns {} constructor.prototype
  */
 PlurObject.prototype.create = function(namepath, constructor, parentConstructor) {
     var prototype = constructor.prototype;
@@ -45,19 +50,56 @@ PlurObject.prototype.create = function(namepath, constructor, parentConstructor)
         prototype.constructor = constructor;
     }
 
+    // inject namepath on both constructor and prototype
     constructor.namepath = namepath;
-    prototype.namepath = namepath;
+    prototype.namepath = constructor.namepath;
 
-    //todo: do not use global namespace for debugging flag
-    if (typeof PLUR_DEBUG !== 'undefined' && PLUR_DEBUG === true) {
-        // throw errors for any uimplemented pure virtual functions
-        for (let propertyName in prototype) {
-            if (prototype[propertyName] === PlurObject.pureVirtualFunction)
-                throw new Error('Unimplemented virtual function: ' + namepath + '.prototype.' + propertyName);
+    // inject an array that will store namepaths of interfaces as keys into the constructor
+    constructor.implemented = {};
+    // inject an implements() method into the prototype
+    prototype.implements = PlurObject.implements;
+
+    return prototype;
+};
+
+/**
+ * Define a subject constructor/prototype as implementing a given interface constructor.
+ * Copies the interface prototype's pure virtual methods in to the subject prototype.
+ * Adds the interface pathname to the subject constructor.implemented variable.
+ *
+ * @function plur/PlurObject.prototype.implement
+ * @param function() constructor
+ * @param function() interfaceConstructor
+ * @returns plur/PlurObject For use in cascaded calls to this method
+ */
+PlurObject.prototype.implement = function(constructor, interfaceConstructor) {
+    if (typeof constructor.implemented[interfaceConstructor.namepath] != 'undefined')
+        return;
+
+    let interfacePrototype = interfaceConstructor.prototype;
+    let prototype = constructor.prototype;
+
+    for (let propertyName in interfaceConstructor) {
+        // make sure that the interface property is assigned to PlurObject.pureVirtualFunction
+        if (interfaceConstructor[propertyName] === this.pureVirtualFunction) {
+            let type = prototype[propertyName];
+
+            // set it if it's undefined. ignore if it exists and is already pure virtual. throw error otherwise.
+            switch(type) {
+            case 'undefined':
+                prototype[propertyName] = interfacePrototype[propertyName];
+                break;
+            default:
+                if (prototype[propertyName] !== this.pureVirtualFunction) {
+                    throw new Error('Inheritance collision in ' + prototype.namepath + ' for ' +
+                        interfaceConstructor.namepath + '.prototype.' + propertyName);
+                }
+            }
         }
     }
 
-    return prototype;
+    constructor.implemented[interfaceConstructor.namepath] = null;
+    return this;
 };
 
 /**

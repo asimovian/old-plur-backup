@@ -3,7 +3,7 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject
  */
-define(['plur/PlurObject'], function (PlurObject) {
+define(['plur/PlurObject', 'plur/file/ISystem'], function (PlurObject, IFileSystem) {
 
 /**
  * A simple abstract base class for all file systems, both local and remote.
@@ -17,6 +17,8 @@ var FileSystem = function() {
 };
 
 FileSystem.prototype = PlurObject.create('plur/file/System', FileSystem);
+
+PlurObject.implement(FileSystem, IFileSystem);
 
 FileSystem.DirNames = {
     bin: 'bin',
