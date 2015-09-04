@@ -1,0 +1,7 @@
+{
+    "classpath": "plur/model/translator/Registry",
+    "models": {
+        "plur/db/query/Request": "plur/db/query/RequestModelTransformer",
+        "plur/db/query/Response": "plur/db/query/ResponseModelTransformer"
+    }
+}
