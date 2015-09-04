@@ -1,6 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requirejs http plur/service/Daemon plur/config/Config plur/config/NodeJs plur/obj/Parser plur/excaption/Error
  */
 define([
     'requirejs',
@@ -9,7 +10,7 @@ define([
     'plur/config/Config',
     'plur/config/NodeJs',
     'plur/obj/Parser',
-    'plur/exception/Exception' ],
+    'plur/error/Error' ],
 function(
     requirejs,
     http,
@@ -17,7 +18,7 @@ function(
     PlurConfig,
     PlurNodeJsConfig,
     PlurObjParser,
-    PlurException ) {
+    PlurError ) {
 
 //todo: There is overlap between Service, Daemon, and Generic Daemon. They need to be broken apart properly.
 //There is nothing Generic about this Service daemon, it's opening a websocket service up.
@@ -46,7 +47,7 @@ var GenericDaemon = function(parameters) {
 	}
 };
 
-GenericDaemon.prototype = PlurObject.create('plur/service/daemon/GenericDaemon', GenericDaemon);
+GenericDaemon.prototype = PlurObject.create('plur/service/daemon/Daemon', GenericDaemon);
 
 /**
  * Starts the daemon
@@ -59,13 +60,13 @@ GenericDaemon.prototype.start = function() {
 			numWaiting--;
 			
 			// contract checking
-			if (typeof(Service.REQUEST_namepathS.length) === 'undefined') {
-				throw new PlurException('Service `' + Service.namepath + '` is valid. It lacks a REQUEST_namepathS static property');
+			if (typeof(Service.REQUEST_NAMEPATHS.length) === 'undefined') {
+				throw new PlurError('Service `' + Service.namepath + '` is valid. It lacks a REQUEST_NAMEPATHS static property');
 			}
 			
 			// map requests to this service
-			for (var j = 0; j < Service.REQUEST_namepathS.length; ++j) {
-				var namepath = Service.REQUEST_namepathS[j];
+			for (var j = 0; j < Service.REQUEST_NAMEPATHS.length; ++j) {
+				var namepath = Service.REQUEST_NAMEPATHS[j];
 				if (typeof(self._requestMap[namepath]) === 'undefined') {
 					self._requestMap[namepath] = [Service];
 				} else {
@@ -98,7 +99,7 @@ GenericDaemon.prototype._listen = function() {
 			var serviceClasses = self._requestMap[namepath];
 			if (typeof(serviceClasses) === 'undefined') {
 				res.writeHead(500, {'Content-Type': 'application/json'});
-				var e = new PlurException('Unsupported service request: ' + namepath);
+				var e = new PlurError('Unsupported service request: ' + namepath);
 				res.end(JSON.stringify(e.toObj()) + "\n");
 				return;
 			}
@@ -107,8 +108,8 @@ GenericDaemon.prototype._listen = function() {
 			ObjParser.get().parse(obj, function(request, error) {
 				if (error) {
 					res.writeHead(500, {'Content-Type': 'application/json'});
-					if (!(error instanceof PlurException)) {
-						var pe = new PlurException(''+e);
+					if (!(error instanceof PlurError)) {
+						var pe = new PlurError(''+e);
 						res.end(JSON.stringify(pe.toObj()) + "\n");
 						throw e;
 					}
