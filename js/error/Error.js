@@ -8,7 +8,7 @@ define(['plur/PlurObject', function(PlurObject) {
 /**
  * Errors thrown by the plur internal platform.
  *
- * @constructor plur/error/PlurError
+ * @constructor plur/error/Error
  * @extends Error
  * @params message
  */
@@ -18,7 +18,7 @@ var PlurError = function(message, errorType, data) {
     this.data = ( typeof data === 'undefined' ? null : data );
 };
 
-PlurError.prototype = PlurObject.create('plur/error/PlurError', PlurError, Error);
+PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
 
 /**
  * Enum for types of errors.

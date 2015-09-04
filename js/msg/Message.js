@@ -7,7 +7,8 @@ define(['plur/PlurObject', 'plur/rng/UUID'], function (PlurObject, UUID) {
 
 /**
  * A simple abstract base class for all messages passed between node and remote services.
- * @var plur/msg/Message
+ *
+ * @constructor plur/msg/Message
  * @abstract
  */
 var Message = function() {

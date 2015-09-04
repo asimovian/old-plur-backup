@@ -3,18 +3,20 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject
  */
-define(['plur/PlurObject'], function(PlurObject) {
+define([
+    'plur/PlurObject' ],
+function(
+    PlurObject ) {
 
 /**
  * ${PROTOTYPE.DESCRIPTION}$
- * @var ${PATHNAME}$/${PROTOTYPE.NAME}$
+ * @constructor ${PROTOTYPE.PATHNAME}$/${PROTOTYPE.NAME}$
  **
- * @function ${PATHNAME}$/${PROTOTYPE.NAME}$
  */
 var ${PROTOTYPE.NAME}$ = function() {
 };
 
-${PROTOTYPE.NAME}$.prototype = PlurObject.create('${PATHNAME}$/${PROTOTYPE.NAME}$', ${PROTOTYPE.NAME}$);
+${PROTOTYPE.NAME}$.prototype = PlurObject.create('${PROTOTYPE.PATHNAME}$/${PROTOTYPE.NAME}$', ${PROTOTYPE.NAME}$);
 
 return ${PROTOTYPE.NAME}$;
 });
