@@ -1,34 +1,36 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
  */
-define(function() { // no indent
-	
+define([
+    'plur/PlurObject' ],
+function(
+    PlurObject ) {
+
+/**
+ * @constructor plur/service/Daemon
+ */
 var Daemon = function() {
-	
 };
 
-Daemon.namepath = 'plur/service/Daemon.js';
-Daemon.prototype.namepath = Daemon.namepath;
+Daemon.prototype = PlurObject.create('plur/service/Daemon', Daemon);
 
-Daemon.prototype = {
-	namepath: Daemon.namepath,
+/**
+ * Starts the daemon
+ */
+Daemon.prototype.start = PlurObject.pureVirtualFunction;
 	
-	/**
-	 * Starts the daemon
-	 */
-	start: null,
+/**
+ * Stops the daemon.
+ */
+Daemon.prototype.stop = PlurObject.pureVirtualFunction,
 	
-	/**
-	 * Stops the daemon.
-	 */
-	stop: null,
-	
-	/**
-	 * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
-	 */
-	heartbeat: null,
+/**
+ * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
+ */
+Daemon.prototype.heartbeat = PlurObject.pureVirtualFunction;
 };
 
 return Daemon;
-}); // no indent
+});

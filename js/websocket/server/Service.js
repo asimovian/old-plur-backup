@@ -2,9 +2,18 @@
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
-define(['ws', 'plur/PlurObject', 'plur/service/Service', 'plur/websocket/WebsocketService',
-        'plur/websocket/WebsocketSession'],
-function(ws, PlurObject, Service, WebsocketService, WebsocketSession) {
+define([
+    'ws',
+    'plur/PlurObject',
+    'plur/service/Service',
+    'plur/websocket/WebsocketService',
+    'plur/websocket/WebsocketSession'],
+function(
+    ws,
+    PlurObject,
+    Service,
+    WebsocketService,
+    WebsocketSession ) {
 
 var WebsocketServerService = function(plurNode) {
 	Service.call(this, plurNode, 'plur.websocket.server.service');
@@ -35,7 +44,7 @@ WebsocketServerService._Connection = function(session, websocket, options) {
 
 WebsocketServerService.DEFAULT_PORT = 9090;
 
-WebsocketServerService.prototype = PlurObject.create('plur/websocket/WebsocketServerService',
+WebsocketServerService.prototype = PlurObject.create('plur/websocket/server/Service',
 	WebsocketServerService,
 	Service
 );
