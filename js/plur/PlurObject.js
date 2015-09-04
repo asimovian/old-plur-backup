@@ -1,8 +1,12 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires require
  */
-define([], function() {
+define([
+    'require'],
+function(
+    require ) {
 
 /**
  * Utility for prototype object construction.
@@ -140,9 +144,15 @@ PlurObject.model = function(v, options) {
         } else if (!override && Object.hasOwnProperty(v.prototype, 'model') && typeof v.model === 'function')
                 return v.model();
         } else {
+            // build the model using only public variables
             let model = {};
 
             for (let propertyName in v)  {
+                // only include public variables (starts with a lower case letter)
+                if (!propertyName.match(/^[a-z]/)) {
+                    continue;
+                }
+
                 let m = PlurObject.model(v[propertyName], options);
                 if (m !== null) {
                     model[propertyName] = m;
@@ -157,6 +167,39 @@ PlurObject.model = function(v, options) {
         return null;
     }
 };
+
+PlurObject.createFromModel = function(model, callback) {
+    if (typeof model.namepath === 'undefined') {
+        callback(model);
+    }
+
+	require([model.namepath], function(constructor) {
+	    if (typeof constructor.fromModel === 'function') {
+		    let object = constructor.fromModel(model);
+		    callback(object);
+		} else {
+		    let object = new Constructor();
+
+		    for (let propertyName in model) {
+                if (!propertyName.match(/^[a-z]/)) {
+                    continue;
+                }
+
+		        switch(typeof object[propertyName]) {
+		            case 'string':
+		            case 'number':
+		                object[propertyName] = model[propertyName];
+		                break;
+
+		            case 'object':
+                        //todo:
+                        break;
+                }
+            }
+		}
+	});
+};
+
 
 return PlurObject;
 });
