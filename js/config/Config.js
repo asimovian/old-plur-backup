@@ -3,7 +3,12 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject plur/obj/Parser
  */
-define(['plur/PlurObject', 'plur/obj/Parser'], function(PlurObject, PlurObjParser) {
+define([
+    'plur/PlurObject',
+    'plur/obj/Parser' ],
+function(
+    PlurObject,
+    PlurObjParser ) {
 
 /**
  * Maintains key/value configuration for a subject object, typically for a prototype.

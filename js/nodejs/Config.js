@@ -1,15 +1,25 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @require fs plur/PlurObject plur/config/Config plur/file/System plur/obj/Parser
+ * @requires fs plur/PlurObject plur/config/Config plur/file/System plur/obj/Parser
  */
-define(['fs', 'plur/PlurObject', 'plur/config/Config', 'plur/file/System', 'plur/obj/Parser'],
-	function(fs, PlurObject, PlurConfig, FileSystem, ObjParser) {
+define([
+	'fs',
+	'plur/PlurObject',
+	'plur/config/Config',
+	'plur/file/System',
+	'plur/obj/Parser' ],
+function(
+    fs,
+    PlurObject,
+    PlurConfig,
+    FileSystem,
+    ObjParser ) {
 
 /**
  * Maintains file-based JSON configuration within the Node.js platform.
  *
- * @constructor plur/nodejs/config/NodeJsConfig
+ * @constructor plur/nodejs/Config
  **
  * @param subjectNamepath
  * @param baseConfig
