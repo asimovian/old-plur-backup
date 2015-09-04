@@ -25,21 +25,18 @@ var PlurError = function(message, data) {
 
 PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
 
-PlurError.prototype.fromObj = function(obj, instance) {
-	if (typeof instance === 'undefined') {
-		instance = new PlurError(obj.message);
-	} else {
-		instance.message = obj.message;
-	}
-	
-	return instance;
+PlurError.fromModel = function(model) {
+    let object = new PlurError(model.message, model.data);
+    return object;
 };
 
-PlurError.prototype.toObj: function() {
-    var o = this.prototype.toObj();
-    o.namepath = this.namepath;
-    o.message = this.message;
-    return o;
+PlurError.prototype.model: function() {
+    let model = {
+        namepath: this.namepath;
+        message: this.message;
+    };
+
+    return model;
 };
 
 return PlurError;

@@ -9,15 +9,18 @@ define([], function() {
  *
  * @constructor plur/PlurObject
  */
-var PlurObject = function() {};
+var PlurObject = function() {
+    throw Error('Cannot instantiate');
+};
 
 // Standardize PlurObject
 PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
-PlurObject.implements = function(interfaceConstructor) {
-    return ( typeof this.prototype.implements !== 'undefined' &&
-            && typeof this.prototype.implements[interfaceConstructor.namepath] !== 'undefined' );
+PlurObject.implements = function(interfaceConstructor, object) {
+    let o = ( object || this );
+    return ( typeof o.prototype.implements !== 'undefined' &&
+            && typeof o.prototype.implements[interfaceConstructor.namepath] !== 'undefined' );
 };
 
 /**
@@ -26,7 +29,7 @@ PlurObject.implements = function(interfaceConstructor) {
  * @function plur/PlurObject.prototype.pureVirtualFunction
  * @throws Error
  */
-PlurObject.prototype.pureVirtualFunction = function() {
+PlurObject.pureVirtualFunction = function() {
     throw new Error('Unimplmeneted pure virtual function');
 };
 
@@ -42,7 +45,7 @@ PlurObject.prototype.pureVirtualFunction = function() {
  * @param Function parentConstructor
  * @returns {} constructor.prototype
  */
-PlurObject.prototype.create = function(namepath, constructor, parentConstructor) {
+PlurObject.create = function(namepath, constructor, parentConstructor) {
     var prototype = constructor.prototype;
 
     if (typeof parentConstructor !== 'undefined') {
@@ -56,8 +59,10 @@ PlurObject.prototype.create = function(namepath, constructor, parentConstructor)
 
     // inject an array that will store namepaths of interfaces as keys into the constructor
     constructor.implemented = {};
-    // inject an implements() method into the prototype
+    // inject an implements() method into the prototype to reflectively check for implementation
     prototype.implements = PlurObject.implements;
+    // inject a model() method into the prototype to convert the object into an intermediate object
+    prototype.model =  PlurObject.model;
 
     return prototype;
 };
@@ -70,9 +75,9 @@ PlurObject.prototype.create = function(namepath, constructor, parentConstructor)
  * @function plur/PlurObject.prototype.implement
  * @param function() constructor
  * @param function() interfaceConstructor
- * @returns plur/PlurObject For use in cascaded calls to this method
+ * @returns plur/PlurObject For use in cascaded calls to PlurObject method
  */
-PlurObject.prototype.implement = function(constructor, interfaceConstructor) {
+PlurObject.implement = function(constructor, interfaceConstructor) {
     if (typeof constructor.implemented[interfaceConstructor.namepath] != 'undefined')
         return;
 
@@ -81,7 +86,7 @@ PlurObject.prototype.implement = function(constructor, interfaceConstructor) {
 
     for (let propertyName in interfaceConstructor) {
         // make sure that the interface property is assigned to PlurObject.pureVirtualFunction
-        if (interfaceConstructor[propertyName] === this.pureVirtualFunction) {
+        if (interfaceConstructor[propertyName] === PlurObject.pureVirtualFunction) {
             let type = prototype[propertyName];
 
             // set it if it's undefined. ignore if it exists and is already pure virtual. throw error otherwise.
@@ -90,7 +95,7 @@ PlurObject.prototype.implement = function(constructor, interfaceConstructor) {
                 prototype[propertyName] = interfacePrototype[propertyName];
                 break;
             default:
-                if (prototype[propertyName] !== this.pureVirtualFunction) {
+                if (prototype[propertyName] !== PlurObject.pureVirtualFunction) {
                     throw new Error('Inheritance collision in ' + prototype.namepath + ' for ' +
                         interfaceConstructor.namepath + '.prototype.' + propertyName);
                 }
@@ -99,13 +104,59 @@ PlurObject.prototype.implement = function(constructor, interfaceConstructor) {
     }
 
     constructor.implemented[interfaceConstructor.namepath] = null;
-    return this;
+    return PlurObject;
 };
 
 /**
- * @var PlurObject plur/PlurObject.singleton
+ * Creates a simple data model from a variable. Prototypes may define their own .model() method.
+ * @param {*} v
+ * @param {options=}
+ * @returns {Object}
  */
-PlurObject.singleton = new PlurObject();
+PlurObject.model = function(v, options) {
+    let override = ( typeof options !== 'undefined' && options.override === false ? false : true );
 
-return PlurObject.singleton;
+    switch(typeof v) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+        return v;
+        break;
+
+    case 'object':
+        if (Array.isArray(v)) {
+            // handle arrays
+            let model = [];
+
+            // use n as a counter for how many elements have been transformed
+            for (let i = 0; i < v.length; ++i) {
+                let m = PlurObject.model(v[i], options);
+                if (m !== null) {
+                    model.push(m);
+                }
+            }
+
+            return model;
+        } else if (!override && Object.hasOwnProperty(v.prototype, 'model') && typeof v.model === 'function')
+                return v.model();
+        } else {
+            let model = {};
+
+            for (let propertyName in v)  {
+                let m = PlurObject.model(v[propertyName], options);
+                if (m !== null) {
+                    model[propertyName] = m;
+                }
+            }
+
+            return model;
+        }
+        break;
+
+    default:
+        return null;
+    }
+};
+
+return PlurObject;
 });
