@@ -24,8 +24,25 @@ var ModelTransformer = function() {
 
 ModelTransformer.prototype = PlurObject.create('plur/json/model/Transformer', ModelTransformer);
 
+/**
+ * Transforms a subject format into a data model object.
+ *
+ * @function plur/model/Transformer
+ * @virtual
+ * @param {*}
+ * @param {function(Object model)} callback
+ * @returns {}
+ */
 ModelTransformer.prototype.toModel = PlurObject.pureVirtualFunction;
 
+/**
+ * Transforms a data model into the subject format.
+ *
+ * @function plur/model/Transformer
+ * @virtual
+ * @param {} model
+ * @returns {}
+ */
 ModelTransformer.prototype.fromModel = PlurObject.pureVirtualFunction;
 
 return ModelTransformer;

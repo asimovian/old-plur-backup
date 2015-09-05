@@ -25,11 +25,11 @@ var JsonModelTransformer = function() {
 JsonModelTransformer.prototype = PlurObject.create('plur/json/model/Transformer', ModelTransformer);
 
 /**
- * Transforms a data object into a JSON string.
+ * Transforms a JSON string into a data model.
  *
  * @function plur/json/model/Transformer
  * @param {string} json
- * @param {function(Object model)} callback
+ * @returns {}
  */
 JsonModelTransformer.prototype.toModel = function(json) {
     var model = JSON.parse(json);
@@ -37,8 +37,11 @@ JsonModelTransformer.prototype.toModel = function(json) {
 };
 
 /**
- * Transforms a JSON string into a data model.
+ * Transforms a data model into the subject format.
  *
+ * @function plur/model/Transformer
+ * @param {} model
+ * @returns {string}
  */
 JsonModelTransformer.prototype.fromModel = function(model) {
     let json = JSON.stringify(model);
