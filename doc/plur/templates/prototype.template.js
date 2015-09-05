@@ -10,13 +10,14 @@ function(
 
 /**
  * ${PROTOTYPE.DESCRIPTION}$
- * @constructor ${PROTOTYPE.PATHNAME}$/${PROTOTYPE.NAME}$
+ *
+ * @constructor ${PROTOTYPE.NAMEPATH}$/${PROTOTYPE.NAME}$
  **
  */
 var ${PROTOTYPE.NAME}$ = function() {
 };
 
-${PROTOTYPE.NAME}$.prototype = PlurObject.create('${PROTOTYPE.PATHNAME}$/${PROTOTYPE.NAME}$', ${PROTOTYPE.NAME}$);
+${PROTOTYPE.NAME}$.prototype = PlurObject.create('${PROTOTYPE.NAMEPATH}$/${PROTOTYPE.NAME}$', ${PROTOTYPE.NAME}$);
 
 return ${PROTOTYPE.NAME}$;
 });

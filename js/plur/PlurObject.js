@@ -185,20 +185,64 @@ PlurObject.createFromModel = function(model, callback) {
                     continue;
                 }
 
-		        switch(typeof object[propertyName]) {
-		            case 'string':
-		            case 'number':
-		                object[propertyName] = model[propertyName];
-		                break;
-
-		            case 'object':
-                        //todo:
-                        break;
-                }
+                object[propertyName] = this._createFromModel(model[propertyName]);
             }
+
+            callback(object);
 		}
 	});
 };
+
+PlurObject._createFromModel = function(v, options) {
+    let override = ( typeof options !== 'undefined' && options.override === false ? false : true );
+
+    switch(typeof v) {
+    case 'string':
+    case 'number':
+    case 'boolean':
+        return v;
+        break;
+
+    case 'object':
+        if (Array.isArray(v)) {
+            // handle arrays
+            let object = [];
+
+            // use n as a counter for how many elements have been transformed
+            for (let i = 0; i < v.length; ++i) {
+                let o = PlurObject._createFromModel(v[i], options);
+                if (o !== null) {
+                    object.push(o);
+                }
+            }
+
+            return object;
+        } else if (!override && Object.hasOwnProperty(v.prototype.constructor, 'fromModel')
+                    && typeof v.prototype.constructor.model === 'function')
+                return v.model();
+        } else {
+            // build the model using only public variables
+            let object = {};
+
+            for (let propertyName in v)  {
+                // only include public variables (starts with a lower case letter)
+                if (!propertyName.match(/^[a-z]/)) {
+                    continue;
+                }
+
+                let o = PlurObject._createFromModel(v[propertyName], options);
+                if (o !== null) {
+                    object[propertyName] = o;
+                }
+            }
+
+            return object;
+        }
+        break;
+
+    default:
+        return null;
+    }};
 
 
 return PlurObject;
