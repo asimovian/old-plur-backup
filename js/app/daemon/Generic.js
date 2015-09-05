@@ -20,30 +20,30 @@ function(
     PlurObjParser,
     PlurError ) {
 
-//todo: There is overlap between Service, Daemon, and Generic Daemon. They need to be broken apart properly.
-//There is nothing Generic about this Service daemon, it's opening a websocket service up.
-
 /**
  * A generic daemon that handles Request messages for any number of registered Services, routing them once validated.
  *
  * @constructor plur/service/daemon/Generic
  **
- * @param {PlurConfig[]} parameters
+ * @param {PlurConfig[]} configs
  */
-var GenericDaemon = function(parameters) {
-	this._CONFIG = GenericDaemon._CONFIG;
+var GenericDaemon = function(configs) {
+    // load default config
+	this._config = new Config(this.namepath);
+	// each service class
 	this._serviceClasses = []; // services
 	this._requestMap = {}; // key (namepath) -> value ([services])
 
+	// merge all provided configuration
 	var configs = [];
+	for (var i = 0; i < configs.length; ++i) {
+		var config = configs[i];
 
-	for (var i = 0; i < parameters.length; ++i) {
-		var p = parameters[i];
-		if (p instanceof PlurConfig) {
-			if (p.getConfiguredNamepath() === GenericDaemon.namepath) {
-				this._CONFIG.merge(p);
-			}
-		}
+		if (!(config instanceof PlurConfig) {
+        	throw PlurError('Parameter passed is not a Config');
+        } else if (config.getConfiguredNamepath() === GenericDaemon.namepath) {
+            this._config.merge(config);
+        }
 	}
 };
 
@@ -54,9 +54,9 @@ GenericDaemon.prototype = PlurObject.create('plur/service/daemon/Daemon', Generi
  */
 GenericDaemon.prototype.start = function() {
 	var self = this;
-	var numWaiting = this._CONFIG.serviceNamepaths.length;
-	for (var i = 0; i < this._CONFIG.serviceNamepaths.length; ++i) {
-		requirejs([this._CONFIG.serviceNamepaths[i]], function(Service) {
+	var numWaiting = this._config.serviceNamepaths.length;
+	for (var i = 0; i < this._config.serviceNamepaths.length; ++i) {
+		requirejs([this._config.serviceNamepaths[i]], function(Service) {
 			numWaiting--;
 			
 			// contract checking
@@ -127,7 +127,7 @@ GenericDaemon.prototype._listen = function() {
 				}
 			});
 		});
-	}).listen(self._CONFIG.port, self._CONFIG.ip, function() {
+	}).listen(self._config.port, self._config.ip, function() {
 		console.log('Service Daemon is running.');
 	});
 };
