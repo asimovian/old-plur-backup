@@ -6,10 +6,6 @@
 
 (function() {
     var plur = {};
-
-   /**
-    * Pre-requisite for nodejs: npm install requirejs
-    */
     plur.require = require('requirejs');
 
     plur.require.config({

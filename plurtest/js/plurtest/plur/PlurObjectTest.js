@@ -5,7 +5,7 @@
  */
  'use strict';
 
-plur.define([
+define([
     'plur/PlurObject',
     'plur/test/Test' ],
 function(
