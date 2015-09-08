@@ -3,7 +3,9 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject plur/test/Test
  */
-define([
+ 'use strict';
+
+plur.define([
     'plur/PlurObject',
     'plur/test/Test' ],
 function(
@@ -39,11 +41,11 @@ PlurObjectTest.prototype.testCreate = function(expected) {
         Alpha.prototype.a = 'a';
 
         this.assertConstruction({
-            constructor: Alpha
-            namepath: 'test/plur/PlurObject/testCreate/alpha',
+            constructor: Alpha,
+            namepath: 'test/plur/PlurObject/testCreate/alpha'
         });
 
-        let alpha = new A();
+        var alpha = new A();
         this.assertOwns(alpha, 'o', 'a');
 
         var Bravo = function() {
@@ -57,11 +59,11 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 
         this.assertConstruction({
             constructor: Bravo,
-            parentConstructor: Alpha
+            parentConstructor: Alpha,
             namepath: 'test/plur/PlurObject/testCreate/bravo',
         });
 
-        let bravo = new B();
+        var bravo = new B();
         this.assertHas(bravo, 'a', 'a');
         this.assertHas(bravo, 'b', 'b');
         this.assertHas(bravo, 'o', 'a->b');

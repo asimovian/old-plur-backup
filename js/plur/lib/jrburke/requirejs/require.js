@@ -9,7 +9,6 @@
 /*global window, navigator, document, importScripts, setTimeout, opera */
 
 var requirejs, require, define;
-var foo = 'bar';
 (function (global) {
     var req, s, head, baseElement, dataMain, src,
         interactiveScript, currentlyAddingScript, mainScript, subPath,

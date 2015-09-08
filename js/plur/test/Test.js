@@ -22,7 +22,7 @@ var Test = function() {
 Test.prototype = PlurObject.create('plur/test/Test', Test);
 
 Test.prototype.test = function() {
-    for (let key in this) {
+    for (var key in this) {
         if (!(key.match(/^test/) && typeof this[key] === 'function')) {
             continue;
         }
@@ -44,11 +44,11 @@ Test.prototype.assertOwns = function(object, propertyName, expected) {
 };
 
 Test.prototype.assertCreation(expected) {
-    let object = new expected.constructor.apply(null, expected.constructionArguments);
+    var object = new expected.constructor.apply(null, expected.constructionArguments);
 
     // interfaces for comparison
-    let expectedImplemented = {};
-    for (let interface in expected.interfaces) {
+    var expectedImplemented = {};
+    for (var interface in expected.interfaces) {
         expectedImplemented[interface.namepath] = null;
     }
 

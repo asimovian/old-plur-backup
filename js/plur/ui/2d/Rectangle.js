@@ -11,13 +11,13 @@ Rectangle.XY = {
 
 Rectangle.boundary = function(polygon) {
     const MAXINT = Number.MAX_VALUE;
-    let topLeft = new XY(MAXINT, MAXINT);
-    let bottomRight = new XY(0,0);
-    let vertices = polygon.vertices;
+    var topLeft = new XY(MAXINT, MAXINT);
+    var bottomRight = new XY(0,0);
+    var vertices = polygon.vertices;
 
     // determine boundaries by sorting xy coordinates of every vertex
-    for (let i = 0; i < vertices.length; ++i) {
-        let xy = vertices[i];
+    for (var i = 0; i < vertices.length; ++i) {
+        var xy = vertices[i];
 
         if (xy.x < topLeft.x)
             topLeft.x = xy.x;

@@ -7,14 +7,14 @@ var Hexagon = function(vertices) {
 Hexagon.calcVertices = function(size, centerXY) {
     var vertices = [];
 
-    let vertex = new XY(
+    var vertex = new XY(
         centerXY.x +  size * Math.cos(0),
         centerXY.y +  size *  Math.sin(0) );
 
     vertices.push(vertex);
 
-    for (let i = 1; i <= 6; ++i) {
-        let vertex = new XY(
+    for (var i = 1; i <= 6; ++i) {
+        var vertex = new XY(
             centerXY.x + size * Math.cos(2*Math.PI * i / 6),
             centerXY.y + size * Math.sin(2*Math.PI * i / 6) );
 

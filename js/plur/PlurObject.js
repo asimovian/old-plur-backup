@@ -22,7 +22,7 @@ PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
 PlurObject.implements = function(interfaceConstructor, object) {
-    let o = ( object || this );
+    var o = ( object || this );
     return ( typeof o.prototype.implements !== 'undefined' &&
             && typeof o.prototype.implements[interfaceConstructor.namepath] !== 'undefined' );
 };
@@ -85,13 +85,13 @@ PlurObject.implement = function(constructor, interfaceConstructor) {
     if (typeof constructor.implemented[interfaceConstructor.namepath] != 'undefined')
         return;
 
-    let interfacePrototype = interfaceConstructor.prototype;
-    let prototype = constructor.prototype;
+    var interfacePrototype = interfaceConstructor.prototype;
+    var prototype = constructor.prototype;
 
-    for (let propertyName in interfaceConstructor) {
+    for (var propertyName in interfaceConstructor) {
         // make sure that the interface property is assigned to PlurObject.pureVirtualFunction
         if (interfaceConstructor[propertyName] === PlurObject.pureVirtualFunction) {
-            let type = prototype[propertyName];
+            var type = prototype[propertyName];
 
             // set it if it's undefined. ignore if it exists and is already pure virtual. throw error otherwise.
             switch(type) {
@@ -118,7 +118,7 @@ PlurObject.implement = function(constructor, interfaceConstructor) {
  * @returns {Object}
  */
 PlurObject.model = function(v, options) {
-    let override = ( typeof options !== 'undefined' && options.override === false ? false : true );
+    var override = ( typeof options !== 'undefined' && options.override === false ? false : true );
 
     switch(typeof v) {
     case 'string':
@@ -130,11 +130,11 @@ PlurObject.model = function(v, options) {
     case 'object':
         if (Array.isArray(v)) {
             // handle arrays
-            let model = [];
+            var model = [];
 
             // use n as a counter for how many elements have been transformed
-            for (let i = 0; i < v.length; ++i) {
-                let m = PlurObject.model(v[i], options);
+            for (var i = 0; i < v.length; ++i) {
+                var m = PlurObject.model(v[i], options);
                 if (m !== null) {
                     model.push(m);
                 }
@@ -145,15 +145,15 @@ PlurObject.model = function(v, options) {
                 return v.model();
         } else {
             // build the model using only public variables
-            let model = {};
+            var model = {};
 
-            for (let propertyName in v)  {
+            for (var propertyName in v)  {
                 // only include public variables (starts with a lower case letter)
                 if (!propertyName.match(/^[a-z]/)) {
                     continue;
                 }
 
-                let m = PlurObject.model(v[propertyName], options);
+                var m = PlurObject.model(v[propertyName], options);
                 if (m !== null) {
                     model[propertyName] = m;
                 }
@@ -175,12 +175,12 @@ PlurObject.createFromModel = function(model, callback) {
 
 	require([model.namepath], function(constructor) {
 	    if (typeof constructor.fromModel === 'function') {
-		    let object = constructor.fromModel(model);
+		    var object = constructor.fromModel(model);
 		    callback(object);
 		} else {
-		    let object = new Constructor();
+		    var object = new Constructor();
 
-		    for (let propertyName in model) {
+		    for (var propertyName in model) {
                 if (!propertyName.match(/^[a-z]/)) {
                     continue;
                 }
@@ -194,7 +194,7 @@ PlurObject.createFromModel = function(model, callback) {
 };
 
 PlurObject._createFromModel = function(v, options) {
-    let override = ( typeof options !== 'undefined' && options.override === false ? false : true );
+    var override = ( typeof options !== 'undefined' && options.override === false ? false : true );
 
     switch(typeof v) {
     case 'string':
@@ -206,11 +206,11 @@ PlurObject._createFromModel = function(v, options) {
     case 'object':
         if (Array.isArray(v)) {
             // handle arrays
-            let object = [];
+            var object = [];
 
             // use n as a counter for how many elements have been transformed
-            for (let i = 0; i < v.length; ++i) {
-                let o = PlurObject._createFromModel(v[i], options);
+            for (var i = 0; i < v.length; ++i) {
+                var o = PlurObject._createFromModel(v[i], options);
                 if (o !== null) {
                     object.push(o);
                 }
@@ -222,15 +222,15 @@ PlurObject._createFromModel = function(v, options) {
                 return v.model();
         } else {
             // build the model using only public variables
-            let object = {};
+            var object = {};
 
-            for (let propertyName in v)  {
+            for (var propertyName in v)  {
                 // only include public variables (starts with a lower case letter)
                 if (!propertyName.match(/^[a-z]/)) {
                     continue;
                 }
 
-                let o = PlurObject._createFromModel(v[propertyName], options);
+                var o = PlurObject._createFromModel(v[propertyName], options);
                 if (o !== null) {
                     object[propertyName] = o;
                 }

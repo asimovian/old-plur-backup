@@ -78,7 +78,7 @@ QueryBuilder.prototype._buildCondition = function(condition, values) {
 	sql += condition.getColumn() + ' ' + condition.getOperator() + ' $' + v++;
 	values.push(condition.getValue());
 	var leaves = condition.getLeafConditions();
-	for (let l = 0; l < leaves.length; ++l) {
+	for (var l = 0; l < leaves.length; ++l) {
 		var leaf = leaves[l];
 		sql += QueryBuilder._buildCondition(leaf, values);
 	}

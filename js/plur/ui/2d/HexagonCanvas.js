@@ -17,17 +17,17 @@ HexagonCanvas.createHexagons = function(canvas, size) {
     var hexagons = [];
     var yOffset = 0;
 
-    for (let x = size; x < canvas.width; x += .5 * size + (2*size * Math.cos(2*Math.PI * 1/6))) { //todo: initialize and increment correctly
+    for (var x = size; x < canvas.width; x += .5 * size + (2*size * Math.cos(2*Math.PI * 1/6))) { //todo: initialize and increment correctly
             if (x + .5*size > canvas.width)
                 break; // don't draw clipped hexagons vertically
 
         // adjust yOffset to make hexagons overlap horizontally
         yOffset = ( x === size || (x !== size && yOffset + size !== size) ? 0 : size*Math.sin(2*Math.PI*1/6));
-        for (let y = size + yOffset; y < canvas.height; y += 2*size*Math.sin(2*Math.PI*1/6)) { //todo: initialize and increment correctly
+        for (var y = size + yOffset; y < canvas.height; y += 2*size*Math.sin(2*Math.PI*1/6)) { //todo: initialize and increment correctly
             if (y + .5*size > canvas.height)
                 break; // don't draw clipped hexagons vertically
-            let centerXY = new XY(x, y);
-            let hexagon = new Hexagon(Hexagon.calcVertices(size, centerXY), size, centerXY);
+            var centerXY = new XY(x, y);
+            var hexagon = new Hexagon(Hexagon.calcVertices(size, centerXY), size, centerXY);
             hexagons.push(hexagon);
         }
     }
@@ -43,10 +43,10 @@ HexagonCanvas.prototype.draw = function() {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     // for each hexagon
-    for (let o = 0; o < this.hexagons.length; ++o) {
-        let hexagon = this.hexagons[o];
-        let vertices = hexagon.vertices;
-        let vertex = vertices[0];
+    for (var o = 0; o < this.hexagons.length; ++o) {
+        var hexagon = this.hexagons[o];
+        var vertices = hexagon.vertices;
+        var vertex = vertices[0];
 
         // begin designing the hex
         context.beginPath();
@@ -54,9 +54,9 @@ HexagonCanvas.prototype.draw = function() {
         context.moveTo(vertex.x, vertex.y);
 
         // for each vertex of the hexagon
-        for (let v = 1; v < vertices.length; ++v) {
+        for (var v = 1; v < vertices.length; ++v) {
             // draw a line from the last vertex to the current
-            let vertex = vertices[v];
+            var vertex = vertices[v];
             context.lineTo(vertex.x, vertex.y);
         }
 
@@ -65,7 +65,7 @@ HexagonCanvas.prototype.draw = function() {
 
         // apply style to the hex accordingly
         // if it has a fill style, fill it
-        let fillStyle = hexagon.getFillStyle();
+        var fillStyle = hexagon.getFillStyle();
         if (fillStyle !== null) {
             context.fillStyle = fillStyle;
             context.strokeStyle = 'yellow';
@@ -85,8 +85,8 @@ HexagonCanvas.prototype.onMouseMove = function(event) {
     var mouseXY = new XY(event.clientX, event.clientY);
     this.resetFillStyles();
 
-    for (let h = 0; h < this.hexagons.length; ++h) {
-        let hexagon = this.hexagons[h];
+    for (var h = 0; h < this.hexagons.length; ++h) {
+        var hexagon = this.hexagons[h];
         if (hexagon.contains(mouseXY)) {
             hexagon.setFillStyle('yellow');
             this.draw();
@@ -96,7 +96,7 @@ HexagonCanvas.prototype.onMouseMove = function(event) {
 };
 
 HexagonCanvas.prototype.resetFillStyles = function() {
-    for (let h = 0; h < this.hexagons.length; ++h) {
+    for (var h = 0; h < this.hexagons.length; ++h) {
         this.hexagons[h].setFillStyle(null);
     }
 };

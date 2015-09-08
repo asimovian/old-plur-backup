@@ -41,7 +41,7 @@ Config.mergeEnvironment = function(configs) {
 		configs = [configs];
 	}
 	
-	for (let i = 0; i < configs.length; ++i) {
+	for (var i = 0; i < configs.length; ++i) {
 		var config = configs[i];
 		if (typeof this._environment[config.subjectNamepath] === 'undefined') {
 			this._environment[config.subjectNamepath] = config;

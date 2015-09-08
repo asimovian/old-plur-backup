@@ -28,7 +28,7 @@ JqueryRequestClient.prototype = PlurObject.create('plur/request/client/JqueryReq
  * @param function({} data) callback
  */
 JqueryRequestClient.prototype.send = function(request, callback) {
-    let json = JSON.stringify(request.toObj());
+    var json = JSON.stringify(request.toObj());
 
     jQuery.getJSON(this._url, json, function(data, textStatus, jqXHR) {
         callback(data);

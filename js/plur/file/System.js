@@ -37,7 +37,7 @@ FileSystem.prototype.joinPaths = function(/* ... */) {
     const pathSeparator = this.getPathSeparator();
     var path = arguments[0]; // base path
 
-    for (let i = 1; i < arguments.length; ++i) {
+    for (var i = 1; i < arguments.length; ++i) {
         // any absolute path is automatically accepted (other than the base path)
         if (arguments[i].charAt(0) === pathSeparator) {
             // throw an error if there are more paths after this one as that's unexpected

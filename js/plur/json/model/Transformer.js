@@ -44,7 +44,7 @@ JsonModelTransformer.prototype.toModel = function(json) {
  * @returns {string}
  */
 JsonModelTransformer.prototype.fromModel = function(model) {
-    let json = JSON.stringify(model);
+    var json = JSON.stringify(model);
     return json;
 };
 

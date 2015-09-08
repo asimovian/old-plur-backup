@@ -13,9 +13,10 @@
     plur.require = require('requirejs');
 
     plur.require.config({
-        baseUrl: 'js',
+        baseUrl: '../',
         paths: {
-            'plur' : 'plur'
+            'plur' : 'plur/js/plur',
+            'plurtest' : 'plur/plurtest/js/plurtest'
         },
         nodeRequire: require,
         enforceDefine: true,
