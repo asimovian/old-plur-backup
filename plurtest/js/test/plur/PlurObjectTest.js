@@ -28,8 +28,6 @@ PlurObjectTest.prototype = PlurObject.create('test/plur/PlurObjectTest', PlurObj
  * @test plur/PlurObject.create
  */
 PlurObjectTest.prototype.testCreate = function(expected) {
-
-
     // test create
     (function() {
         var Alpha = function() {

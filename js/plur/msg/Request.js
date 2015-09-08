@@ -3,7 +3,14 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject plur/msg/Message plur/UUID
  */
-define(['plur/PlurObject', 'plur/msg/Message', 'plur/rng/UUID'], function (PlurObject, Message, UUID) {
+define([
+    'plur/PlurObject',
+    'plur/msg/Message',
+    'plur/rng/UUID'],
+function (
+    PlurObject,
+    Message,
+    UUID ) {
 
 /**
  * A simple abstract base class for all forms of requests.
