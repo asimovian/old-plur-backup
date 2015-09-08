@@ -3,6 +3,8 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires require
  */
+ 'use strict';
+
 define([
     'requirejs'],
 function(
@@ -12,9 +14,10 @@ function(
  * Utility for prototype object construction.
  *
  * @constructor plur/PlurObject
+ * @private
  */
 var PlurObject = function() {
-    throw Error('Cannot instantiate');
+    throw Error('Cannot instantiate private constructor of PlurObject');
 };
 
 // Standardize PlurObject
@@ -173,7 +176,7 @@ PlurObject.createFromModel = function(model, callback) {
         callback(model);
     }
 
-	require([model.namepath], function(constructor) {
+	requirejs([model.namepath], function(constructor) {
 	    if (typeof constructor.fromModel === 'function') {
 		    var object = constructor.fromModel(model);
 		    callback(object);

@@ -46,20 +46,28 @@ Test.prototype.assertOwns = function(object, propertyName, expected) {
 Test.prototype.assertCreation = function(expected) {
     var object = new expected.constructor.apply(null, expected.constructionArguments);
 
-    // interfaces for comparison
-    var expectedImplemented = {};
-    for (var interface in expected.interfaces) {
-        expectedImplemented[interface.namepath] = null;
-    }
-
     // check constructor
     this.assert(object.constructor, expected.constructor);
+
     // check parent constructor
-    this.assert(object.constructor.prototype.constructor, expected.parentConstructor)
+    if (typeof expected.parentConstructor !== 'undefined') {
+        this.assert(object.constructor.prototype.constructor, expected.parentConstructor)
+    }
+
     // check constructor implement method
     this.assert(object.constructor.implement, PlurObject.implement)
+
     // check constructor implemented
-    this.assertEquals(object.constructor.implemented, expectedImplemented)
+    if (typeof expected.interfaces !== 'undefined') {
+        // create a hash array that matches PlurObject.implemented
+        var expectedImplemented = {};
+        for (var interface in expected.interfaces) {
+            expectedImplemented[interface.namepath] = null;
+        }
+
+        this.assertEquals(object.constructor.implemented, expectedImplemented)
+    }
+
     // check constructor namepath
     this.assertOwns(object.constructor, 'namepath', expected.namepath);
     // check prototype namepath
