@@ -43,7 +43,7 @@ Test.prototype.assertOwns = function(object, propertyName, expected) {
         throw AssertionError();
 };
 
-Test.prototype.assertCreation(expected) {
+Test.prototype.assertCreation = function(expected) {
     var object = new expected.constructor.apply(null, expected.constructionArguments);
 
     // interfaces for comparison

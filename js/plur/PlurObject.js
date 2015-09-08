@@ -4,9 +4,9 @@
  * @requires require
  */
 define([
-    'require'],
+    'requirejs'],
 function(
-    require ) {
+    requirejs ) {
 
 /**
  * Utility for prototype object construction.
@@ -23,7 +23,7 @@ PlurObject.prototype.namepath = PlurObject.namepath;
 
 PlurObject.implements = function(interfaceConstructor, object) {
     var o = ( object || this );
-    return ( typeof o.prototype.implements !== 'undefined' &&
+    return ( typeof o.prototype.implements !== 'undefined'
             && typeof o.prototype.implements[interfaceConstructor.namepath] !== 'undefined' );
 };
 
@@ -141,7 +141,7 @@ PlurObject.model = function(v, options) {
             }
 
             return model;
-        } else if (!override && Object.hasOwnProperty(v.prototype, 'model') && typeof v.model === 'function')
+        } else if (!override && Object.hasOwnProperty(v.prototype, 'model') && typeof v.model === 'function') {
                 return v.model();
         } else {
             // build the model using only public variables
@@ -218,7 +218,7 @@ PlurObject._createFromModel = function(v, options) {
 
             return object;
         } else if (!override && Object.hasOwnProperty(v.prototype.constructor, 'fromModel')
-                    && typeof v.prototype.constructor.model === 'function')
+                    && typeof v.prototype.constructor.model === 'function') {
                 return v.model();
         } else {
             // build the model using only public variables
@@ -242,7 +242,8 @@ PlurObject._createFromModel = function(v, options) {
 
     default:
         return null;
-    }};
+    }
+};
 
 
 return PlurObject;

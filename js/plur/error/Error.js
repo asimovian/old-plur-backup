@@ -4,7 +4,7 @@
  * @requires plur/PlurObject
  */
 define([
-    'plur/PlurObject',
+    'plur/PlurObject' ],
 function(
     PlurObject) {
 
@@ -30,10 +30,10 @@ PlurError.fromModel = function(model) {
     return object;
 };
 
-PlurError.prototype.model: function() {
+PlurError.prototype.model = function() {
     var model = {
-        namepath: this.namepath;
-        message: this.message;
+        namepath: this.namepath,
+        message: this.message
     };
 
     return model;

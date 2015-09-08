@@ -5,7 +5,7 @@
  */
 define([
     'plur/PlurObject',
-    'plur/error/Error'
+    'plur/error/Error' ],
 function(
     PlurObject,
     Error ) {
