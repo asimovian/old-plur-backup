@@ -25,8 +25,7 @@ var DojoWebsocket = function(dojoWebsocket) {
 	});
 };
 
-DojoWebsocket.prototype = Object.create(WebsocketEmitter.prototype);
-DojoWebsocket.prototype.constructor = DojoWebsocket;
+DojoWebsocket.prototype = PlurObject.create('plur/dojo/Websocket', DojoWebsocket, Websocket);
 
 DojoWebsocket.prototype.send = function(data, options) {
 	this._dojoWebsocket.send(data);
@@ -36,5 +35,5 @@ DojoWebsocket.prototype.close = function() {
 	this._dojoWebsocket.close();
 };
 
-return Websocket;
+return DojoWebsocket;
 });

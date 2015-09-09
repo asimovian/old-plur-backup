@@ -1,7 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject @plur/error/Error
+ * @requires plur/PlurObject plur/error/Error
  */
 define([
     'plur/PlurObject',
