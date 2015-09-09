@@ -8,8 +8,7 @@ var DojoWebsocketClientService = function(node) {
 	WebsocketClientService.call(this, node);
 };
 
-DojoWebsocketClientService.prototype = Object.create(WebsocketClientService.prototype);
-DojoWebsocketClientService.prototype.constructor = DojoWebsocketClientService;
+DojoWebsocketClientService.prototype = PlurObject.create('plur/dojo/websocket/WebsocketClientService');
 
 DojoWebsocketClientService.prototype._connect = function(url, options) {
 	var websocket = dojox.socket(url);
