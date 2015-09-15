@@ -25,19 +25,7 @@ var PlurError = function(message, data) {
 
 PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
 
-PlurError.fromModel = function(model) {
-    var object = new PlurError(model.message, model.data);
-    return object;
-};
 
-PlurError.prototype.model = function() {
-    var model = {
-        namepath: this.namepath,
-        message: this.message
-    };
-
-    return model;
-};
 
 return PlurError;
 });
