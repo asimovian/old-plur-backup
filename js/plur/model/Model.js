@@ -12,11 +12,10 @@ function(
  * Converts an object to / from a simple data model.
  *
  * @constructor plur/model/Model
- * @interface
+ * @abstract
  **
  */
 var Model = function() {
-    throw new Error('Cannot instantiate interface.');
 };
 
 Model.prototype = PlurObject.create('plur/model/Model', Model);
