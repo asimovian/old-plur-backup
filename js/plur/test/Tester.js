@@ -31,7 +31,9 @@ Tester.prototype.test = function(testTargets) {
 
     for (var t = 0; t < testTargets.length; ++t) {
         var testTarget = testTargets[t];
+        // determine whether the test target is an entire test class or a specific test method
         if (testTarget.match(Tester._TEST_METHOD)) {
+            // test a specific method
             var parts = testTarget.split('.');
             var namepath = parts[0];
             var method = parts[1];
@@ -42,13 +44,14 @@ Tester.prototype.test = function(testTargets) {
                 self._onComplete(namepath, method, true);
             });
         } else if (testTarget.match(Tester._TEST_CLASS)){
+            // test an entire class
             requirejs([testTarget], function(TestClass) {
                 var obj = new TestClass(Tester._onComplete);
-                for (key in obj) {
-                    if (key.match(/^test/) && obj[key] instanceof Function && key !== 'test') {
-                        console.log('Testing: ' + testTarget + '.' + key + '()');
-                        obj[key]();
-                        self._onComplete(testTarget, key, true);
+                for (propertyName in obj) {
+                    if (propertyName.match(/^test/) && obj[propertyName] instanceof Function && propertyName !== 'test') {
+                        console.log('Testing: ' + testTarget + '.' + propertyName + '()');
+                        obj[propertyName]();
+                        self._onComplete(testTarget, propertyName, true);
                     }
                 }
             });

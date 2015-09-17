@@ -1,7 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires require
+ * @requires requirejs
  */
  'use strict';
 
@@ -113,9 +113,6 @@ PlurObject.implement = function(constructor, interfaceConstructor) {
     constructor.implemented[interfaceConstructor.namepath] = null;
     return PlurObject;
 };
-
-
-
 
 return PlurObject;
 });
