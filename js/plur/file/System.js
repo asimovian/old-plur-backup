@@ -27,7 +27,7 @@ PlurObject.implement(FileSystem, IFileSystem);
 
 FileSystem.DirNames = {
     bin: 'bin',
-    config: 'config';
+    config: 'config'
 };
 
 /**
@@ -39,7 +39,7 @@ FileSystem.DirNames = {
  * @returns string
  */
 FileSystem.prototype.joinPaths = function(/* ... */) {
-    const pathSeparator = this.getPathSeparator();
+    var pathSeparator = this.getPathSeparator();
     var path = arguments[0]; // base path
 
     for (var i = 1; i < arguments.length; ++i) {
@@ -64,8 +64,8 @@ FileSystem.prototype.joinPaths = function(/* ... */) {
  * @param ... string[] paths
  * @returns string
  */
-FileSystem.prototype.getHomePath = function (/* ... */)
-	return this.joinPaths.apply(this, ([this._homePath].concat(arguments));
+FileSystem.prototype.getHomePath = function (/* ... */) {
+	return this.joinPaths.apply(this, ([this._homePath].concat(arguments)));
 };
 
 /**

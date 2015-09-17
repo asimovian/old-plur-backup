@@ -39,7 +39,7 @@ var GenericDaemon = function(configs) {
 	for (var i = 0; i < configs.length; ++i) {
 		var config = configs[i];
 
-		if (!(config instanceof PlurConfig) {
+		if (!(config instanceof PlurConfig)) {
         	throw PlurError('Parameter passed is not a Config');
         } else if (config.getConfiguredNamepath() === GenericDaemon.namepath) {
             this._config.merge(config);

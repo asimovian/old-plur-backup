@@ -40,7 +40,6 @@ Application.prototype.stop = PlurObject.pureVirtualFunction,
  * @virtual
  */
 Application.prototype.heartbeat = PlurObject.pureVirtualFunction;
-};
 
 return Application;
 });

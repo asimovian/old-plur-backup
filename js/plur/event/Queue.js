@@ -23,7 +23,7 @@ PlurObject.createClass('plur/event/Queue', Queue, PlurObject, {
 		this.unsubscribe(name);
 		
 		for (var i = 0, n = topics.length; i < n; ++i) {
-			this.subscribers.push(new Subscriber(name, topics[i], callback);
+			this.subscribers.push(new Subscriber(name, topics[i], callback));
 		}
 	},
 	

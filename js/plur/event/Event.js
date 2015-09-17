@@ -4,7 +4,10 @@
  * @deprecated
  * @requires plur/PlurObject
  */
-define(['plur/PlurObject', function(PlurObject) {
+define([
+    'plur/PlurObject' ],
+function(
+    PlurObject ) {
     
 var Event = function(topic, data) {
 	this.topic = topic;
@@ -15,7 +18,7 @@ var Event = function(topic, data) {
 Event.prototype = PlurObject.create('plur/event/Event', Event);
 
 Event.prototype.toObj = function() {
-    o = this.prototype.toObj();
+    var o = this.prototype.toObj();
     o.namepath = this.namepath;
     o.topic = this.topic;
     o.timestamp = this.timestamp;

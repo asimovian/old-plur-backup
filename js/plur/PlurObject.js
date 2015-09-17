@@ -24,10 +24,10 @@ var PlurObject = function() {
 PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
-PlurObject.implements = function(interfaceConstructor, object) {
+PlurObject.implementing = function(interfaceConstructor, object) {
     var o = ( object || this );
-    return ( typeof o.prototype.implements !== 'undefined'
-            && typeof o.prototype.implements[interfaceConstructor.namepath] !== 'undefined' );
+    return ( typeof o.prototype.implementing !== 'undefined'
+            && typeof o.prototype.implementing[interfaceConstructor.namepath] !== 'undefined' );
 };
 
 /**
@@ -44,7 +44,7 @@ PlurObject.pureVirtualFunction = function() {
  * Creates a prototype object; extending it from a parent constructor if provided via Object.create().
  * Injects a namepath variable to the constructor and prototype that provided the namespace + partial file name.
  * Injects an implemented assoc array into the constructor that maintains namepaths of all interfaces implemented.
- * Injects an implements() method into the prototype to check for interface inheritance.
+ * Injects an implementing() method into the prototype to check for interface inheritance.
  *
  * @function plur/PlurObject.prototype.create
  * @param string namepath
@@ -66,8 +66,8 @@ PlurObject.create = function(namepath, constructor, parentConstructor) {
 
     // inject an array that will store namepaths of interfaces as keys into the constructor
     constructor.implemented = {};
-    // inject an implements() method into the prototype to reflectively check for implementation
-    prototype.implements = PlurObject.implements;
+    // inject an implementing() method into the prototype to reflectively check for implementation
+    prototype.implementing = PlurObject.implementing;
     // inject a model() method into the prototype to convert the object into an intermediate object
     prototype.model =  PlurObject.model;
 

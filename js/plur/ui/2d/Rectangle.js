@@ -10,7 +10,7 @@ Rectangle.XY = {
 };
 
 Rectangle.boundary = function(polygon) {
-    const MAXINT = Number.MAX_VALUE;
+    var MAXINT = Number.MAX_VALUE;
     var topLeft = new XY(MAXINT, MAXINT);
     var bottomRight = new XY(0,0);
     var vertices = polygon.vertices;

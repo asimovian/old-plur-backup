@@ -17,7 +17,7 @@ var PlurNode = function() {
 	this._sessionMap = {};
 	var localnet = new NodeNetwork(this._hashId);
 	this._networkHashMap = {
-		local: localnet,
+		local: localnet
 	};
 	
 	this._networkHashMap[localnet.getHashId()] = localnet;

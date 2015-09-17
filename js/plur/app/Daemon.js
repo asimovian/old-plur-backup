@@ -42,7 +42,6 @@ Daemon.prototype.stop = PlurObject.pureVirtualFunction,
  * @virtual
  */
 Daemon.prototype.heartbeat = PlurObject.pureVirtualFunction;
-};
 
 return Daemon;
 });

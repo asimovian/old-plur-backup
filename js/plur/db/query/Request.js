@@ -98,7 +98,7 @@ Find.prototype.getOrder = function() {
 Find.prototype.toObj = function() {
     var o = {
         namepath: Find.namepath,
-        from: this._targetNamepath,
+        from: this._targetNamepath
     };
 
     if (this._columnNames != null) {

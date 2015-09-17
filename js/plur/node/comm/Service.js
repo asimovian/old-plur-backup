@@ -40,7 +40,7 @@ NodeCommService.prototype._handshake = function(websocketService) {
 		websocketService.send(data.sessionId, 'plur.node.comm.hello', {
 			nodeId: plurNode.getHashId(),
 			sessionId: data.sessionId,
-			networkId: plurNode.getLocalNetwork().getHashId(),
+			networkId: plurNode.getLocalNetwork().getHashId()
 		});
 	});
 

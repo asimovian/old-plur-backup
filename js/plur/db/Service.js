@@ -56,7 +56,7 @@ Find.prototype.process = function(request, response, callback) {
 	db.connect(function(err) {
 		Debug.error(this.namepath + '.prototype.process', err);
 		db.query(query.sql, query.values, function(err, result) {
-		    Log.debug(this.namepath + '.prototype.process', { result: result, err: err }));
+		    Log.debug(this.namepath + '.prototype.process', { result: result, err: err });
 			var response = new PlurDbFindResponse(result.rows, request.getColumns());
 			db.end();
 			callback(response);

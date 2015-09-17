@@ -6,12 +6,12 @@
 define([
 	'fs',
 	'plur/PlurObject',
-	'plur/file/System'
+	'plur/file/System',
 	'plur/config/Config' ],
 function(
 	fs,
 	PlurObject,
-	FileSystem.
+	FileSystem,
 	Config ) {
 
 /**
@@ -20,7 +20,7 @@ function(
  * @constructor plur/nodejs/file/System
  * @extends plur/file/System
  */
-var NodeJsFileSystem.= function() {
+var NodeJsFileSystem = function() {
 	this._homePath = fs.realpathSync('.');
 
 };
@@ -50,5 +50,5 @@ NodeJsFileSystem.prototype.getPathSeparator = function() {
     return '/';
 };
 
-return NodeJsNodeJsFileSystem.
+return NodeJsNodeJsFileSystem;
 });

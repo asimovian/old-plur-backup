@@ -26,21 +26,15 @@ var Config = function(subjectNamepath, baseConfig) {
 	}
 };
 
+Config.prototype = PlurObject.create('plur/config/Config', Config);
+
 Config._environment = {};
-
-Config.fromObj = function(obj, instance) {
-	if (!instance) {
-		instance = new Config(obj.subjectNamepath);
-	}
-
-	return instance.merge(obj);
-}
 
 Config.mergeEnvironment = function(configs) {
 	if (typeof configs.length === 'undefined') {
 		configs = [configs];
 	}
-	
+
 	for (var i = 0; i < configs.length; ++i) {
 		var config = configs[i];
 		if (typeof this._environment[config.subjectNamepath] === 'undefined') {
@@ -51,37 +45,7 @@ Config.mergeEnvironment = function(configs) {
 	}
 };
 
-Config.prototype = PlurObject.create('plur/config/Config', Config);
-
-Config.prototype.merge = function(config) {
-    for (var key in config) {
-        if (this._isConfigField(key, config[key])) {
-            this[key] = config[key];
-        }
-    }
-
-    return this;
-};
-	
-Config.prototype.getSubjectNamepath = function() {
-    return this._subjectNamepath;
-};
-	
-Config.prototype.toObj: function() {
-    var o = this.prototype.fromObj();
-    o.subjectNamepath = this._subjectNamepath;
-
-    // config keys
-    for (var key in this) {
-        if (this._isConfigField(key, this[key])) {
-            o[key] = this[key];
-        }
-    }
-
-    return o;
-};
-	
-Config.prototype._isConfigField: function(name, value) {
+Config.isConfigField = function(name, value) {
     if (name.match(/^_/) || name === 'namepath') {
         return false;
     }
@@ -100,6 +64,22 @@ Config.prototype._isConfigField: function(name, value) {
 
     return true;
 };
+
+Config.prototype.merge = function(config) {
+    for (var key in config) {
+        if (Config.isConfigField(key, config[key])) {
+            this[key] = config[key];
+        }
+    }
+
+    return this;
+};
+	
+Config.prototype.getSubjectNamepath = function() {
+    return this._subjectNamepath;
+};
+
+	
 
 return Config;
 });

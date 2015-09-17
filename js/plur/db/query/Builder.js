@@ -3,7 +3,10 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject
  */
-define(['plur/PlurObject', function(PlurObject) {
+define([
+	'plur/PlurObject' ],
+function(
+	PlurObject ) {
 
 /**
  * Creates a SQL queries for DB Find Requests conditions.
@@ -28,7 +31,7 @@ QueryBuilder.prototype = PlurObject.create('plur/db/message/FindRequestQueryBuil
  * @returns string
  */
 QueryBuilder.getTableForNamepath = function(namepath) {
-	return namepath.replace(/\//g, '_').toLowerCase();
+	return namepath.replace('/\//', '_').toLowerCase();
 };
 
 /**
@@ -88,7 +91,7 @@ QueryBuilder.prototype._buildCondition = function(condition, values) {
 	}
 	
 	return sql;
-}
+};
 
 /**
  * @var plur/db/message/FindQueryQueryBuilder plur/db/message/FindRequestQueryBuilder.singleton

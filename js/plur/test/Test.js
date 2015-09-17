@@ -61,8 +61,8 @@ Test.prototype.assertCreation = function(expected) {
     if (typeof expected.interfaces !== 'undefined') {
         // create a hash array that matches PlurObject.implemented
         var expectedImplemented = {};
-        for (var interface in expected.interfaces) {
-            expectedImplemented[interface.namepath] = null;
+        for (var interfaceName in expected.interfaces) {
+            expectedImplemented[expected.interfaces[interfaceName].namepath] = null;
         }
 
         this.assertEquals(object.constructor.implemented, expectedImplemented)
@@ -73,7 +73,7 @@ Test.prototype.assertCreation = function(expected) {
     // check prototype namepath
     this.assertOwns(object.prototype, 'namepath', expected.namepath);
     // check prototype implements method
-    this.assertOwns(object.prototype, 'implements', PlurObject.implements);
+    this.assertOwns(object.prototype, 'implementing', PlurObject.implementing);
 };
 
 Test.prototype.assertHas = function(object, propertyName, expected) {

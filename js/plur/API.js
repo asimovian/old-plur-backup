@@ -4,7 +4,7 @@
  * @requires plur/PlurObject
  */
 define([
-    'plur/PlurObject',
+    'plur/PlurObject' ],
 function(
     PlurObject ) {
 

@@ -101,5 +101,3 @@ HexagonCanvas.prototype.resetFillStyles = function() {
     }
 };
 
-return HexagonCanvas;
-})();

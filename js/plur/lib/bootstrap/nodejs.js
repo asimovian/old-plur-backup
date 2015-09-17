@@ -15,7 +15,7 @@
             'plurtest': 'plur/plurtest/js/plurtest'
         },
         nodeRequire: require,
-        enforceDefine: true,
+        enforceDefine: true
     });
 
     module.exports = plur;
