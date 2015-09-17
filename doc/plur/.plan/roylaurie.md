@@ -9,3 +9,10 @@ Currently ...
 -------------
 
 Working on unit test code coverage for all public API methods as well as standardizing code style and doc templates.
+
+Recently ...
+------------
+
+Creates a very basic testing framework for unit tests.
+
+Merged all pre-existing libraries into one area and generally standardized them to fit with the new structure.
