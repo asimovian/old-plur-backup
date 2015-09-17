@@ -70,19 +70,5 @@ PlurObjectTest.prototype.testCreate = function(expected) {
     });
 };
 
-/**
- * @function test/plur/PlurObject.testModel
- * @test plur/PlurObject.model
- */
-PlurObjectTest.prototype.testModel = function() {
-};
-
-/**
- * @function test/plur/PlurObject.testCreateFromModel
- * @test plur/PlurObject.createFromModel
- */
- PlurObjectTest.prototype.testCreateFromModel = function() {
-};
-
 return PlurObjectTest;
 });

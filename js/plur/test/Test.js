@@ -22,12 +22,12 @@ var Test = function() {
 Test.prototype = PlurObject.create('plur/test/Test', Test);
 
 Test.prototype.test = function() {
-    for (var key in this) {
-        if (!(key.match(/^test/) && typeof this[key] === 'function')) {
+    for (var propertyName in this) {
+        if (!propertyName.match(/^test/) || typeof this[propertyName] !== 'function' || propertyName === 'test') {
             continue;
         }
 
-        this[key]();
+        this[propertyName]();
     }
 };
 

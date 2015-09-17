@@ -25,7 +25,5 @@ var PlurError = function(message, data) {
 
 PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
 
-
-
 return PlurError;
 });
