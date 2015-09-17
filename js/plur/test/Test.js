@@ -86,5 +86,9 @@ Test.prototype.assertHas = function(object, propertyName, expected) {
     }
 };
 
+Test.prototype.fail = function(message, data) {
+    throw new AssertionError(message || 'Assertion failed', data);
+};
+
 return Test;
 });

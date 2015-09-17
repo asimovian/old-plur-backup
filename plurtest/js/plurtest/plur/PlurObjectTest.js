@@ -24,7 +24,7 @@ var PlurObjectTest = function() {
 PlurObjectTest.prototype = PlurObject.create('plurtest/plur/PlurObjectTest', PlurObjectTest, Test);
 
 /**
- * @function plurtest/plur/PlurObject.testCreate
+ * @function plurtest/plur/PlurObject.prototype.testCreate
  * @test plur/PlurObject.create
  */
 PlurObjectTest.prototype.testCreate = function(expected) {
@@ -64,6 +64,35 @@ PlurObjectTest.prototype.testCreate = function(expected) {
     this.assertHas(bravo, 'a', 'a');
     this.assertHas(bravo, 'b', 'b');
     this.assertHas(bravo, 'o', 'a->b');
+};
+
+/**
+ * @function plurtest/plur/PlurObjectTest.prototype.testImplement
+ * @test plur/PlurObject.implement
+ */
+PlurObjectTest.prototype.testImplement = function() {
+    var IAlpha = function() {};
+    IAlpha.prototype = PlurObject.create('plurtest/IAlpha', IAlpha);
+    IAlpha.prototype.alpha = PlurObject.pureVirtualFunction;
+
+    var Alpha = function() {};
+    Alpha.prototype = PlurObject.create('plurtest/Alpha', Alpha);
+    PlurObject.implement(Alpha, IAlpha);
+
+    this.assertHas(Alpha.prototype, IAlpha.prototype.alpha);
+};
+
+/**
+ * @function plurtest/plur/PlurObjectTest.prototype.testPureVirtualFunction
+ * @test plur/PlurObject.pureVirtualFunction
+ */
+PlurObjectTest.prototype.testPureVirtualFunction = function() {
+    // this should throw an exception
+    try {
+        PlurObject.pureVirtualFunction();
+        // we should not get here ...
+        this.fail('Pure virtual function did not throw exception.');
+    } catch (e) {}
 };
 
 return PlurObjectTest;
