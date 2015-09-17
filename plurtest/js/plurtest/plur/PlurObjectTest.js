@@ -13,9 +13,7 @@ function(
     Test) {
 
 /**
- *
- *
- * @constructor test/plur/PlurObjectTest
+ * @constructor plurtest/plur/PlurObjectTest
  * @extends plur/test/Test
  * @test plur/PlurObject
  **
@@ -23,10 +21,10 @@ function(
 var PlurObjectTest = function() {
 };
 
-PlurObjectTest.prototype = PlurObject.create('test/plur/PlurObjectTest', PlurObjectTest, Test);
+PlurObjectTest.prototype = PlurObject.create('plurtest/plur/PlurObjectTest', PlurObjectTest, Test);
 
 /**
- * @function test/plur/PlurObject.testCreate
+ * @function plurtest/plur/PlurObject.testCreate
  * @test plur/PlurObject.create
  */
 PlurObjectTest.prototype.testCreate = function(expected) {
@@ -36,13 +34,13 @@ PlurObjectTest.prototype.testCreate = function(expected) {
             this.o = 'a';
         };
 
-        Alpha.prototype = PlurObject.create('test/plur/PlurObject/testCreate/Alpha', Alpha);
+        Alpha.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Alpha', Alpha);
 
         Alpha.prototype.a = 'a';
 
         this.assertConstruction({
             constructor: Alpha,
-            namepath: 'test/plur/PlurObject/testCreate/alpha'
+            namepath: 'plurtest/plur/PlurObject/testCreate/alpha'
         });
 
         var alpha = new A();
@@ -53,14 +51,14 @@ PlurObjectTest.prototype.testCreate = function(expected) {
             this.o += '->b'
         };
 
-        Bravo.prototype = PlurObject.create('test/plur/PlurObject/testCreate/Bravo', Bravo);
+        Bravo.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Bravo', Bravo);
 
         Bravo.prototype.b = 'b';
 
         this.assertConstruction({
             constructor: Bravo,
             parentConstructor: Alpha,
-            namepath: 'test/plur/PlurObject/testCreate/bravo',
+            namepath: 'plurtest/plur/PlurObject/testCreate/bravo',
         });
 
         var bravo = new B();
