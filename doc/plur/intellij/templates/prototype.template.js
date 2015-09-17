@@ -3,6 +3,8 @@
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject
  */
+ 'use strict';
+
 define([
     'plur/PlurObject' ],
 function(

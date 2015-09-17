@@ -41,7 +41,7 @@ var TestApp = function() {
     }
 };
 
-TestApp.prototype = PlurObject.create('plurbin/plur/Test', TestApp);
+TestApp.prototype = PlurObject.create('plurbin/plur/test', TestApp);
 
 TestApp.prototype.run = function() {
     var tester = new PlurTester();

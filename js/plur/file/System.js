@@ -1,9 +1,14 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject
+ * @requires plur/PlurObject plur/file/ISystem
  */
-define(['plur/PlurObject', 'plur/file/ISystem'], function (PlurObject, IFileSystem) {
+define([
+    'plur/PlurObject',
+    'plur/file/ISystem' ],
+function (
+    PlurObject,
+    IFileSystem ) {
 
 /**
  * A simple abstract base class for all file systems, both local and remote.
