@@ -13,6 +13,6 @@ Working on unit test code coverage for all public API methods as well as standar
 Recently ...
 ------------
 
-Creates a very basic testing framework for unit tests.
+Created a very basic testing framework for unit tests.
 
 Merged all pre-existing libraries into one area and generally standardized them to fit with the new structure.
