@@ -8,7 +8,7 @@ define([
     'plur/error/Error' ],
 function(
     PlurObject,
-    Error ) {
+    PlurError ) {
 
 /**
  * Errors thrown by assertions - typically in tests.
@@ -19,23 +19,22 @@ function(
  * @params {string} message
  * @params {=} data
  */
-var AssertionError = function(expected, actual, message) {
-    if (typeof message === 'undefined')
+var AssertionError = function(message, data) {
+    if (typeof message === 'object') {
+        data = message;
         message = 'Assertion failed';
+    } else if (typeof message === 'undefined') {
+        message = 'Assertion failed';
+    }
 
-    Error.call(this, message);
-
-    this.data = {
-        expected: expected,
-        actual: actual
-    };
+    PlurError.call(this, message, data);
 };
 
-AssertionError.prototype = PlurObject.create('plur/error/Assertion', AssertionError, Error);
+AssertionError.prototype = PlurObject.create('plur/error/Assertion', AssertionError, PlurError);
 
-AssertionError.assert = function(result) {
+AssertionError.assert = function(result, message) {
     if (!result) {
-        throw new AssertionError();
+        throw new AssertionError(message, {expected: true, actual: false});
     }
 };
 

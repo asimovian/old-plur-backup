@@ -29,43 +29,41 @@ PlurObjectTest.prototype = PlurObject.create('plurtest/plur/PlurObjectTest', Plu
  */
 PlurObjectTest.prototype.testCreate = function(expected) {
     // test create
-    (function() {
-        var Alpha = function() {
-            this.o = 'a';
-        };
+    var Alpha = function() {
+        this.o = 'a';
+    };
 
-        Alpha.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Alpha', Alpha);
+    Alpha.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Alpha', Alpha);
 
-        Alpha.prototype.a = 'a';
+    Alpha.prototype.a = 'a';
 
-        this.assertConstruction({
-            constructor: Alpha,
-            namepath: 'plurtest/plur/PlurObject/testCreate/alpha'
-        });
-
-        var alpha = new A();
-        this.assertOwns(alpha, 'o', 'a');
-
-        var Bravo = function() {
-            this.constructor.prototype.constructor.call(this);
-            this.o += '->b'
-        };
-
-        Bravo.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Bravo', Bravo);
-
-        Bravo.prototype.b = 'b';
-
-        this.assertConstruction({
-            constructor: Bravo,
-            parentConstructor: Alpha,
-            namepath: 'plurtest/plur/PlurObject/testCreate/bravo',
-        });
-
-        var bravo = new B();
-        this.assertHas(bravo, 'a', 'a');
-        this.assertHas(bravo, 'b', 'b');
-        this.assertHas(bravo, 'o', 'a->b');
+    this.assertCreation({
+        constructor: Alpha,
+        namepath: 'plurtest/plur/PlurObject/testCreate/Alpha'
     });
+
+    var alpha = new Alpha();
+    this.assertOwns(alpha, 'o', 'a');
+
+    var Bravo = function() {
+        Alpha.call(this);
+        this.o += '->b'
+    };
+
+    Bravo.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Bravo', Bravo, Alpha);
+
+    Bravo.prototype.b = 'b';
+
+    this.assertCreation({
+        constructor: Bravo,
+        parentConstructor: Alpha,
+        namepath: 'plurtest/plur/PlurObject/testCreate/Bravo',
+    });
+
+    var bravo = new Bravo();
+    this.assertHas(bravo, 'a', 'a');
+    this.assertHas(bravo, 'b', 'b');
+    this.assertHas(bravo, 'o', 'a->b');
 };
 
 return PlurObjectTest;

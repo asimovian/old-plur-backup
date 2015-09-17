@@ -31,31 +31,31 @@ Test.prototype.test = function() {
     }
 };
 
-Test.prototype.assert = function(actual, expected) {
+Test.prototype.assertEquals = function(actual, expected, message) {
     if (actual !== expected)
-        throw AssertionError(expected, actual);
+        throw new AssertionError(message || 'Values are not strictly equal', { expected: expected, actual: actual});
 };
 
-Test.prototype.assertOwns = function(object, propertyName, expected) {
-    if (!Object.hasOwnProperty(object, propertyName))
-        throw AssertionError();
-    if (typeof expected !== 'undefined' && object[propertyName] !== expected)
-        throw AssertionError();
+Test.prototype.assertOwns = function(object, propertyName, expected, message) {
+    if (typeof object === 'undefined') {
+        throw new AssertionError(message || 'Actual object is undefined', { expected: { propertyName: propertyName, value: expected }, actual: 'undefined' });
+    } else if (!object.hasOwnProperty(propertyName)) {
+        throw new AssertionError(message || 'Object does not own property', { expected: { propertyName: propertyName, value: expected }, actual: object[propertyName] });
+    }
+
+    this.assertEquals(object[propertyName], expected, message || 'Object does not own property');
 };
 
-Test.prototype.assertCreation = function(expected) {
-    var object = new expected.constructor.apply(null, expected.constructionArguments);
+Test.prototype.assertCreation = function(expected, message) {
+    var object = new expected.constructor(expected.constructionArguments);
 
     // check constructor
-    this.assert(object.constructor, expected.constructor);
+    this.assertEquals(object.constructor, expected.constructor, message || 'Constructor not found');
 
     // check parent constructor
     if (typeof expected.parentConstructor !== 'undefined') {
-        this.assert(object.constructor.prototype.constructor, expected.parentConstructor)
+        this.assertEquals(Object.getPrototypeOf(object.constructor.prototype).constructor, expected.parentConstructor, message || 'Parent constructor not inherited')
     }
-
-    // check constructor implement method
-    this.assert(object.constructor.implement, PlurObject.implement)
 
     // check constructor implemented
     if (typeof expected.interfaces !== 'undefined') {
@@ -65,24 +65,24 @@ Test.prototype.assertCreation = function(expected) {
             expectedImplemented[expected.interfaces[interfaceName].namepath] = null;
         }
 
-        this.assertEquals(object.constructor.implemented, expectedImplemented)
+        this.assertEquals(object.constructor.implemented, expectedImplemented, message || 'Interface not implemented')
     }
 
     // check constructor namepath
-    this.assertOwns(object.constructor, 'namepath', expected.namepath);
+    this.assertOwns(object.constructor, 'namepath', expected.namepath, message || 'Constructor does not own namepath');
     // check prototype namepath
-    this.assertOwns(object.prototype, 'namepath', expected.namepath);
+    this.assertOwns(object.constructor.prototype, 'namepath', expected.namepath, message || 'Prototype does not own namepath');
     // check prototype implements method
-    this.assertOwns(object.prototype, 'implementing', PlurObject.implementing);
+    this.assertOwns(object.constructor.prototype, 'implementing', PlurObject.implementing, message || 'Prototype implements method not inherited');
 };
 
 Test.prototype.assertHas = function(object, propertyName, expected) {
     if (typeof object[propertyName] === 'undefined') {
-        throw AssertionError();
+        throw new AssertionError();
     }
 
     if (typeof expected !== 'undefined' && object[propertyName] !== expected) {
-        throw AssertionError();
+        throw new AssertionError();
     }
 };
 

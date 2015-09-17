@@ -18,12 +18,32 @@ function(
  * @params {=} data
  */
 var PlurError = function(message, data) {
-    Error.call(this, message);
-
+    this.name = this.namepath;
+    this.message = message;
     this.data = ( typeof data === 'undefined' ? null : data );
+
+    Error.captureStackTrace(this, this.constructor);
 };
 
 PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
+
+PlurError.prototype.toString = function() {
+    if (this.data === null)
+        return 'Error (' + this.name + '): ' + this.message;
+
+    return 'Error (' + this.name + '): ' + this.message + ' ; ' + JSON.stringify(this.data, PlurError._stringifyReplacer);
+};
+
+PlurError._stringifyReplacer = function(key, value) {
+    switch(typeof value) {
+    case 'undefined':
+        return 'undefined';
+    case 'function':
+        return '[Function]';
+    default:
+        return value;
+    };
+};
 
 return PlurError;
 });
