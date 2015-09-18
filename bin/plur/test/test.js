@@ -23,7 +23,12 @@ function(
 /**
  * Performs tests against either a provided set of test classes / test methods or against all available tests.
  *
- * @constructor plur/bin/test/test
+ * Searching involves globbing for JS files in each plur module (via RequireJS config 'paths').
+ * Only modules with the word "test" in their name will be included.
+ * Only JS files that end with "Test" will be targeted.
+ *
+ * @constructor plurbin/plur/test/test
+ **
  */
 var TestApp = function() {
     this._targets = [];
@@ -78,8 +83,9 @@ TestApp.prototype.start = function() {
     // if no targets were provided, test everything under the sun
     if (this._targets.length === 0) {
         this._findTargets(function(targets) {
+            this._targets = targets;
             var tester = new PlurTester();
-            tester.test(targets);
+            tester.test(this._targets);
         });
     } else {
         var tester = new PlurTester();
