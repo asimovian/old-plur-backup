@@ -37,6 +37,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 
     Alpha.prototype.a = 'a';
 
+    // check basic creation
     this.assertCreation({
         constructor: Alpha,
         namepath: 'plurtest/plur/PlurObject/testCreate/Alpha'
@@ -54,6 +55,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 
     Bravo.prototype.b = 'b';
 
+    // check details of inheritance
     this.assertCreation({
         constructor: Bravo,
         parentConstructor: Alpha,
@@ -61,6 +63,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
     });
 
     var bravo = new Bravo();
+    // check basics of inheritance
     this.assertHas(bravo, 'a', 'a');
     this.assertHas(bravo, 'b', 'b');
     this.assertHas(bravo, 'o', 'a->b');
@@ -79,7 +82,7 @@ PlurObjectTest.prototype.testImplement = function() {
     Alpha.prototype = PlurObject.create('plurtest/Alpha', Alpha);
     PlurObject.implement(Alpha, IAlpha);
 
-    this.assertHas(Alpha.prototype, IAlpha.prototype.alpha);
+    this.assertHas(Alpha.prototype, 'alpha', IAlpha.prototype.alpha, 'Did not implement interface method');
 };
 
 /**

@@ -68,8 +68,6 @@ PlurObject.create = function(namepath, constructor, parentConstructor) {
     constructor.implemented = {};
     // inject an implementing() method into the prototype to reflectively check for implementation
     prototype.implementing = PlurObject.implementing;
-    // inject a model() method into the prototype to convert the object into an intermediate object
-    prototype.model =  PlurObject.model;
 
     return prototype;
 };
@@ -85,19 +83,17 @@ PlurObject.create = function(namepath, constructor, parentConstructor) {
  * @returns plur/PlurObject For use in cascaded calls to PlurObject method
  */
 PlurObject.implement = function(constructor, interfaceConstructor) {
-    if (typeof constructor.implemented[interfaceConstructor.namepath] != 'undefined')
+    if (typeof constructor.implemented[interfaceConstructor.namepath] !== 'undefined')
         return;
 
     var interfacePrototype = interfaceConstructor.prototype;
     var prototype = constructor.prototype;
 
-    for (var propertyName in interfaceConstructor) {
+    for (var propertyName in interfacePrototype) {
         // make sure that the interface property is assigned to PlurObject.pureVirtualFunction
-        if (interfaceConstructor[propertyName] === PlurObject.pureVirtualFunction) {
-            var type = prototype[propertyName];
-
+        if (interfacePrototype[propertyName] === PlurObject.pureVirtualFunction) {
             // set it if it's undefined. ignore if it exists and is already pure virtual. throw error otherwise.
-            switch(type) {
+            switch(typeof prototype[propertyName]) {
             case 'undefined':
                 prototype[propertyName] = interfacePrototype[propertyName];
                 break;
