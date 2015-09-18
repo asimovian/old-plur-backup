@@ -30,6 +30,16 @@ FileSystem.DirNames = {
     config: 'config'
 };
 
+FileSystem._local = null;
+
+FileSystem.local = function() {
+    return FileSystem._local;
+};
+
+FileSystem.initLocal = function(localFileSystem) {
+    FileSystem._local = localFileSystem;
+};
+
 /**
  * Combines the provided paths together into one path.
  *
@@ -42,7 +52,7 @@ FileSystem.prototype.joinPaths = function(/* ... */) {
     var pathSeparator = this.getPathSeparator();
     var path = arguments[0]; // base path
 
-    for (var i = 1; i < arguments.length; ++i) {
+    for (var i = 0; i < arguments.length; ++i) {
         // any absolute path is automatically accepted (other than the base path)
         if (arguments[i].charAt(0) === pathSeparator) {
             // throw an error if there are more paths after this one as that's unexpected
@@ -65,6 +75,10 @@ FileSystem.prototype.joinPaths = function(/* ... */) {
  * @returns string
  */
 FileSystem.prototype.getHomePath = function (/* ... */) {
+    if (arguments.length === 0) {
+        return this._getHomePath();
+    }
+
 	return this.joinPaths.apply(this, ([this._homePath].concat(arguments)));
 };
 

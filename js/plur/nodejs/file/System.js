@@ -6,13 +6,11 @@
 define([
 	'fs',
 	'plur/PlurObject',
-	'plur/file/System',
-	'plur/config/Config' ],
+	'plur/file/System' ],
 function(
 	fs,
 	PlurObject,
-	FileSystem,
-	Config ) {
+	FileSystem ) {
 
 /**
  * Represents the underlying File System through Node.JS.
@@ -21,8 +19,7 @@ function(
  * @extends plur/file/System
  */
 var NodeJsFileSystem = function() {
-	this._homePath = fs.realpathSync('.');
-
+	this._homePath = fs.realpathSync('../');
 };
 
 NodeJsFileSystem.prototype = PlurObject.create('plur/nodejs/file/System', NodeJsFileSystem, FileSystem);
@@ -50,5 +47,5 @@ NodeJsFileSystem.prototype.getPathSeparator = function() {
     return '/';
 };
 
-return NodeJsNodeJsFileSystem;
+return NodeJsFileSystem;
 });

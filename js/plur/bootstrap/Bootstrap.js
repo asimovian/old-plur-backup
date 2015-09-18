@@ -16,18 +16,38 @@ function(
  * @constructor plur/Bootstrap
  **
  */
-var Bootstrap = function(requirejs) {
-    this.require = requirejs;
+var Bootstrap = function(platformBootstrap) {
+    this._require = platformBootstrap.require;
+    this._platformType = platformBootstrap.platformType;
 };
 
 Bootstrap.prototype = PlurObject.create('plur/Bootstrap', Bootstrap);
 
+Bootstrap.Platform = {
+    NodeJs: 'nodejs',
+    Web: 'web'
+};
+
+Bootstrap.singleton = null;
+
+Bootstrap.init = function(bootstrap) {
+    Bootstrap.singleton = bootstrap;
+};
+
+Bootstrap.get = function() {
+    return Bootstrap.singleton;
+};
+
 Bootstrap.prototype.getRequireConfig = function() {
-    return this.require.s.contexts._.config;
+    return this._require.s.contexts._.config;
 };
 
 Bootstrap.prototype.addPath = function(name, path) {
     this.getRequireConfig().paths[name] = path;
+};
+
+Bootstrap.prototype.getPlatformType = function() {
+    return this._platformType;
 };
 
 return Bootstrap;
