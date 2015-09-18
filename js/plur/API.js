@@ -12,6 +12,7 @@ function(
  * API version information
  *
  * @constructor plur/API
+ **
  */
 var PlurAPI = function() {
     this.version = '0.0.0';
