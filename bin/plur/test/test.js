@@ -33,6 +33,7 @@ function(
 var TestApp = function() {
     this._targets = [];
 
+    // load targets from the commandline, if available. searching will be performed by start() if necessary
     for (var i = 2; i < process.argv.length; ++i) {
         this._targets.push(process.argv[i]);
     }
@@ -46,6 +47,7 @@ TestApp.prototype._findTargets = function(callback) {
     var requireConfig = bootstrap.getRequireConfig();
     var applicationRoot = path.resolve(__dirname + '/../../../..'); //todo: use plur/file/System
 
+    // create an array of potential test targets, skipping any paths that do not include the word "test" in their name
     var pathNames = [];
     for (var key in requireConfig.paths) {
         if (key.match(/test/)) {
@@ -62,15 +64,19 @@ TestApp.prototype._findTargets = function(callback) {
             return function(err, files) {
                 for (var i = 0; i < files.length; ++i) {
                     var filepath = files[i];
+                    // skip and files that do not end in "Test.js"
                     if (!path.basename(filepath).match(/^[a-zA-Z0-9_\-]+Test\.js$/)) {
                         continue;
                     }
 
+                    // remove the module path root from the filepath, making it relative (like the namepath is)
                     var relativeFilepath = filepath.substring(jsPath.length - path.basename(jsPath).length);
+                    // remove the extension from the name to form a valid namepath
                     var namepath = relativeFilepath.match(/^(.*)\.[^.]+$/)[1];
                     targets.push(namepath);
                 }
 
+                // check if we've finished globbing every path yet, callback if we have
                 if (++numPathsGlobbed === pathNames.length) {
                     callback(targets);
                 }
@@ -80,7 +86,7 @@ TestApp.prototype._findTargets = function(callback) {
 };
 
 TestApp.prototype.start = function() {
-    // if no targets were provided, test everything under the sun
+    // if no targets were provided, find and test everything under the sun
     if (this._targets.length === 0) {
         this._findTargets(function(targets) {
             this._targets = targets;
