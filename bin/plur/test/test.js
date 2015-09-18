@@ -55,16 +55,17 @@ TestApp.prototype._findTargets = function(callback) {
         }
     }
 
+    // pathNames.length will be used by the glob handler to identify when all operations have been completed
     for (var i = 0; i < pathNames.length; ++i) {
         var key = pathNames[i];
         var jsPath = applicationRoot + '/' + requireConfig.paths[key];
 
-        // scope jsPath value into callback
+        // scope jsPath value into callback as it will change value on the next iteration
         glob(jsPath + '/**/*Test.js', (function(jsPath) {
             return function(err, files) {
                 for (var i = 0; i < files.length; ++i) {
                     var filepath = files[i];
-                    // skip and files that do not end in "Test.js"
+                    // skip any files that do not end in "Test.js"
                     if (!path.basename(filepath).match(/^[a-zA-Z0-9_\-]+Test\.js$/)) {
                         continue;
                     }
