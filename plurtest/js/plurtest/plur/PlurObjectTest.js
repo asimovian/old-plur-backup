@@ -72,6 +72,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 /**
  * @function plurtest/plur/PlurObjectTest.prototype.testImplement
  * @test plur/PlurObject.implement
+ * @test plur/PlurObject.implementing
  */
 PlurObjectTest.prototype.testImplement = function() {
     var IAlpha = function() {};
@@ -83,6 +84,9 @@ PlurObjectTest.prototype.testImplement = function() {
     PlurObject.implement(Alpha, IAlpha);
 
     this.assertHas(Alpha.prototype, 'alpha', IAlpha.prototype.alpha, 'Did not implement interface method');
+
+    // test implementing
+    this.assert(PlurObject.implementing(Alpha, IAlpha));
 };
 
 /**

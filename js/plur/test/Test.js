@@ -37,6 +37,14 @@ Test.prototype.test = function() {
 /**
  * Determines whether a value is strictly equal.
  */
+Test.prototype.assert = function(actual, message) {
+    if (!actual)
+        throw new AssertionError(message || 'Assertion failed', { actual: actual });
+};
+
+/**
+ * Determines whether a value is strictly equal.
+ */
 Test.prototype.assertEquals = function(actual, expected, message) {
     if (actual !== expected)
         throw new AssertionError(message || 'Values are not strictly equal', { expected: expected, actual: actual});
