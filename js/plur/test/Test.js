@@ -92,8 +92,6 @@ Test.prototype.assertCreation = function(expected, message) {
     this.assertOwns(object.constructor, 'namepath', expected.namepath, message || 'Constructor does not own namepath');
     // check prototype namepath
     this.assertOwns(object.constructor.prototype, 'namepath', expected.namepath, message || 'Prototype does not own namepath');
-    // check prototype implements method
-    this.assertOwns(object.constructor.prototype, 'implementing', PlurObject.implementing, message || 'Prototype implements method not inherited');
 };
 
 /**

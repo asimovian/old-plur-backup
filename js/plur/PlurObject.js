@@ -24,10 +24,10 @@ var PlurObject = function() {
 PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
-PlurObject.implementing = function(interfaceConstructor, object) {
-    var o = ( object || this );
-    return ( typeof o.prototype.implementing !== 'undefined'
-            && typeof o.prototype.implementing[interfaceConstructor.namepath] !== 'undefined' );
+PlurObject.implementing = function(object, interfaceConstructor) {
+    var constructor = Object.getPrototypeOf(object).constructor;
+    return ( typeof constructor.implemented !== 'undefined'
+            && typeof constructor.implemented[interfaceConstructor.namepath] !== 'undefined' );
 };
 
 /**
@@ -66,8 +66,6 @@ PlurObject.create = function(namepath, constructor, parentConstructor) {
 
     // inject an array that will store namepaths of interfaces as keys into the constructor
     constructor.implemented = {};
-    // inject an implementing() method into the prototype to reflectively check for implementation
-    prototype.implementing = PlurObject.implementing;
 
     return prototype;
 };

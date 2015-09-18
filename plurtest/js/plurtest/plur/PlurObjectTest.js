@@ -86,7 +86,7 @@ PlurObjectTest.prototype.testImplement = function() {
     this.assertHas(Alpha.prototype, 'alpha', IAlpha.prototype.alpha, 'Did not implement interface method');
 
     // test implementing
-    this.assert(PlurObject.implementing(Alpha, IAlpha));
+    this.assert(PlurObject.implementing(new Alpha(), IAlpha));
 };
 
 /**
