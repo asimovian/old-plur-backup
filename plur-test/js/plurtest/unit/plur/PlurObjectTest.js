@@ -13,7 +13,7 @@ function(
     Test) {
 
 /**
- * @constructor plurtest/unit/plur/PlurObjectTest
+ * @constructor plur-test/unit/plur/PlurObjectTest
  * @extends plur/test/Test
  * @test plur/PlurObject
  **
@@ -21,10 +21,10 @@ function(
 var PlurObjectTest = function() {
 };
 
-PlurObjectTest.prototype = PlurObject.create('plurtest/unit/plur/PlurObjectTest', PlurObjectTest, Test);
+PlurObjectTest.prototype = PlurObject.create('plur-test/unit/plur/PlurObjectTest', PlurObjectTest, Test);
 
 /**
- * @function plurtest/unit/plur/PlurObject.prototype.testCreate
+ * @function plur-test/unit/plur/PlurObject.prototype.testCreate
  * @test plur/PlurObject.create
  */
 PlurObjectTest.prototype.testCreate = function(expected) {
@@ -33,14 +33,14 @@ PlurObjectTest.prototype.testCreate = function(expected) {
         this.o = 'a';
     };
 
-    Alpha.prototype = PlurObject.create('plurtest/unit/plur/PlurObject/testCreate/Alpha', Alpha);
+    Alpha.prototype = PlurObject.create('plur-test/unit/plur/PlurObject/testCreate/Alpha', Alpha);
 
     Alpha.prototype.a = 'a';
 
     // check basic creation
     this.assertCreation({
         constructor: Alpha,
-        namepath: 'plurtest/unit/plur/PlurObject/testCreate/Alpha'
+        namepath: 'plur-test/unit/plur/PlurObject/testCreate/Alpha'
     });
 
     var alpha = new Alpha();
@@ -51,7 +51,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
         this.o += '->b'
     };
 
-    Bravo.prototype = PlurObject.create('plurtest/unit/plur/PlurObject/testCreate/Bravo', Bravo, Alpha);
+    Bravo.prototype = PlurObject.create('plur-test/unit/plur/PlurObject/testCreate/Bravo', Bravo, Alpha);
 
     Bravo.prototype.b = 'b';
 
@@ -59,7 +59,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
     this.assertCreation({
         constructor: Bravo,
         parentConstructor: Alpha,
-        namepath: 'plurtest/unit/plur/PlurObject/testCreate/Bravo',
+        namepath: 'plur-test/unit/plur/PlurObject/testCreate/Bravo',
     });
 
     var bravo = new Bravo();
@@ -70,17 +70,17 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 };
 
 /**
- * @function plurtest/unit/plur/PlurObjectTest.prototype.testImplement
+ * @function plur-test/unit/plur/PlurObjectTest.prototype.testImplement
  * @test plur/PlurObject.implement
  * @test plur/PlurObject.implementing
  */
 PlurObjectTest.prototype.testImplement = function() {
     var IAlpha = function() {};
-    IAlpha.prototype = PlurObject.create('plurtest/IAlpha', IAlpha);
+    IAlpha.prototype = PlurObject.create('plur-test/IAlpha', IAlpha);
     IAlpha.prototype.alpha = PlurObject.pureVirtualFunction;
 
     var Alpha = function() {};
-    Alpha.prototype = PlurObject.create('plurtest/Alpha', Alpha);
+    Alpha.prototype = PlurObject.create('plur-test/Alpha', Alpha);
     PlurObject.implement(Alpha, IAlpha);
 
     this.assertHas(Alpha.prototype, 'alpha', IAlpha.prototype.alpha, 'Did not implement interface method');
@@ -90,7 +90,7 @@ PlurObjectTest.prototype.testImplement = function() {
 };
 
 /**
- * @function plurtest/unit/plur/PlurObjectTest.prototype.testPureVirtualFunction
+ * @function plur-test/unit/plur/PlurObjectTest.prototype.testPureVirtualFunction
  * @test plur/PlurObject.pureVirtualFunction
  */
 PlurObjectTest.prototype.testPureVirtualFunction = function() {

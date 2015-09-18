@@ -28,7 +28,7 @@ function(
  * @param {} connectionParams
  */
 var DbFindService = function(connectionParams) {
-	this._uri = 'tcp://rlaurie:password@localhost/plurtest'; //todo: connection parameters built on construction
+	this._uri = 'tcp://rlaurie:password@localhost/plur-test'; //todo: connection parameters built on construction
 };
 
 DbFindService.prototype = PlurObject.create('plur/db/service/DbFindService', DbFindService, Service);
