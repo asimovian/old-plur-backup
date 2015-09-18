@@ -17,7 +17,7 @@ function(
 /**
  * Test
  *
- * @constructor plurtest/plur/APITest
+ * @constructor plurtest/unit/plur/APITest
  * @extends plur/test/Test
  * @tests plur/API
  **
@@ -25,7 +25,7 @@ function(
 var APITest = function() {
 };
 
-APITest.prototype = PlurObject.create('plurtest/plur/APITest', APITest, Test);
+APITest.prototype = PlurObject.create('plurtest/unit/plur/APITest', APITest, Test);
 
 APITest.prototype.testValues = function() {
     this.assertHas(API, 'version', '0.0.0');

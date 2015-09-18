@@ -26,5 +26,9 @@ Bootstrap.prototype.getRequireConfig = function() {
     return this.require.s.contexts._.config;
 };
 
+Bootstrap.prototype.addPath = function(name, path) {
+    this.getRequireConfig().paths[name] = path;
+};
+
 return Bootstrap;
 });

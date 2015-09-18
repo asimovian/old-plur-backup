@@ -13,7 +13,7 @@ function(
     Test) {
 
 /**
- * @constructor plurtest/plur/PlurObjectTest
+ * @constructor plurtest/unit/plur/PlurObjectTest
  * @extends plur/test/Test
  * @test plur/PlurObject
  **
@@ -21,10 +21,10 @@ function(
 var PlurObjectTest = function() {
 };
 
-PlurObjectTest.prototype = PlurObject.create('plurtest/plur/PlurObjectTest', PlurObjectTest, Test);
+PlurObjectTest.prototype = PlurObject.create('plurtest/unit/plur/PlurObjectTest', PlurObjectTest, Test);
 
 /**
- * @function plurtest/plur/PlurObject.prototype.testCreate
+ * @function plurtest/unit/plur/PlurObject.prototype.testCreate
  * @test plur/PlurObject.create
  */
 PlurObjectTest.prototype.testCreate = function(expected) {
@@ -33,14 +33,14 @@ PlurObjectTest.prototype.testCreate = function(expected) {
         this.o = 'a';
     };
 
-    Alpha.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Alpha', Alpha);
+    Alpha.prototype = PlurObject.create('plurtest/unit/plur/PlurObject/testCreate/Alpha', Alpha);
 
     Alpha.prototype.a = 'a';
 
     // check basic creation
     this.assertCreation({
         constructor: Alpha,
-        namepath: 'plurtest/plur/PlurObject/testCreate/Alpha'
+        namepath: 'plurtest/unit/plur/PlurObject/testCreate/Alpha'
     });
 
     var alpha = new Alpha();
@@ -51,7 +51,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
         this.o += '->b'
     };
 
-    Bravo.prototype = PlurObject.create('plurtest/plur/PlurObject/testCreate/Bravo', Bravo, Alpha);
+    Bravo.prototype = PlurObject.create('plurtest/unit/plur/PlurObject/testCreate/Bravo', Bravo, Alpha);
 
     Bravo.prototype.b = 'b';
 
@@ -59,7 +59,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
     this.assertCreation({
         constructor: Bravo,
         parentConstructor: Alpha,
-        namepath: 'plurtest/plur/PlurObject/testCreate/Bravo',
+        namepath: 'plurtest/unit/plur/PlurObject/testCreate/Bravo',
     });
 
     var bravo = new Bravo();
@@ -70,7 +70,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 };
 
 /**
- * @function plurtest/plur/PlurObjectTest.prototype.testImplement
+ * @function plurtest/unit/plur/PlurObjectTest.prototype.testImplement
  * @test plur/PlurObject.implement
  * @test plur/PlurObject.implementing
  */
@@ -90,7 +90,7 @@ PlurObjectTest.prototype.testImplement = function() {
 };
 
 /**
- * @function plurtest/plur/PlurObjectTest.prototype.testPureVirtualFunction
+ * @function plurtest/unit/plur/PlurObjectTest.prototype.testPureVirtualFunction
  * @test plur/PlurObject.pureVirtualFunction
  */
 PlurObjectTest.prototype.testPureVirtualFunction = function() {
