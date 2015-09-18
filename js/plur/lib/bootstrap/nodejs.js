@@ -5,10 +5,10 @@
 'use strict';
 
 (function() {
-    var plur = {};
-    plur.require = require('requirejs');
+    var _bootstrap = {};
+    _bootstrap.require = require('requirejs');
 
-    plur.require.config({
+    _bootstrap.require.config({
         baseUrl: '../',
         paths: {
             'plur': 'plur/js/plur',
@@ -18,5 +18,9 @@
         enforceDefine: true
     });
 
-    module.exports = plur;
+    _bootstrap.getRequireConfig = function() {
+        return _bootstrap.require.s.contexts._.config;
+    };
+
+    module.exports = _bootstrap;
 })();

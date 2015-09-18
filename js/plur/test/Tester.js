@@ -37,10 +37,9 @@ Tester.prototype.test = function(testTargets) {
             var parts = testTarget.split('.');
             var namepath = parts[0];
             var method = parts[1];
-
-            console.log('Testing: ' + namepath + '.' + method);
-
             requirejs([namepath], function(TestClass) {
+                console.log('Testing: ' + namepath + '.' + method);
+
                 var obj = new TestClass();
                 obj[method]();
                 self._onComplete(namepath, method, true);
