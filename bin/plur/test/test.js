@@ -6,7 +6,7 @@
  */
  'use strict';
 
-var bootstrap = require('../../../js/plur/lib/bootstrap/nodejs.js');
+var bootstrap = require('../../../js/plur/nodejs/Bootstrap.js');
 bootstrap.require([
     'fs',
     'path',
@@ -89,10 +89,11 @@ TestApp.prototype._findTargets = function(callback) {
 TestApp.prototype.start = function() {
     // if no targets were provided, find and test everything under the sun
     if (this._targets.length === 0) {
+        var self = this;
         this._findTargets(function(targets) {
-            this._targets = targets;
+            self._targets = targets;
             var tester = new PlurTester();
-            tester.test(this._targets);
+            tester.test(self._targets);
         });
     } else {
         var tester = new PlurTester();
