@@ -1,27 +1,38 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
  */
-'use strict';
+ 'use strict';
+
+define([
+    'plur/PlurObject',
+    'plur/bootstrap/Bootstrap' ],
+function(
+    PlurObject,
+    Bootstrap ) {
 
 /**
- * Expects requirejs.js to have been pre-loaded by a <script> reference or dynamically.
+ * Web Bootstrap
+ *
+ * @constructor plur/web/Bootstrap
+ * @extends plur/bootstrap/Bootstrap
+ **
  */
-(function() {
-    var _bootstrap = {};
-    _bootstrap.require = requirejs;
+var WebBootstrap = function(platformBootstrap) {
+    Bootstrap.call(this, platformBootstrap) ;
+};
 
-    _bootstrap.require.config({
-        baseUrl: '../',
-        paths: {
-            'plur': 'plur/js/plur',
-            'plur-test': 'plur/plur-test/js/plur-test'
-        },
-        nodeRequire: require,
-        enforceDefine: true
-    });
+WebBootstrap.prototype = PlurObject.create('plur/web/Bootstrap', WebBootstrap, Bootstrap);
 
-    _bootstrap.getRequireConfig = function() {
-        return _bootstrap.require.s.contexts._.config;
-    };
-})();
+WebBootstrap.init = function(platformBootstrap) {
+    Bootstrap.init(new WebBootstrap(platformBootstrap));
+    return this;
+};
+
+WebBootstrap.get = function() {
+    return Bootstrap.singleton;
+};
+
+return WebBootstrap;
+});

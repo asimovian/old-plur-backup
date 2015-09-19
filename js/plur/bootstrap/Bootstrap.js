@@ -42,8 +42,9 @@ Bootstrap.prototype.getRequireConfig = function() {
     return this._require.s.contexts._.config;
 };
 
-Bootstrap.prototype.addPath = function(name, path) {
-    this.getRequireConfig().paths[name] = path;
+Bootstrap.prototype.addPaths = function(pathMap) {
+    this._require.config({ paths: pathMap });
+    console.log(this.getRequireConfig());
 };
 
 Bootstrap.prototype.getPlatformType = function() {

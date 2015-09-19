@@ -6,7 +6,7 @@
  'use strict';
 
 define([
-    'requirejs'],
+    'require'],
 function(
     requirejs ) {
 

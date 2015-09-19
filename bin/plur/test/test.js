@@ -6,15 +6,15 @@
  */
  'use strict';
 
-var platformBootstrap = require('../../../js/plur/nodejs/bootstrap.js');
-platformBootstrap.require([
+var plurbootstrap = require('../../../js/plur/nodejs/bootstrap.js');
+plurbootstrap.require([
     'plur/nodejs/Bootstrap',
     'plur-bin/plur/test/TestApp' ],
 function(
     NodeJsBootstrap,
     TestApp ) {
 
-NodeJsBootstrap.init(platformBootstrap);
+NodeJsBootstrap.init(plurbootstrap);
 new TestApp().start();
 
 });

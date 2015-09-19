@@ -5,10 +5,10 @@
 'use strict';
 
 (function() {
-    var platformBootstrap = {};
-    platformBootstrap.require = require('requirejs');
+    var plurbootstrap = {};
+    plurbootstrap.require = require('requirejs');
 
-    platformBootstrap.require.config({
+    plurbootstrap.require.config({
         baseUrl: '../',
         paths: {
             'plur': 'plur/js/plur',
@@ -19,7 +19,7 @@
         enforceDefine: true
     });
 
-    platformBootstrap.platformType = 'nodejs';
+    plurbootstrap.platformType = 'nodejs';
 
-    module.exports = platformBootstrap;
+    module.exports = plurbootstrap;
 })();
