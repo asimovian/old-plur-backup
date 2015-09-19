@@ -27,11 +27,11 @@ WebBootstrap.prototype = PlurObject.create('plur/web/Bootstrap', WebBootstrap, B
 
 WebBootstrap.init = function(platformBootstrap) {
     Bootstrap.init(new WebBootstrap(platformBootstrap));
-    return this;
+    return Bootstrap.get();
 };
 
 WebBootstrap.get = function() {
-    return Bootstrap.singleton;
+    return Bootstrap.get();
 };
 
 return WebBootstrap;

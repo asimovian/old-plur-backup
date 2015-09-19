@@ -32,6 +32,7 @@ Bootstrap.singleton = null;
 
 Bootstrap.init = function(bootstrap) {
     Bootstrap.singleton = bootstrap;
+    return Bootstrap.singleton;
 };
 
 Bootstrap.get = function() {
@@ -44,11 +45,16 @@ Bootstrap.prototype.getRequireConfig = function() {
 
 Bootstrap.prototype.addPaths = function(pathMap) {
     this._require.config({ paths: pathMap });
-    console.log(this.getRequireConfig());
+    return this;
 };
 
 Bootstrap.prototype.getPlatformType = function() {
     return this._platformType;
+};
+
+Bootstrap.prototype.require = function(paths, callback) {
+    this._require(paths, callback);
+    return this;
 };
 
 return Bootstrap;
