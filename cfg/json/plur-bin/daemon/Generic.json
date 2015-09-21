@@ -1,0 +1,7 @@
+{
+    "namepath": "plur/config/Config",
+    "subjectNamepath": "plur/service/daemon/Generic",
+    "port": 8080,
+    "ip": "127.0.0.1",
+    "serviceNamepaths": []
+}

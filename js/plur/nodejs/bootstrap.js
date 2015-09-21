@@ -12,8 +12,9 @@
         baseUrl: '../',
         paths: {
             'plur': 'plur/js/plur',
-            'plur-test': 'plur/plur-test/js/plur-test',
+            'plur-config': 'plur/cfg/json/plur'
             'plur-bin': 'plur/plur-bin/js/plur-bin'
+            'plur-test': 'plur/plur-test/js/plur-test',
         },
         nodeRequire: require,
         enforceDefine: true

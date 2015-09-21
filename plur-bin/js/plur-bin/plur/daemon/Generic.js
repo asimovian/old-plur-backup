@@ -10,7 +10,8 @@ define([
     'plur/config/Config',
     'plur/config/NodeJs',
     'plur/obj/Parser',
-    'plur/error/Error' ],
+    'plur/error/Error',
+    'plur-config/plur/app/daemon/Generic'],
 function(
     requirejs,
     http,
@@ -18,7 +19,8 @@ function(
     PlurConfig,
     PlurNodeJsConfig,
     PlurObjParser,
-    PlurError ) {
+    PlurError,
+    DefaultConfigJson ) {
 
 /**
  * A generic daemon that handles Request messages for any number of registered Services, routing them once validated.
@@ -29,7 +31,7 @@ function(
  */
 var GenericDaemon = function(configs) {
     // load default config
-	this._config = new Config(this.namepath);
+	this._config = GenericDaemon._defaultConfig.copy();
 	// each service class
 	this._serviceClasses = []; // services
 	this._requestMap = {}; // key (namepath) -> value ([services])
@@ -46,6 +48,8 @@ var GenericDaemon = function(configs) {
         }
 	}
 };
+
+GenericDaemon._defaultConfig = new Config(DefaultConfigJson);
 
 GenericDaemon.prototype = PlurObject.create('plur/service/daemon/Daemon', GenericDaemon);
 

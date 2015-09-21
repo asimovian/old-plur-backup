@@ -1,117 +1,193 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
  */
-define(['plur/PlurObject'], function(PlurObject) {
+define([
+    'plur/PlurObject',
+    'plur/error/Type',
+    'plur/error/State' ],
+function(
+    PlurObject,
+    PlurTypeError,
+    PlurStateError ) {
 	
 /**
  * A generic event emitter.
+ *
+ * @constructor plur/event/Emitter
+ **
  */
 var Emitter = function() {
-	this.__online = true;
-	this.__destroyed = false;
-	this.__debugging = false;
-	this.__eventCallbackMap = {};
-	this.__eventScheduledCallbackMap = {};
+	this._destroyed = false;
+	this._listening = false;
+	this._listenerTree = { Emitter.wildcard: {} };
+	this._listenerTreeIndex = {};
+	this._namespaceTreeCache = {};
 };
 
 Emitter.prototype = PlurObject.create('plur/event/Emitter', Emitter);
 
-Emitter.prototype.on = function(event, callback) {
-	if (this.__destroyed)
-		return this;
-	if (typeof event === 'undefined') { // turn entire emitter offline
-		this.__online = true;
-		return this;
+Emitter.wildcard = '*';
+
+Emitter._listenersKey = '>';
+
+Emitter.Listener = function(subscriptionId, callback, temporary) {
+    this.subscriptionId = subscriptionId;
+    this.callback = callback;
+    this.temporary = temporary;
+};
+
+
+/**
+ * Subscribes a listener for the specified event. The provided callback is executed once the event is published.
+ *
+ * The callback will provide the event emitted as well as any event-specific data.
+ *
+ * @function plur/event/Emitter.prototype.on
+ * @param {string} event
+ * @param {Function({string} event, {} data)} callback
+ * @param {string|undefined} Optional subscription id, which can be used to unsubscribe to an event via off().
+ * @returns Emitter This emitter for cascaded API calls
+ */
+Emitter.prototype.on = function(event, callback, subscriptionId) {
+    this._subscribe(event, callback, subscriptionId, false);
+	return this;
+};
+
+/**
+ * Subscribes a listener for the specified event once. The provided callback is executed once the event is published.
+ * The listener is automatically unsubscribed once published, before executing the callback.
+ *
+ * The callback will provide the event emitted as well as any event-specific data.
+ *
+ * @function plur/event/Emitter.prototype.on
+ * @param {string} event
+ * @param {Function({string} event, {} data)} callback
+ * @param {string|undefined} Optional unique subscription id, which can be used to stop listening to an event via off().
+ * @returns Emitter This emitter for cascaded API calls
+ */
+ Emitter.prototype.once = function(event, callback, subscriptionId) {
+    this._subscribe(event, callback, subscriptionId, true);
+
+	return this;
+};
+
+Emitter.prototype._subscribe = function(event, callback, subscriptionId, temporary) {
+    var listener = new Emitter.Listener(event, callback, subscriptionId);
+    var namespaceTree = Emitter._createNamespaceTree(event);
+    var branch = Emitter._copyNamespaceTree(namespaceTree, this._listenerTree);
+
+	if (typeof branch[Emitter._listenersKey] !== 'array') {
+		branch[Emitter._listenersKey] = [];
 	}
-	
-	if (typeof this.__eventCallbackMap[event] === 'undefined')
-		this.__eventCallbackMap[event] = [];
-	
-	this.__eventCallbackMap[event].push(callback);
-	return this;
+
+	branch[Emitter._listenersKey].push(listener);
+	this._listenerTreeIndex[subscriptionId] = event;
+
+	if (!this._listening) {
+	    this._listening = true;
+	}
 };
 
-Emitter.prototype.once = function(event, callback) {
-	if (this.__destroyed)
-		return this;
-	if (typeof this.__eventScheduledCallbackMap[event] === 'undefined')
-		this.__eventScheduledCallbackMap[event] = [];
-	
-	this.__eventScheduledCallbackMap[event].push(callback);
-	return this;
+/**
+ * If a subscription ID is specified, determines whether the associated listener is subscribed.
+ */
+Emitter.prototype.listening = function(subscriptionId) {
+    if (typeof subscriptionId === 'undefined') {
+	    return this._listening;
+	}
+    // search listeners
+    for (var event in this._listenerTree) {
+        if (typeof this._listenerTree[event][subscriptionId] !== 'undefined') {
+            return true;
+        }
+    }
+
+    // search
+    for (var event in this._scheduledListeners) {
+        if (typeof this._scheduledListeners[event][subscriptionId] !== 'undefined') {
+            return true;
+        }
+    }}
+
+    return false;
 };
 
-Emitter.prototype.online = function() {
-	return this.__online;
-};
-
-Emitter.prototype.off = function(callback) {
-	if (this.__destroyed)
-		return this;
+Emitter.prototype.unsubscribe = function(subscriptionId) {
+	if (this._destroyed) {
+		throw new PlurStateError('Emitter has been destroyed');
+	} else if (typeof subscriptionId !== 'string') {
+	    throw new PlurTypeError('Invalid subscriptionId');
+	}
 	if (typeof event === 'undefined') {
-		this.__online = false;
+		this._listening = false;
 		return this;
 	}
 	
-	this._off(callback, this.__eventScheduledCallbackMap);
-	this._off(callback, this.__eventCallbackMap);
+	this._unsubscribe(callback, this._scheduledListeners);
+	this._unsubscribe(callback, this._listenerTree);
 	
 	return this;
 };
 
-Emitter.prototype._off = function(callback, callbackMap) {
-	for (var event in callbackMap) {
-		var callbacks = callbackMap[event];
+Emitter.prototype._unsubscribe= function(callback, listeners) {
+	for (var event in listeners) {
+		var callbacks = listeners[event];
 		for (var i = 0; i < callbacks.length; ++i) {
 			if (callbacks[i] === callback)
 				callbacks.splice(i--, 1); // splice out the callback
 		}
 		
 		if (callbacks.length === 0)
-			delete callbackMap[event];
+			delete listeners[event];
 	}
 	
 	return this;
 };
 
 /**
- * @returns int received The amount of callbacks that were called. -1 if the emitter is currently offline.
+ * Publishes an event (with data) to this emitter. All listeners subscribed to the event will have their provided
+ * callbacks executed.
+ *
+ * @function plur/event/Emitter.prototype.emit
+ * @param {string} event
+ * @param {{}|undefined} data
  */
-Emitter.prototype.emit = function(event, data) {
-	if (!this.__online)
-		return -1;
+Emitter.prototype.emit = function(event, data, persistent) {
+    if (this._destroyed) {
+        throw new StateError('Emitter has been destroyed');
+    } else if (!this._listening) {
+	    return;
+	}
 	
-	if (this.__debugging)
-		console.log('[dbg] Emit: ' + event + ' : ', data);
-	
-	var received = this._emit(event, data, this.__eventScheduledCallbackMap, true);
-	received += this._emit(event, data, this.__eventCallbackMap, false);
-	return received;
+	this._emit(event, data, this._scheduledListeners, true);
+	this._emit(event, data, this._listenerTree, false);
+
+	if (typeof persistent === 'boolean' && persistent === true) {
+	    this._persistentEvents[event] = true;
+	}
 };
 
-Emitter.prototype._emit = function(event, data, callbackMap, prune) {
-	prune = ( typeof prune === 'undefined' ? false : prune );
-	var received = 0;
+Emitter.prototype._emit = function(event, data, listeners, prune) {
 	// the exact event
-	if (typeof callbackMap[event] !== 'undefined') {
-		var callbacks = callbackMap[event];
+	if (typeof listeners[event] !== 'undefined') {
+		var callbacks = listeners[event];
 		if (callbacks.length > 0) {
-			received += callbacks.length;
-			for (var i = 0, n = callbacks.length; i < n; ++i) {
+		    for (var subscriptionId in listeners)
 				var callback = callbacks[i];
 				callback(event, data, callback);
 			}
 			
 			if (prune)
-				delete callbackMap[event];
+				delete listeners[event];
 		}
 	}
 	
 	// a wildcard of this event
 	var wildcardEvent = event + '.*';
-	if (typeof callbackMap[wildcardEvent] !== 'undefined') {
-		var callbacks = callbackMap[wildcardEvent];
+	if (typeof listeners[wildcardEvent] !== 'undefined') {
+		var callbacks = listeners[wildcardEvent];
 		if (callbacks.length > 0) {
 			received += callbacks.length;
 			for (var i = 0, n = callbacks.length; i < n; ++i) {
@@ -120,13 +196,13 @@ Emitter.prototype._emit = function(event, data, callbackMap, prune) {
 			}
 			
 			if (prune)
-				delete callbackMap[wildcardEvent];
+				delete listeners[wildcardEvent];
 		}
 	}
 	
 	// the ALL (*) event
-	if (typeof callbackMap['*'] !== 'undefined') {
-		var callbacks = callbackMap['*'];
+	if (typeof listeners['*'] !== 'undefined') {
+		var callbacks = listeners['*'];
 		if (callbacks.length > 0) {
 			received += callbacks.length;
 			for (var i = 0, n = callbacks.length; i < n; ++i) {
@@ -135,22 +211,112 @@ Emitter.prototype._emit = function(event, data, callbackMap, prune) {
 			}
 			
 			if (prune)
-				delete callbackMap['*'];
+				delete listeners['*'];
 		}
 	}
 	
 	return received;
 };
 
+/**
+ * Unsubscribes all listeners and prevents further subscriptions to be added as well as further events to be emitted.
+ */
 Emitter.prototype.destroy = function() {
-	this.__online = false;
-	this.__destroyed = true;
-	this.__eventCallbackMap = null;
-	this.__eventScheduledCallbackMap = null;
+	this._listening = false;
+	this._destroyed = true;
+	this._listenerTree = null;
+	this._listenerTreeIndex = null;
+	this._namespaceTreeCache = null;
 };
 
-Emitter.prototype.debug = function(debugging) {
-	this.__debugging = ( typeof debugging === 'undefined' ? true : debugging );
+Emitter.prototype._getNamespaceTree = function(event) {
+    if (typeof this._namespaceTreeCache[event] !== 'array') {
+        this._namespaceTreeCache = Emitter._createNamespaceTree(event);
+    }
+
+    return this._namespaceTreeCache[event];
+};
+
+/**
+ * Performs parameter assertions for potential listeners, throwing Errors if necessary.
+ * @returns subscriptionId Normalized
+ */
+Emitter.prototype._assertListener = function(event, callback, subscriptionId) {
+	if (this._destroyed) {
+	    throw new PlurStateError('Emitter has been destroyed')
+    } else if (typeof event !== 'string') {
+        throw new PlurTypeError('Invalid event');
+    } else if (typeof callback === 'function') {
+        throw new PlurTypeError('Invalid callback');
+    } else if (typeof subscriptionId !== 'string') {
+        subscriptionId = Emitter.wildcard;
+    }
+
+    return subscriptionId;
+};
+
+Emitter._createNamespaceTree = function(event) {
+    // split event name into namespace segments by either the / character or the . character
+    var names = event.split(/[\/\.]/);
+    var tree = {};
+    var branch = tree;
+
+    // create a tree where the root is the 0th name, it's child the 1st name, a leaf of that child the 2nd name, etc.
+    for (var i = 0, n = items.length; i < n; ++i) {
+        var name = names[i];
+
+        if (i+1 !== n) {
+            branch[name] = {};
+            branch = branch[name];
+        } else {
+            branch[name] = null;
+        }
+    }
+
+    return tree;
+};
+
+Emitter._copyNamespaceTree = function(sourceTree, destinationTree) {
+    var sourceBranch = sourceTree;
+    var desintationBranch = destinationTree;
+
+    for (var key in sourceBranch) {
+        if (typeof destinationBranch[key] === 'undefined') {
+            destinationBranch[key] = {};
+        }
+
+        if (typeof sourceBranch[key] === 'object') {
+            Emitter._copyNamespaceTree(sourceBranch[key], destinationBranch[key]);
+        }
+    }
+};
+
+Emitter._findListeners = function(event, namespaceTree) {
+    var names = event.split(/[\/\.]/);
+    var branch = namespaceTree;
+    var listeners = [];
+
+    var (var i = 0; i < names.length; ++i) {
+        var name = names[i];
+
+        if (typeof branch[Emitter.wildcard] === 'object' && typeof branch[Emitter.wildcard]._listeners === 'array') {
+            // add all listeners that are listening to <name>/*
+            listeners.push(branch[Emitter.wildcard]._listeners);
+        }
+
+        if (typeof branch[name] !== 'object') {
+            break;
+        } else if (i+1 === names.length) {
+            // if this is the leaf-most namespace token, add all listeners directly associated with it
+            if (typeof branch[Emitter._listenersKey] === 'array') {
+                listeners.push(branch[Emitter._listenersKey]);
+            }
+        }
+
+        branch = branch[name];
+    }
+
+    return listeners;
 };
 
 return Emitter;

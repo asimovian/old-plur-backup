@@ -74,6 +74,12 @@ Config.prototype.merge = function(config) {
 
     return this;
 };
+
+Config.prototype.copy = function() {
+    var config = new Config();
+    config.merge(this);
+    return config;
+};
 	
 Config.prototype.getSubjectNamepath = function() {
     return this._subjectNamepath;
