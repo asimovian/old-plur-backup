@@ -1,4 +1,4 @@
-plur/event/Emitter
+plur / event / Emitter
 ==================
 
 The Plur library uses its own home-rolled event emitter to handle simple event-driven execution and communication.
