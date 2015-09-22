@@ -33,11 +33,11 @@ using a trailing wildcard character '*'. If only the wildcard character is provi
 For example:
 
 > // Given the following event types:  
-> //   car/event/control/Brake  
-> //   car/event/control/Gas  
-> //   car/event/telemetry/Temperature  
-> //   car/event/telemetry/FluidLevel.Oil
-> //   car/event/telemetry/FluidLevel.Fuel
+> // * car/event/control/Brake  
+> // * car/event/control/Gas  
+> // * car/event/telemetry/Temperature  
+> // * car/event/telemetry/FluidLevel.Oil  
+> // * car/event/telemetry/FluidLevel.Fuel  
 >  
 > // Subscribe to a specific event. Only receives events of type car/event/control/Brake.  
 > myEmitter.on('car/event/control/Brake', function(event, data) { /* ... */ });  
