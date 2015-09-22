@@ -16,13 +16,13 @@ if it exists, or the prototype handling it if the former is anonymous. Further s
 For example:
 
 > // Event data is modeled by a prototype  
-> var event = 'car/event/Brake';  
+> myEmitter.emit('car/event/Brake', function(event, data) { /* ... */ });  
 >  
 > // Event data created anonymous by another prototype. Dot-walking used to show source-code model  
-> var event = 'car/event/Factory.Brake'  
+> myEmitter.emit('car/event/Factory.Brake', function(event, data) { /* ... */ });  
 >  
 > // Or  
-> var event = 'car/event/Factory.createEvent.brake'  
+> myEmitter.emit('car/event/Factory.createEvent.brake', function(event, data) { /* ... */ });  
 
 Wildcards
 ---------
@@ -37,20 +37,20 @@ For example:
 > //   car/event/control/Gas  
 > //   car/event/telemetry/Temperature  
 >  
-> // Subscribe to a specific event. Only receives events of type 'car/event/control/stop'.  
-> var event = 'car/event/control/Brake';  
+> // Subscribe to a specific event. Only receives events of type car/event/control/Break.  
+> myEmitter.on('car/event/control/Brake', function(event, data) { /* ... */ });  
 >  
 > // Subscribe to all events within a namepath. Receives both car/event/control/Brake and car/event/control/Gas.  
-> var event = 'car/event/control/*';  
+> myEmitter.on('car/event/control/\*', function(event, data) { /* ... */ });  
 >  
 > // Subscribe to all events with a larger namepath. Receives all three events.  
-> var event = 'car/event/*';  
+> myEmitter.on('car/event/\*', function(event, data) { /* ... */ });  
 >  
 > // Receives ALL events received by the emitter.  
-> var event = '*';  
+> myEmitter.on('\*', function(event, data) { /* ... */ });  
 >  
 > // Receives no events.  
-> var event = 'bus/*';  
+> myEmitter.on('bus/\*', function(event, data) { /* ... */ });  
 
 
 
