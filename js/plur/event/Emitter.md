@@ -36,20 +36,25 @@ For example:
 > //   car/event/control/Brake  
 > //   car/event/control/Gas  
 > //   car/event/telemetry/Temperature  
+> //   car/event/telemetry/FluidLevel.Oil
+> //   car/event/telemetry/FluidLevel.Fuel
 >  
-> // Subscribe to a specific event. Only receives events of type car/event/control/Break.  
+> // Subscribe to a specific event. Only receives events of type car/event/control/Brake.  
 > myEmitter.on('car/event/control/Brake', function(event, data) { /* ... */ });  
 >  
-> // Subscribe to all events within a namepath. Receives both car/event/control/Brake and car/event/control/Gas.  
+> // Subscribe to all events within a namepath. Receives both control/Brake and control/Gas.  
 > myEmitter.on('car/event/control/\*', function(event, data) { /* ... */ });  
 >  
-> // Subscribe to all events with a larger namepath. Receives all three events.  
+> // Subscribe to all events within a namepath. Receives both FluidLevel.Oil and FluidLevel.Fuel.  
+> myEmitter.on('car/event/telemetry/FluidLevel.\*', function(event, data) { /* ... */ });  
+>
+> // Subscribe to all events with a larger namepath. Receives all five events.  
 > myEmitter.on('car/event/\*', function(event, data) { /* ... */ });  
 >  
 > // Receives ALL events received by the emitter.  
 > myEmitter.on('\*', function(event, data) { /* ... */ });  
 >  
-> // Receives no events.  
+> // Receives no events, in this case.  
 > myEmitter.on('bus/\*', function(event, data) { /* ... */ });  
 
 
