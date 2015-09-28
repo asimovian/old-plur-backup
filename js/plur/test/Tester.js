@@ -51,8 +51,12 @@ Tester.prototype.test = function(testTargets) {
                 for (propertyName in obj) {
                     if (propertyName.match(/^test/) && obj[propertyName] instanceof Function && propertyName !== 'test') {
                         console.log('Testing: ' + testTarget + '.' + propertyName + '()');
-                        obj[propertyName]();
-                        self._onComplete(testTarget, propertyName, true);
+                        if (typeof obj[propertyName].__asyncTest !== 'undefined') {
+                            obj[propertyName](function(passed) { self._onComplete(testTarget, propertyName); })
+                        } else {
+                            obj[propertyName]();
+                            self._onComplete(testTarget, propertyName, true);
+                        }
                     }
                 }
             });

@@ -5,7 +5,7 @@
  */
 define([
     'plur/PlurObject',
-    'plur/error/Assertion'
+    'plur/error/Assertion',
     'plur/error/Type',
     'plur/error/State' ],
 function(
@@ -23,7 +23,7 @@ function(
 var Emitter = function() {
 	this._destroyed = false;
 	this._listening = false;
-	this._listenerTree = { Emitter.wildcard: {} };
+	this._listenerTree = { '*': {} };
 	this._listenerTreeIndex = {};
 	this._namespaceTreeCache = {};
 	this._persistentEvents = {};
@@ -90,7 +90,7 @@ Emitter._findListeners = function(event, namespaceTree) {
     var branch = namespaceTree;
     var listeners = [];
 
-    var (var i = 0; i < names.length; ++i) {
+    for (var i = 0; i < names.length; ++i) {
         var name = names[i];
 
         if (typeof branch[Emitter.wildcard] === 'object' && typeof branch[Emitter.wildcard]._listeners === 'array') {
