@@ -17,6 +17,7 @@ function(
  **
  */
 var Test = function() {
+    this._promises = [];
 };
 
 Test.prototype = PlurObject.create('plur/test/Test', Test);
@@ -32,6 +33,24 @@ Test.prototype.test = function() {
 
         this[propertyName]();
     }
+};
+
+Test.prototype.addPromise = function(promise) {
+    this._promises.push(promise);
+};
+
+Test.prototype.hasPromises = function() {
+    return ( this._promises.length !== 0 );
+};
+
+Test.prototype.onPromises = function(timeout, onFulfilled, onRejected) {
+    var promises = this._promises.concat(new PlurPromise(function(resolve, reject) {
+        setTimeout(timeout, function() {
+            reject(new Error('Test promises timed out after ' + timeout + ' ms'));
+        });
+    }));
+
+    return PlurPromise.all(promises, onFulfilled, onRejected);
 };
 
 /**

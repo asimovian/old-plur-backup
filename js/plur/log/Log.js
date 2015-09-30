@@ -73,10 +73,5 @@ Log.prototype.emitter = function() {
     return this._emitter;
 };
 
-/**
- * @var Log plur/Log.singleton
- */
-Log.singleton = new Log();
-
-return Log.singleton;
+return Log;
 });
