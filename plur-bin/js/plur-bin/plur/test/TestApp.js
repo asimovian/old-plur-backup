@@ -93,12 +93,37 @@ TestApp.prototype.start = function() {
         this._findTargets(function(targets) {
             self._targets = targets;
             var tester = new Tester();
-            tester.test(self._targets);
+            this._start(tester);
         });
     } else {
         var tester = new Tester();
-        tester.test(this._targets);
+        this._start(tester);
     }
+};
+
+TestApp.prototype._start = function(tester) {
+    var promise = tester.test(this._targets);
+    promise.then(
+        (function (self) { return TestApp._onTesterPromiseFulfilled; })(this),
+        (function (self) { return TestApp._onTesterPromiseRejected; })(this) );
+};
+
+/**
+ * Expects variable "self" to exist in calling closure.
+ */
+TestApp._onTesterPromiseFulfilled = function() {
+    self.stop(true);
+};
+
+/**
+ * Expects variable "self" to exist in calling closure.
+ */
+TestApp._onTesterPromiseRejected = function() {
+    self.stop(false);
+};
+
+TestApp.prototype.stop = function(success) {
+    process.exit(success ? 0 : 1 );
 };
 
 return TestApp;
