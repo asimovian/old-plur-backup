@@ -27,7 +27,7 @@ Log.prototype = PlurObject.create('plur/log/Log', Log);
  * @param {} data
  */
 Log.prototype.info = function(message, data) {
-	this._emitter.emit('info', { type: 'info', message: message, data: data });
+	this._emitter.emit('info', { type: 'info', data: { message: message, data: data } });
 };
 
 /**
@@ -38,7 +38,7 @@ Log.prototype.info = function(message, data) {
  * @param {} data
  */
 Log.prototype.debug = function(message, data) {
-	this._emitter.emit('debug', { type: 'debug', message: message, data: data });
+	this._emitter.emit('debug', { type: 'debug', data: { message: message, data: data } });
 };
 
 /**

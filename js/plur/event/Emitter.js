@@ -23,7 +23,7 @@ function(
 var Emitter = function() {
 	this._destroyed = false;
 	this._listening = false;
-	this._listenerTree = { '*': {} };
+	this._listenerTree = {};
 	this._listenerTreeIndex = {};
 	this._namespaceTreeCache = {};
 	this._persistentEvents = {};
@@ -35,7 +35,7 @@ Emitter.prototype = PlurObject.create('plur/event/Emitter', Emitter);
  * @constructor plur/event/Emitter._Listener
  **
  */
-Emitter._Listener = function(subscriptionId, callback, temporary) {
+Emitter._Listener = function(callback, subscriptionId, temporary) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed');
 	Assertion.assert(typeof event === 'string', PlurTypeError, 'Invalid event');
 	Assertion.assert(typeof callback === 'function', PlurTypeError, 'Invalid callback')
@@ -49,14 +49,18 @@ Emitter.wildcard = '*';
 
 Emitter._listenersKey = '>';
 
+Emitter._splitEventKeys = function(event) {
+    return event.split(/[\/\.]/);
+};
+
 Emitter._createNamespaceTree = function(event) {
     // split event name into namespace segments by either the / character or the . character
-    var names = event.split(/[\/\.]/);
+    var names = ( typeof event !== 'string' ? event : Emitter._splitEventKeys(event) );
     var tree = {};
     var branch = tree;
 
     // create a tree where the root is the 0th name, it's child the 1st name, a leaf of that child the 2nd name, etc.
-    for (var i = 0, n = items.length; i < n; ++i) {
+    for (var i = 0, n = names.length; i < n; ++i) {
         var name = names[i];
 
         if (i+1 !== n) {
@@ -72,7 +76,7 @@ Emitter._createNamespaceTree = function(event) {
 
 Emitter._copyNamespaceTree = function(sourceTree, destinationTree) {
     var sourceBranch = sourceTree;
-    var desintationBranch = destinationTree;
+    var destinationBranch = destinationTree;
 
     for (var key in sourceBranch) {
         if (typeof destinationBranch[key] === 'undefined') {
@@ -86,7 +90,7 @@ Emitter._copyNamespaceTree = function(sourceTree, destinationTree) {
 };
 
 Emitter._findListeners = function(event, namespaceTree) {
-    var names = event.split(/[\/\.]/);
+    var names = Emitter._splitEventKeys(event);
     var branch = namespaceTree;
     var listeners = [];
 
@@ -95,15 +99,15 @@ Emitter._findListeners = function(event, namespaceTree) {
 
         if (typeof branch[Emitter.wildcard] === 'object' && typeof branch[Emitter.wildcard]._listeners === 'array') {
             // add all listeners that are listening to <name>/*
-            listeners.push(branch[Emitter.wildcard]._listeners);
+            listeners = listeners.concat(branch[Emitter.wildcard]._listeners);
         }
 
         if (typeof branch[name] !== 'object') {
             break;
         } else if (i+1 === names.length) {
             // if this is the leaf-most namespace token, add all listeners directly associated with it
-            if (typeof branch[Emitter._listenersKey] === 'array') {
-                listeners.push(branch[Emitter._listenersKey]);
+            if (typeof branch[name][Emitter._listenersKey] === 'object') {
+                listeners = listeners.concat(branch[name][Emitter._listenersKey]);
             }
         }
 
@@ -148,15 +152,23 @@ Emitter.prototype.on = function(event, callback, subscriptionId) {
 
 Emitter.prototype._subscribe = function(event, callback, subscriptionId, temporary) {
     var listener = new Emitter._Listener(callback, subscriptionId, temporary);
-    var namespaceTree = Emitter._createNamespaceTree(event);
-    var branch = Emitter._copyNamespaceTree(namespaceTree, this._listenerTree);
+    var eventKeys = Emitter._splitEventKeys(event);
+    var namespaceTree = Emitter._createNamespaceTree(eventKeys);
+
+    Emitter._copyNamespaceTree(namespaceTree, this._listenerTree);
+
+    // iterate down namespace tree and add the listener as the last leaf child
+    var branch = this._listenerTree;
+    for (var i = 0; i < eventKeys.length; ++i) {
+        branch = branch[eventKeys[i]];
+    }
 
 	if (typeof branch[Emitter._listenersKey] !== 'array') {
 		branch[Emitter._listenersKey] = [];
 	}
 
 	branch[Emitter._listenersKey].push(listener);
-	this._listenerTreeIndex[subscriptionId] = event;
+	this._listenerTreeIndex[listener.subscriptionId] = event;
 
 	if (!this._listening) {
 	    this._listening = true;
@@ -216,7 +228,7 @@ Emitter.prototype.emit = function(event, data, persistent) {
 	}
 
 	var namespaceTree = this._getNamespaceTree(event);
-	var listeners = Emitter._findListeners(namespaceTree, this._listenerTree);
+	var listeners = Emitter._findListeners(event, this._listenerTree);
 
 	for (var i = 0; i < listeners.length; ++i) {
 		var listener = listeners[i];
@@ -242,7 +254,7 @@ Emitter.prototype.destroy = function() {
 
 Emitter.prototype._getNamespaceTree = function(event) {
     if (typeof this._namespaceTreeCache[event] !== 'array') {
-        this._namespaceTreeCache = Emitter._createNamespaceTree(event);
+        this._namespaceTreeCache[event] = Emitter._createNamespaceTree(event);
     }
 
     return this._namespaceTreeCache[event];

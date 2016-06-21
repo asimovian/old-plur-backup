@@ -6,9 +6,11 @@
  'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/error/State' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    PlurStateError ) {
 
 /**
  * Acts as singleton wrapper for other prototypes.
