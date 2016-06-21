@@ -16,5 +16,4 @@ function(
 
 NodeJsBootstrap.init(plurbootstrap);
 new TestApp().start();
-
 });

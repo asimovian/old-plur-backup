@@ -23,8 +23,9 @@ var Tester = function(testTargets) {
     this._testTargets = testTargets;
     this._testTargetIndex = -1;
     this._testTarget = null;
-    this._resolve = null;
-    this._reject = null;
+    this._promise = null;
+    this._promiseResolve = null;
+    this._promiseReject = null;
 };
 
 Tester.prototype = PlurObject.create('plur/test/Tester', Tester);
@@ -41,23 +42,28 @@ Tester.prototype._onComplete = function(namepath, method, passed) {
     
 Tester.prototype.test = function() {
     var bootstrap = Bootstrap.get();
-    var self = this;
 
     // pass a noop function that writes the resolve and reject methods to state for use by test callbacks
-    var promise = new PlurPromise(function(resolve, reject) {
-        self._resolve = resolve;
-        self._reject = reject;
+    this._promise = new PlurPromise(function(resolve, reject) {
+        this._promiseResolve = resolve;
+        this._promiseReject = reject;
     });
 
-    this._testNextTarget(promise);
+    this._testNextTarget();
 
-    return promise;
+    return this._promise;
+};
+
+Tester.prototype._rejected = function(errors) {
+    this._log.error('Test failed: ' + this._testTarget, errors);
 };
 
 Tester.prototype._testNextTarget = function() {
+    var self = this;
+
     // if this was the last target prototype, resolve to pass the test entirely
     if (this._testTargetIndex === this._testTargets.length) {
-        this._resolve();
+        this._promiseResolve();
         return;
     }
 
@@ -71,7 +77,7 @@ Tester.prototype._testNextTarget = function() {
 
     var promise = new PlurPromise(function(resolve, reject) {
         var methodPromise = null;
-
+FAILNOW;
         Bootstrap.get().require([this._testTarget], function(TestConstructor) {
             var test = new TestConstructor();
 
@@ -89,13 +95,7 @@ Tester.prototype._testNextTarget = function() {
         });
     });
 
-    promise.then(Tester._callbackTestNextTarget(this), this._reject);
-};
-
-Tester._callbackTestNextTarget = function(self) {
-    return function(targetResolve, targetReject) {
-        self._testNextTarget();
-    };
+    promise.then(function() { self._testNextTarget() }, function(error) { self._rejected(error); });
 };
 
 Tester._callbackTestMethod = function(test, methodName, targetResolve) {
@@ -103,6 +103,7 @@ Tester._callbackTestMethod = function(test, methodName, targetResolve) {
         this._log.info('Testing: ' + test.namepath + '.prototype.' + methodName + '()');
 
         var testMethod = test[methodName];
+
         testMethod();
 
         var promises = test.popPromises();

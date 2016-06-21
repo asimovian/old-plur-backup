@@ -102,23 +102,26 @@ TestApp.prototype.start = function() {
 };
 
 TestApp.prototype._start = function(tester) {
+    var self = this;
     var promise = tester.test(this._targets);
     promise.then(
-        (function (self) { return TestApp._onTesterPromiseFulfilled; })(this),
-        (function (self) { return TestApp._onTesterPromiseRejected; })(this) );
+        function() { self._onTesterPromiseFulfilled(); },
+        function(errors) { self._onTesterPromiseRejected(errors); } );
 };
 
 /**
  * Expects variable "self" to exist in calling closure.
  */
-TestApp._onTesterPromiseFulfilled = function() {
+TestApp.prototype._onTesterPromiseFulfilled = function() {
+    console.log('Tests passed.');
     self.stop(true);
 };
 
 /**
  * Expects variable "self" to exist in calling closure.
  */
-TestApp._onTesterPromiseRejected = function() {
+TestApp.prototype._onTesterPromiseRejected = function(errors) {
+    console.error('Tests failed');
     self.stop(false);
 };
 

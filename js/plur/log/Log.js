@@ -49,7 +49,7 @@ Log.prototype.debug = function(message, data) {
  * @param {} data
  */
 Log.prototype.warning = function(message, data) {
-	this._emitter.emit('warning', { type: 'warning', message: message, data: data });
+	this._emitter.emit('warning', { type: 'warning', data: { message: message, data: data }});
 };
 
 /**
@@ -60,7 +60,7 @@ Log.prototype.warning = function(message, data) {
  * @param {} data
  */
 Log.prototype.error = function(message, data) {
-	this._emitter.emit('error', { type: 'error', message: message, data: data });
+	this._emitter.emit('error', { type: 'error', data: { message: message, data: data }});
 } ;
 
 /**

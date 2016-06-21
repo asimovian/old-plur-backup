@@ -55,7 +55,7 @@ EmitterTest.prototype.testOn = function() {
     })
 
     emitter.emit(this.namepath + '.test.1');
-
+    console.log('done');
 };
 
 EmitterTest.prototype.testOn.__asyncTest = true;
