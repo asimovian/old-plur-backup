@@ -106,7 +106,7 @@ TestApp.prototype._start = function(tester) {
     var promise = tester.test(this._targets);
     promise.then(
         function() { self._onTesterPromiseFulfilled(); },
-        function(errors) { self._onTesterPromiseRejected(errors); } );
+        function(error) { self._onTesterPromiseRejected(error); } );
 };
 
 /**
@@ -120,9 +120,11 @@ TestApp.prototype._onTesterPromiseFulfilled = function() {
 /**
  * Expects variable "self" to exist in calling closure.
  */
-TestApp.prototype._onTesterPromiseRejected = function(errors) {
+TestApp.prototype._onTesterPromiseRejected = function(error) {
     console.error('Tests failed');
+    console.error(error.stack)
     self.stop(false);
+
 };
 
 TestApp.prototype.stop = function(success) {

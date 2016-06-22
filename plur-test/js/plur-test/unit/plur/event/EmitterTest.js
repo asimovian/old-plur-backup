@@ -6,6 +6,7 @@
  'use strict';
 
 define([
+    'sleep',
     'plur/PlurObject',
     'plur/test/Test',
     'plur/event/Emitter' ],
@@ -55,16 +56,15 @@ EmitterTest.prototype.testOn = function() {
     })
 
     emitter.emit(this.namepath + '.test.1');
-    console.log('done');
 };
 
 EmitterTest.prototype.testOn.__asyncTest = true;
 
 EmitterTest.prototype.assertUntil = function(timeout, message, assertionFunction) {
-    var timeoutTime = new Date().getTimeMillis() + timeout;
+    var timeoutTime = new Date().getTime() + timeout;
     var sleepTime = 1000 * (timeout / 100);
 
-    while (new Date().getTimeMillis() <= timeoutTime) {
+    while (new Date().getTime() <= timeoutTime) {
         sleep.usleep(sleepTime);
         if (assertionFunction())
             return true;

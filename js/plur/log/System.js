@@ -35,9 +35,9 @@ var SystemLog = function() {
 
     emitter.on('error', function(eventType, event) {
         if (typeof event.data.data !== 'undefined')
-            console.log(event.data.message, event.data.data);
+            console.error(event.data.message, event.data.data);
         else
-            console.log(event.data.message);
+            console.error(event.data.message);
     });};
 
 SystemLog.prototype = PlurObject.create('plur/log/System', SystemLog, Singleton);
