@@ -84,8 +84,28 @@ EmitterTest.prototype.testOnce = function() {
     this._assertExpectedEmissions();
 };
 
+/**
+ * @function plur-test/unit/plur/event/EmitterTest.prototype.testListening
+ * @tests plur/event/Emitter.prototype.listening
+ * @throws Error
+ */
+EmitterTest.prototype.testListening = function() {
+    // create a new emitter
+    var emitter = new Emitter();
+
+    this.assert(!emitter.listening(), 'Emitter is listening on creation');
+
+    this._assertListenOnce(emitter, 'listening.1', 1);
+    this.assert(emitter.listening(), 'Emitter is not listening after once()');
+
+    this._assertEmit(emitter, 'listening.1');
+    this.assert(!emitter.listening(), 'Emitter is listening after once()+emit()');
+
+    //TODO: Fix failure ^
+};
+
 EmitterTest.prototype._assertListenOnce = function(emitter, eventType, expectedCount) {
-    this._assertListen(emitter, eventType, expectedCount, true);
+    return this._assertListen(emitter, eventType, expectedCount, true);
 };
 
 /**
@@ -113,21 +133,24 @@ EmitterTest.prototype._assertListen = function(emitter, eventType, expectedCount
 
     // the emit callback
     var onEmit = function(event) {
-        self.assert(event instanceof Event, true, 'Invalid event');
-        self.assert(typeof event.getType() === 'string', true, 'Invalid event type');
-        self.assert(typeof event.getData() === 'object', true, 'Invalid event data');
-        self.assert(typeof event.getData().test === 'object', true, 'Invalid event data container');
-        self.assert(typeof event.getData().test.eventType === 'string', true, 'Invalid event data item');
+        self.assert(event instanceof Event, 'Invalid event');
+        self.assert(typeof event.getType() === 'string', 'Invalid event type');
+        self.assert(typeof event.getData() === 'object', 'Invalid event data');
+        self.assert(typeof event.getData().test === 'object', 'Invalid event data container');
+        self.assert(typeof event.getData().test.eventType === 'string', 'Invalid event data item');
         self._actualEmittedEvents[eventType]++;
     };
 
+    var subscriptionId = null;
     if (once) {
         // subscribe to the emitter. one ping only.
-        emitter.once(fullEventType, onEmit, fullEventType);
+        subscriptionId = emitter.once(fullEventType, onEmit, fullEventType);
     } else {
         // subscribe to the emitter
-        emitter.on(fullEventType, onEmit, fullEventType);
+        subscriptionId = emitter.on(fullEventType, onEmit, fullEventType);
     }
+
+    return subscriptionId;
 };
 
 
