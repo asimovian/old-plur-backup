@@ -7,12 +7,14 @@ define([
     'plur/PlurObject',
     'plur/error/Assertion',
     'plur/error/Type',
-    'plur/error/State' ],
+    'plur/error/State',
+    'plur/event/Event' ],
 function(
     PlurObject,
     Assertion,
     PlurTypeError,
-    PlurStateError ) {
+    PlurStateError,
+    Event ) {
 	
 /**
  * A generic event emitter.
@@ -216,19 +218,26 @@ Emitter.prototype._unsubscribe = function(callback, listeners) {
  * Publishes an event (with data) to this emitter. All listeners subscribed to the event will have their provided
  * callbacks executed.
  *
+ ** Callback
+ * function callback(plur/Event/Event event)
+ **
  * @function plur/event/Emitter.prototype.emit
  * @param {string} event
  * @param {{}|undefined} data
  */
-Emitter.prototype.emit = function(event, data, persistent) {
+Emitter.prototype.emit = function(eventType, eventData, persistent) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
 
     if (!this._listening) {
 	    return;
 	}
 
-	var namespaceTree = this._getNamespaceTree(event);
-	var listeners = Emitter._findListeners(event, this._listenerTree);
+	// build event
+	var event = new Event(eventType, eventData);
+
+	// find listeners for event type
+	var namespaceTree = this._getNamespaceTree(eventType);
+	var listeners = Emitter._findListeners(eventType, this._listenerTree);
 
 	for (var i = 0; i < listeners.length; ++i) {
 		var listener = listeners[i];
@@ -237,7 +246,7 @@ Emitter.prototype.emit = function(event, data, persistent) {
 			this.unsubscribe(listener.subscriptionId);
 		}
 
-		listener.callback(event, data);
+		listener.callback(event);
 	}
 };
 

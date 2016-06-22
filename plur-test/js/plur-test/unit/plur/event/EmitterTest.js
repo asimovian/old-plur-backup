@@ -8,10 +8,12 @@
 define([
     'plur/PlurObject',
     'plur/test/Test',
+    'plur/event/Event',
     'plur/event/Emitter' ],
 function(
     PlurObject,
     Test,
+    Event,
     Emitter ) {
 
 /**
@@ -40,16 +42,17 @@ EmitterTest.prototype.testOn = function() {
     // create a new emitter
     var emitter = new Emitter();
 
-    // test exact events - should receive one call each
-    this._assertListen(emitter, 'on.1', 1) ;
-    this._assertListen(emitter, 'on.2', 1) ;
-    // test wildcards - should collect two calls
-    this._assertListen(emitter, 'on.*', 2);
     // test for event leakage - no events should be fired
     this._assertListen(emitter, 'on.0', 0);
+    // test for exact event type matches
+    this._assertListen(emitter, 'on.1', 1); // emitted once
+    this._assertListen(emitter, 'on.2', 2); // emitted twice
+    // test wildcards - should collect two calls
+    this._assertListen(emitter, 'on.*', 3); // emitted for both on.1 and on.2; thrice!
 
     // emit
     this._assertEmit(emitter, 'on.1');
+    this._assertEmit(emitter, 'on.2'); // emit this twice
     this._assertEmit(emitter, 'on.2');
 
     this._assertExpectedEmissions();
@@ -68,12 +71,14 @@ EmitterTest.prototype.testOn = function() {
  */
 EmitterTest.prototype._assertListen = function(emitter, event, expectedCount) {
     var self = this;
+
+    // set actual and expected counts for later testing
     this._actualEmittedEvents[event] = 0;
     this._expectedEmittedEvents[event] = expectedCount;
 
+    // subscribe to the emitter
     emitter.on(this.eventNamepath + event, function(event) {
-        //this.assertEquals(event.type, this.eventNamepath + event, 'Event type mismatch');
-        self.assert(typeof event === 'object', true, 'Invalid event parameter type');
+        self.assert(event instanceof Event, true, 'Invalid event');
         self.assertOwns(event, 'event', event, 'Data "event" missing');
         self._actualEmittedEvents[event]++;
     });
@@ -104,7 +109,7 @@ EmitterTest.prototype._assertEmit = function(emitter, eventType) {
 EmitterTest.prototype._assertExpectedEmissions = function() {
     for (var event in this._expectedEmittedEvents) {
         var expectedCount = this._expectedEmittedEvents[event];
-        this.assertEquals(this._actualEmittedEvents[event], expectedCount, 'Emission count for ' + event);
+        this.assertEquals(this._actualEmittedEvents[event], expectedCount, 'Incorrect emission count for event: ' + event);
     }
 };
 

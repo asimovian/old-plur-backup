@@ -27,7 +27,7 @@ Log.prototype = PlurObject.create('plur/log/Log', Log);
  * @param {} data
  */
 Log.prototype.info = function(message, data) {
-	this._emitter.emit('info', { type: 'info', data: { message: message, data: data } });
+	this._emitter.emit('info', { logEntry: { type: 'info', message: message, data: data } });
 };
 
 /**
@@ -38,7 +38,7 @@ Log.prototype.info = function(message, data) {
  * @param {} data
  */
 Log.prototype.debug = function(message, data) {
-	this._emitter.emit('debug', { type: 'debug', data: { message: message, data: data } });
+	this._emitter.emit('debug', { logEntry: { type: 'debug', message: message, data: data } });
 };
 
 /**
@@ -49,7 +49,7 @@ Log.prototype.debug = function(message, data) {
  * @param {} data
  */
 Log.prototype.warning = function(message, data) {
-	this._emitter.emit('warning', { type: 'warning', data: { message: message, data: data }});
+	this._emitter.emit('warning', { logEntry: { type: 'warning', message: message, data: data }});
 };
 
 /**
@@ -60,7 +60,7 @@ Log.prototype.warning = function(message, data) {
  * @param {} data
  */
 Log.prototype.error = function(message, data) {
-	this._emitter.emit('error', { type: 'error', data: { message: message, data: data }});
+	this._emitter.emit('error', { logEntry: { type: 'error', message: message, data: data }});
 } ;
 
 /**

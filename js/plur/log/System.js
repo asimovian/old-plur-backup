@@ -26,18 +26,20 @@ var SystemLog = function() {
     // add listeners that output to console
     var emitter = this.object.emitter();
 
-    emitter.on('info', function(eventType, event) {
-        if (typeof event.data.data !== 'undefined')
-            console.info(event.data.message, event.data.data);
+    emitter.on('info', function(event) {
+        var data = event.getData();
+        if (typeof data.logEntry.data !== 'undefined')
+            console.info(data.logEntry.message, data.logEntry.data);
         else
-            console.info(event.data.message);
+            console.info(data.logEntry.message);
     });
 
-    emitter.on('error', function(eventType, event) {
-        if (typeof event.data.data !== 'undefined')
-            console.error(event.data.message, event.data.data);
+    emitter.on('error', function(event) {
+        var data = event.getData();
+        if (typeof data.logEntry.data !== 'undefined')
+            console.error(data.logEntry.message, data.logEntry.data);
         else
-            console.error(event.data.message);
+            console.error(data.logEntry.message);
     });};
 
 SystemLog.prototype = PlurObject.create('plur/log/System', SystemLog, Singleton);
