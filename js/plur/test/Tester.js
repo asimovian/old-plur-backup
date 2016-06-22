@@ -96,6 +96,7 @@ Tester.prototype._testNextTarget = function() {
             self._testNextMethod(methodPromise, test, 0, testMethodNames, targetPromiseResolve, targetPromiseReject);
 
             methodPromiseResolve();
+
         });
     });
 
@@ -114,7 +115,7 @@ Tester.prototype._testNextMethod = function(prevMethodPromise, test, testMethodI
                     self._log.info('Test passed: ' + test.namepath + '.prototype.' + testMethodNames[testMethodIndex] + '()');
 
                     if (++testMethodIndex < testMethodNames.length) {
-                        self._testNextMethod(methodPromise, test, ++testMethodIndex, testMethodNames);
+                            self._testNextMethod(methodPromise, test, testMethodIndex, testMethodNames, targetPromiseResolve, targetPromiseReject);
                     } else {
                         targetPromiseResolve();
                     }
@@ -131,7 +132,6 @@ Tester.prototype._testMethod = function(test, methodName) {
 
     var methodTestPromise = new PlurPromise(function(resolve, reject) {
         self._log.info('Testing method: ' + test.namepath + '.prototype.' + methodName + '()');
-
         test[methodName]();
         resolve();
 

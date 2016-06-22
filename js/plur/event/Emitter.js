@@ -196,7 +196,6 @@ Emitter.prototype.listening = function() {
  */
 Emitter.prototype.unsubscribe = function(subscriptionId) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
-	Assertion.assert(typeof subscriptionId === 'string', PlurTypeError, 'Invalid subscription ID')
 
 	this._unsubscribe(callback, this._listenerTree);
 };

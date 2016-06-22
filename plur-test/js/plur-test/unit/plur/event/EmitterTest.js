@@ -38,7 +38,6 @@ EmitterTest.prototype = PlurObject.create('plur-test/event/EmitterTest', Emitter
  * @throws Error
  */
 EmitterTest.prototype.testOn = function() {
-    var self = this;
     // create a new emitter
     var emitter = new Emitter();
 
@@ -47,7 +46,7 @@ EmitterTest.prototype.testOn = function() {
     // test for exact event type matches
     this._assertListen(emitter, 'on.1', 1); // emitted once
     this._assertListen(emitter, 'on.2', 2); // emitted twice
-    // test wildcards - should collect two calls
+    // test wildcards - should collect three calls
     this._assertListen(emitter, 'on.*', 3); // emitted for both on.1 and on.2; thrice!
 
     // emit
@@ -56,6 +55,37 @@ EmitterTest.prototype.testOn = function() {
     this._assertEmit(emitter, 'on.2');
 
     this._assertExpectedEmissions();
+};
+
+/**
+ * @function plur-test/unit/plur/event/EmitterTest.prototype.testOnce
+ * @tests plur/event/Emitter.prototype.once
+ * @throws Error
+ */
+EmitterTest.prototype.testOnce = function() {
+    // create a new emitter
+    var emitter = new Emitter();
+
+    this._assertListenOnce(emitter, 'once.0', 0); // never emitted
+    // test for exact event type matches
+    this._assertListenOnce(emitter, 'once.1', 1); // emitted once
+    this._assertListenOnce(emitter, 'once.2', 2); // emitted once, second time, not listening
+
+    // test wildcards and test re-subscribing on the same event type. should be called after each emit to resub.
+    this._assertListenOnce(emitter, 'once.*', 3); // emitted for both on.1 and on.2; thrice!
+
+    // emit
+    this._assertEmit(emitter, 'once.1'); // first and only
+    this._assertListenOnce(emitter, 'once.*', 3); // for re-sub test #2
+    this._assertEmit(emitter, 'once.2'); // emit this twice ... #1
+    this._assertListenOnce(emitter, 'once.*', 3); // for re-sub test #3
+    this._assertEmit(emitter, 'once.2'); // #2
+
+    this._assertExpectedEmissions();
+};
+
+EmitterTest.prototype._assertListenOnce = function(emitter, eventType, expectedCount) {
+    this._assertListen(emitter, eventType, expectedCount, true);
 };
 
 /**
@@ -69,24 +99,38 @@ EmitterTest.prototype.testOn = function() {
  * @param int expectedCount
  * @throws Error On anything unexpected
  */
-EmitterTest.prototype._assertListen = function(emitter, eventType, expectedCount) {
+EmitterTest.prototype._assertListen = function(emitter, eventType, expectedCount, _once) {
     var self = this;
+    var once = ( !!once );
     var fullEventType = this.eventNamepath + eventType;
 
     // set actual and expected counts for later testing
-    this._actualEmittedEvents[eventType] = 0;
+    if (typeof this._actualEmittedEvents[eventType] === 'undefined') { // don't reset actual count on re-sub
+        this._actualEmittedEvents[eventType] = 0;
+    }
+
     this._expectedEmittedEvents[eventType] = expectedCount;
 
-    // subscribe to the emitter
-    emitter.on(fullEventType, function(event) {
+    // the emit callback
+    var onEmit = function(event) {
         self.assert(event instanceof Event, true, 'Invalid event');
         self.assert(typeof event.getType() === 'string', true, 'Invalid event type');
         self.assert(typeof event.getData() === 'object', true, 'Invalid event data');
         self.assert(typeof event.getData().test === 'object', true, 'Invalid event data container');
         self.assert(typeof event.getData().test.eventType === 'string', true, 'Invalid event data item');
         self._actualEmittedEvents[eventType]++;
-    }, fullEventType);
+    };
+
+    if (once) {
+        // subscribe to the emitter. one ping only.
+        emitter.once(fullEventType, onEmit, fullEventType);
+    } else {
+        // subscribe to the emitter
+        emitter.on(fullEventType, onEmit, fullEventType);
+    }
 };
+
+
 
 /**
  * Emit an event to the given emitter, using the class's event namepath as the prefix.
