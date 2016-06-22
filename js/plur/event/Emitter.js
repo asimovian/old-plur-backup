@@ -27,7 +27,7 @@ var Emitter = function() {
 	this._listening = false;
 	this._listenerTree = {};
 	this._listenerTreeIndex = {};
-	this._namespaceTreeCache = {};
+	this._eventTypeTokenTreeCache = {};
 	this._persistentEvents = {};
 };
 
@@ -56,32 +56,32 @@ Emitter.wildcard = '*';
 
 Emitter._listenersKey = '>';
 
-Emitter._splitEventKeys = function(event) {
-    return event.split(/[\/\.]/);
+Emitter._tokenizeEventType = function(eventType) {
+    return eventType.split(/[\/\.]/);
 };
 
-Emitter._createNamespaceTree = function(event) {
+Emitter._createEventTypeTokenTree = function(eventType) {
     // split event name into namespace segments by either the / character or the . character
-    var names = ( typeof event !== 'string' ? event : Emitter._splitEventKeys(event) );
+    var tokens = ( typeof eventType !== 'string' ? eventType : Emitter._tokenizeEventType(eventType) );
     var tree = {};
     var branch = tree;
 
     // create a tree where the root is the 0th name, it's child the 1st name, a leaf of that child the 2nd name, etc.
-    for (var i = 0, n = names.length; i < n; ++i) {
-        var name = names[i];
+    for (var i = 0, n = tokens.length; i < n; ++i) {
+        var token = tokens[i];
 
         if (i+1 !== n) {
-            branch[name] = {};
-            branch = branch[name];
+            branch[token] = {};
+            branch = branch[token];
         } else {
-            branch[name] = null;
+            branch[token] = null;
         }
     }
 
     return tree;
 };
 
-Emitter._copyNamespaceTree = function(sourceTree, destinationTree) {
+Emitter._copyEventTypeTokenTree = function(sourceTree, destinationTree) {
     var sourceBranch = sourceTree;
     var destinationBranch = destinationTree;
 
@@ -91,13 +91,13 @@ Emitter._copyNamespaceTree = function(sourceTree, destinationTree) {
         }
 
         if (typeof sourceBranch[key] === 'object') {
-            Emitter._copyNamespaceTree(sourceBranch[key], destinationBranch[key]);
+            Emitter._copyEventTypeTokenTree(sourceBranch[key], destinationBranch[key]);
         }
     }
 };
 
 Emitter._findListeners = function(eventType, listenerTree) {
-    var eventTypeTokens = Emitter._splitEventKeys(eventType);
+    var eventTypeTokens = Emitter._tokenizeEventType(eventType);
     var listenerBranch = listenerTree;
     var listeners = [];
 
@@ -158,15 +158,15 @@ Emitter.prototype.on = function(eventType, callback) {
 
 Emitter.prototype._subscribe = function(eventType, callback, temporary) {
     var listener = new Emitter._Listener(eventType, callback, temporary);
-    var eventKeys = Emitter._splitEventKeys(eventType);
-    var namespaceTree = Emitter._createNamespaceTree(eventKeys);
+    var eventTypeTokens = Emitter._tokenizeEventType(eventType);
+    var eventTypeTokenTree = Emitter._createEventTypeTokenTree(eventTypeTokens);
 
-    Emitter._copyNamespaceTree(namespaceTree, this._listenerTree);
+    Emitter._copyEventTypeTokenTree(eventTypeTokenTree, this._listenerTree);
 
     // iterate down namespace tree and add the listener as the last leaf child
     var branch = this._listenerTree;
-    for (var i = 0; i < eventKeys.length; ++i) {
-        branch = branch[eventKeys[i]];
+    for (var i = 0; i < eventTypeTokens.length; ++i) {
+        branch = branch[eventTypeTokens[i]];
     }
 
 	if (typeof branch[Emitter._listenersKey] !== 'array') {
@@ -203,12 +203,6 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
 	Assertion.assert(typeof subscriptionId === 'string', PlurTypeError, 'Invalid subscription ID')
 
-	if (typeof event === 'undefined') {
-		this._listening = false;
-		return this;
-	}
-	
-	this._unsubscribe(callback, this._scheduled_Listeners);
 	this._unsubscribe(callback, this._listenerTree);
 };
 
@@ -267,7 +261,7 @@ Emitter.prototype.destroy = function() {
 	this._destroyed = true;
 	this._listenerTree = null;
 	this._listenerTreeIndex = null;
-	this._namespaceTreeCache = null;
+	this._eventTypeTokenTreeCache = null;
 };
 
 return Emitter;
