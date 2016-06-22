@@ -69,18 +69,22 @@ EmitterTest.prototype.testOn = function() {
  * @param int expectedCount
  * @throws Error On anything unexpected
  */
-EmitterTest.prototype._assertListen = function(emitter, event, expectedCount) {
+EmitterTest.prototype._assertListen = function(emitter, eventType, expectedCount) {
     var self = this;
+    var fullEventType = this.eventNamepath + eventType;
 
     // set actual and expected counts for later testing
-    this._actualEmittedEvents[event] = 0;
-    this._expectedEmittedEvents[event] = expectedCount;
+    this._actualEmittedEvents[eventType] = 0;
+    this._expectedEmittedEvents[eventType] = expectedCount;
 
     // subscribe to the emitter
-    emitter.on(this.eventNamepath + event, function(event) {
+    emitter.on(fullEventType, function(event) {
         self.assert(event instanceof Event, true, 'Invalid event');
-        self.assertOwns(event, 'event', event, 'Data "event" missing');
-        self._actualEmittedEvents[event]++;
+        self.assert(typeof event.getType() === 'string', true, 'Invalid event type');
+        self.assert(typeof event.getData() === 'object', true, 'Invalid event data');
+        self.assert(typeof event.getData().test === 'object', true, 'Invalid event data container');
+        self.assert(typeof event.getData().test.eventType === 'string', true, 'Invalid event data item');
+        self._actualEmittedEvents[eventType]++;
     });
 };
 
@@ -95,7 +99,7 @@ EmitterTest.prototype._assertListen = function(emitter, event, expectedCount) {
  * @throws Error On anything unexpected.
  */
 EmitterTest.prototype._assertEmit = function(emitter, eventType) {
-    emitter.emit(this.eventNamepath + eventType, { event: eventType});
+    emitter.emit(this.eventNamepath + eventType, { test: { eventType: eventType} });
 };
 
 /**
