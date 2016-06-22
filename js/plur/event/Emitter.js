@@ -153,8 +153,7 @@ Emitter.prototype.on = function(eventType, callback) {
  * @returns int subscriptionId for use with unsubscribe()
  */
  Emitter.prototype.once = function(eventType, callback) {
-    this._subscribe(eventType, callback, true);
-	return this;
+    return this._subscribe(eventType, callback, true);
 };
 
 Emitter.prototype._subscribe = function(eventType, callback, temporary) {
@@ -186,11 +185,20 @@ Emitter.prototype._subscribe = function(eventType, callback, temporary) {
 
 /**
  * If a subscription ID is specified, determines whether the associated listener is subscribed.
+ *
+ * @function plur/event/Emitter.prototype.listening
+ * @returns boolean isListening TRUE if listening, FALSE if not.
  */
 Emitter.prototype.listening = function() {
 	return this._listening;
 };
 
+/**
+ * Unsubscribes a listener from this emitter by subscriptionId previously returned by on() or once().
+ *
+ * @function plur/event/Emitter.prototype.unsubscribe
+ * @param int subscriptionId
+ */
 Emitter.prototype.unsubscribe = function(subscriptionId) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
 	Assertion.assert(typeof subscriptionId === 'string', PlurTypeError, 'Invalid subscription ID')
@@ -202,8 +210,6 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
 	
 	this._unsubscribe(callback, this._scheduled_Listeners);
 	this._unsubscribe(callback, this._listenerTree);
-	
-	return this;
 };
 
 Emitter.prototype._unsubscribe = function(callback, listeners) {
@@ -217,8 +223,6 @@ Emitter.prototype._unsubscribe = function(callback, listeners) {
 		if (callbacks.length === 0)
 			delete listeners[event];
 	}
-	
-	return this;
 };
 
 /**
@@ -265,16 +269,6 @@ Emitter.prototype.destroy = function() {
 	this._listenerTreeIndex = null;
 	this._namespaceTreeCache = null;
 };
-
-Emitter.prototype._getNamespaceTree = function(event) {
-    if (typeof this._namespaceTreeCache[event] !== 'array') {
-        this._namespaceTreeCache[event] = Emitter._createNamespaceTree(event);
-    }
-
-    return this._namespaceTreeCache[event];
-};
-
-
 
 return Emitter;
 });
