@@ -212,6 +212,8 @@ Emitter.prototype._unsubscribe = function(callback, listeners) {
 		if (callbacks.length === 0)
 			delete listeners[event];
 	}
+
+	//TODO: prune empty trees. set listening to false if the entire tree is empty
 };
 
 /**
