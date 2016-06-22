@@ -85,7 +85,7 @@ EmitterTest.prototype._assertListen = function(emitter, eventType, expectedCount
         self.assert(typeof event.getData().test === 'object', true, 'Invalid event data container');
         self.assert(typeof event.getData().test.eventType === 'string', true, 'Invalid event data item');
         self._actualEmittedEvents[eventType]++;
-    });
+    }, fullEventType);
 };
 
 /**

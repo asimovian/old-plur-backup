@@ -31,21 +31,26 @@ var Emitter = function() {
 	this._persistentEvents = {};
 };
 
+
 Emitter.prototype = PlurObject.create('plur/event/Emitter', Emitter);
+
 
 /**
  * @constructor plur/event/Emitter._Listener
  **
  */
-Emitter._Listener = function(callback, subscriptionId, temporary) {
+Emitter._Listener = function(eventType, callback, temporary) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed');
 	Assertion.assert(typeof event === 'string', PlurTypeError, 'Invalid event');
 	Assertion.assert(typeof callback === 'function', PlurTypeError, 'Invalid callback')
 
-    this.subscriptionId = ( typeof subscriptionId === 'string' ? subscriptionId : Emitter.wildcard );
+    this.eventType = eventType;
+    this.subscriptionId =  ++Emitter._Listener._subscriptionIdIndex;
     this.callback = callback;
     this.temporary = temporary;
 };
+
+Emitter._Listener._subscriptionIdIndex = 0;
 
 Emitter.wildcard = '*';
 
@@ -91,29 +96,32 @@ Emitter._copyNamespaceTree = function(sourceTree, destinationTree) {
     }
 };
 
-Emitter._findListeners = function(event, namespaceTree) {
-    var names = Emitter._splitEventKeys(event);
-    var branch = namespaceTree;
+Emitter._findListeners = function(eventType, listenerTree) {
+    var eventTypeTokens = Emitter._splitEventKeys(eventType);
+    var listenerBranch = listenerTree;
     var listeners = [];
 
-    for (var i = 0; i < names.length; ++i) {
-        var name = names[i];
+    for (var i = 0; i < eventTypeTokens.length; ++i) {
+        var eventTypeToken = eventTypeTokens[i];
 
-        if (typeof branch[Emitter.wildcard] === 'object' && typeof branch[Emitter.wildcard]._listeners === 'array') {
-            // add all listeners that are listening to <name>/*
-            listeners = listeners.concat(branch[Emitter.wildcard]._listeners);
+        if (typeof listenerBranch[eventTypeToken] !== 'object') { // path not found
+            break;
         }
 
-        if (typeof branch[name] !== 'object') {
-            break;
-        } else if (i+1 === names.length) {
+        listenerBranch = listenerBranch[eventTypeToken];
+
+        if (i+1 === eventTypeTokens.length) { // last token, grab exact subscribers for this branch
             // if this is the leaf-most namespace token, add all listeners directly associated with it
-            if (typeof branch[name][Emitter._listenersKey] === 'object') {
-                listeners = listeners.concat(branch[name][Emitter._listenersKey]);
+            if (Array.isArray(listenerBranch[Emitter._listenersKey])) {
+                listeners = listeners.concat(listenerBranch[Emitter._listenersKey]);
+            }
+        } else if (i+2 === eventTypeTokens.length) { // second to last token, grab wildcard subscribers for this branch
+            if (typeof listenerBranch[Emitter.wildcard] === 'object' && Array.isArray(listenerBranch[Emitter.wildcard][Emitter._listenersKey])) {
+                // add all listeners that are listening to <name>/*
+                listeners = listeners.concat(listenerBranch[Emitter.wildcard][Emitter._listenersKey]);
             }
         }
 
-        branch = branch[name];
     }
 
     return listeners;
@@ -127,12 +135,10 @@ Emitter._findListeners = function(event, namespaceTree) {
  * @function plur/event/Emitter.prototype.on
  * @param {string} event
  * @param {Function({string} event, {} data)} callback
- * @param {string|undefined} Optional subscription id, which can be used to unsubscribe to an event via off().
- * @returns Emitter This emitter for cascaded API calls
+ * @returns int subscriptionId for use with unsubscribe()
  */
-Emitter.prototype.on = function(event, callback, subscriptionId) {
-    this._subscribe(event, callback, subscriptionId, false);
-	return this;
+Emitter.prototype.on = function(eventType, callback) {
+    return this._subscribe(eventType, callback, false);
 };
 
 /**
@@ -144,17 +150,16 @@ Emitter.prototype.on = function(event, callback, subscriptionId) {
  * @function plur/event/Emitter.prototype.on
  * @param {string} event
  * @param {Function({string} event, {} data)} callback
- * @param {string|undefined} Optional unique subscription id, which can be used to stop listening to an event via off().
- * @returns Emitter This emitter for cascaded API calls
+ * @returns int subscriptionId for use with unsubscribe()
  */
- Emitter.prototype.once = function(event, callback, subscriptionId) {
-    this._subscribe(event, callback, subscriptionId, true);
+ Emitter.prototype.once = function(eventType, callback) {
+    this._subscribe(eventType, callback, true);
 	return this;
 };
 
-Emitter.prototype._subscribe = function(event, callback, subscriptionId, temporary) {
-    var listener = new Emitter._Listener(callback, subscriptionId, temporary);
-    var eventKeys = Emitter._splitEventKeys(event);
+Emitter.prototype._subscribe = function(eventType, callback, temporary) {
+    var listener = new Emitter._Listener(eventType, callback, temporary);
+    var eventKeys = Emitter._splitEventKeys(eventType);
     var namespaceTree = Emitter._createNamespaceTree(eventKeys);
 
     Emitter._copyNamespaceTree(namespaceTree, this._listenerTree);
@@ -170,11 +175,13 @@ Emitter.prototype._subscribe = function(event, callback, subscriptionId, tempora
 	}
 
 	branch[Emitter._listenersKey].push(listener);
-	this._listenerTreeIndex[listener.subscriptionId] = event;
+	this._listenerTreeIndex[listener.subscriptionId] = eventType;
 
 	if (!this._listening) {
 	    this._listening = true;
 	}
+
+	return listener.subscriptionId;
 };
 
 /**
@@ -236,9 +243,7 @@ Emitter.prototype.emit = function(eventType, eventData, persistent) {
 	var event = new Event(eventType, eventData);
 
 	// find listeners for event type
-	var namespaceTree = this._getNamespaceTree(eventType);
 	var listeners = Emitter._findListeners(eventType, this._listenerTree);
-
 	for (var i = 0; i < listeners.length; ++i) {
 		var listener = listeners[i];
 
