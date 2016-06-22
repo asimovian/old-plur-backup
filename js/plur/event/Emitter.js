@@ -23,17 +23,13 @@ function(
  **
  */
 var Emitter = function() {
-	this._destroyed = false;
 	this._listening = false;
+	this._destroyed = false;
 	this._listenerTree = {};
-	this._listenerTreeIndex = {};
-	this._eventTypeTokenTreeCache = {};
 	this._persistentEvents = {};
 };
 
-
 Emitter.prototype = PlurObject.create('plur/event/Emitter', Emitter);
-
 
 /**
  * @constructor plur/event/Emitter._Listener
@@ -174,7 +170,6 @@ Emitter.prototype._subscribe = function(eventType, callback, temporary) {
 	}
 
 	branch[Emitter._listenersKey].push(listener);
-	this._listenerTreeIndex[listener.subscriptionId] = eventType;
 
 	if (!this._listening) {
 	    this._listening = true;
@@ -260,8 +255,6 @@ Emitter.prototype.destroy = function() {
 	this._listening = false;
 	this._destroyed = true;
 	this._listenerTree = null;
-	this._listenerTreeIndex = null;
-	this._eventTypeTokenTreeCache = null;
 };
 
 return Emitter;
