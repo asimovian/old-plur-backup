@@ -30,6 +30,11 @@ var EmitterTest = function() {
 
 EmitterTest.prototype = PlurObject.create('plur-test/event/EmitterTest', EmitterTest, Test);
 
+/**
+ * @function plur-test/unit/plur/event/EmitterTest.prototype.testOn
+ * @tests plur/event/Emitter.prototype.on
+ * @throws Error
+ */
 EmitterTest.prototype.testOn = function() {
     var self = this;
     // create a new emitter
@@ -43,7 +48,6 @@ EmitterTest.prototype.testOn = function() {
     // test for event leakage - no events should be fired
     this._assertListen(emitter, 'on.0', 0);
 
-
     // emit
     this._assertEmit(emitter, 'on.1');
     this._assertEmit(emitter, 'on.2');
@@ -51,22 +55,53 @@ EmitterTest.prototype.testOn = function() {
     this._assertExpectedEmissions();
 };
 
+/**
+ * Adds a listener to the provided emitter. Prefixes the specified event with the classes's namespace.
+ * Adds the event type to the list of expected emissions along with the expected emission count, to be
+ * verified on each call to _assertExpectedEmissions.
+ *
+ * @function plur-test/unit/plur/event/EmitterTest.prototype._assertListen
+ * @param plur/event/Emitter emitter
+ * @param string eventType
+ * @param int expectedCount
+ * @throws Error On anything unexpected
+ */
 EmitterTest.prototype._assertListen = function(emitter, event, expectedCount) {
     var self = this;
     this._actualEmittedEvents[event] = 0;
     this._expectedEmittedEvents[event] = expectedCount;
 
-    emitter.on(this.eventNamepath + event, function() {
+    emitter.on(this.eventNamepath + event, function(event) {
+        //this.assertEquals(event.type, this.eventNamepath + event, 'Event type mismatch');
+        self.assert(typeof event === 'object', true, 'Invalid event parameter type');
+        self.assertOwns(event, 'event', event, 'Data "event" missing');
         self._actualEmittedEvents[event]++;
     });
 };
 
-EmitterTest.prototype._assertEmit = function(emitter, event) {
-    emitter.emit(this.eventNamepath + event, { event: event});
+/**
+ * Emit an event to the given emitter, using the class's event namepath as the prefix.
+ * Passes a data structure of { event: string event }
+ * Intended to be used after one or more setup calls to _assertListen.
+ *
+ * @function plur-test/unit/plur/event/EmitterTest.prototype._assertEmit
+ * @param plur/event/Emitter emitter
+ * @param string eventType
+ * @throws Error On anything unexpected.
+ */
+EmitterTest.prototype._assertEmit = function(emitter, eventType) {
+    emitter.emit(this.eventNamepath + eventType, { event: eventType});
 };
 
+/**
+ * Compares all expected emitter event counts against actual ejvent counts.
+ * Intended to be called after one or more _assertEmit calls. Does not reset counts, so unique event types
+ * should be used.
+ *
+ * @function plur-test/unit/plur/event/EmitterTest.prototype._assertExpectedEmissions
+ * @throws Error on invalid emission counts or anything else unexpected
+ */
 EmitterTest.prototype._assertExpectedEmissions = function() {
-console.log(this._actualEmittedEvents);
     for (var event in this._expectedEmittedEvents) {
         var expectedCount = this._expectedEmittedEvents[event];
         this.assertEquals(this._actualEmittedEvents[event], expectedCount, 'Emission count for ' + event);
