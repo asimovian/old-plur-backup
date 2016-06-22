@@ -6,12 +6,10 @@
  'use strict';
 
 define([
-    'sleep',
     'plur/PlurObject',
     'plur/test/Test',
     'plur/event/Emitter' ],
 function(
-    sleep,
     PlurObject,
     Test,
     Emitter ) {
@@ -25,52 +23,54 @@ function(
  **
  */
 var EmitterTest = function() {
+    this.eventNamepath = this.namepath + '.test.';
+    this._expectedEmittedEvents = {};
+    this._actualEmittedEvents = {};
 };
 
 EmitterTest.prototype = PlurObject.create('plur-test/event/EmitterTest', EmitterTest, Test);
 
 EmitterTest.prototype.testOn = function() {
-    // test event response
-    var passed = false;
+    var self = this;
+    // create a new emitter
     var emitter = new Emitter();
-    emitter.on(this.namepath + '.test.1', function(event, data) {
-       passed = true;
-    });
 
-    emitter.emit(this.namepath + '.test.1');
-    this.assertUntil(250, 'Did not callback on emit', function() { return passed; });
+    // test exact events - should receive one call each
+    this._assertListen(emitter, 'on.1', 1) ;
+    this._assertListen(emitter, 'on.2', 1) ;
+    // test wildcards - should collect two calls
+    this._assertListen(emitter, 'on.*', 2);
+    // test for event leakage - no events should be fired
+    this._assertListen(emitter, 'on.0', 0);
 
-    // test for listeners being called back for unexpected events
-    var passed2 = true;
-    emitter.on(this.namepath + '.test.0', function(event, data) {
-        passed2 = false;
-    });
 
-    emitter.emit(this.namepath + 'test.1');
-    this.assertUntil(250, 'Callback executed without event', function() { return passed2; });
+    // emit
+    this._assertEmit(emitter, 'on.1');
+    this._assertEmit(emitter, 'on.2');
 
-    // test for wildcards
-    var passed3 = false;
-    emitter.on(this.namepath + '.test.*', function(event, data) {
-        passed = true;
-    })
-
-    emitter.emit(this.namepath + '.test.1');
+    this._assertExpectedEmissions();
 };
 
-EmitterTest.prototype.testOn.__asyncTest = true;
+EmitterTest.prototype._assertListen = function(emitter, event, expectedCount) {
+    var self = this;
+    this._actualEmittedEvents[event] = 0;
+    this._expectedEmittedEvents[event] = expectedCount;
 
-EmitterTest.prototype.assertUntil = function(timeout, message, assertionFunction) {
-    var timeoutTime = new Date().getTime() + timeout;
-    var sleepTime = 1000 * (timeout / 100);
+    emitter.on(this.eventNamepath + event, function() {
+        self._actualEmittedEvents[event]++;
+    });
+};
 
-    while (new Date().getTime() <= timeoutTime) {
-        sleep.usleep(sleepTime);
-        if (assertionFunction())
-            return true;
+EmitterTest.prototype._assertEmit = function(emitter, event) {
+    emitter.emit(this.eventNamepath + event, { event: event});
+};
+
+EmitterTest.prototype._assertExpectedEmissions = function() {
+console.log(this._actualEmittedEvents);
+    for (var event in this._expectedEmittedEvents) {
+        var expectedCount = this._expectedEmittedEvents[event];
+        this.assertEquals(this._actualEmittedEvents[event], expectedCount, 'Emission count for ' + event);
     }
-
-    this.fail(message || 'Assertion timed out');
 };
 
 return EmitterTest;
