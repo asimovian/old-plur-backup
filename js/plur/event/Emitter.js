@@ -108,11 +108,12 @@ Emitter._ListenerTreeNode.prototype.addListener = function(listener) {
 };
 
 Emitter._ListenerTreeNode.prototype.addChildListener = function(listener) {
-    this.childListeners.push(listener);
+    this.childListeners[listener.subscriptionId] = listener;
 };;
 
-Emitter._ListenerTreeNode.prototype.removeListener = function(listener) {
-
+Emitter._ListenerTreeNode.prototype.removeListener = function(subscriptionId) {
+    delete this.listeners[listner.subscriptionId];
+    delete this.childListeners[listner.subscriptionId];
 };
 
 Emitter.wildcard = '*';
@@ -123,55 +124,42 @@ Emitter._tokenizeEventType = function(eventType) {
     return eventType.split(/[\/\.]/);
 };
 
-Emitter._createEventTypeTokenTree = function(eventType) {
-    // split event name into namespace segments by either the / character or the . character
-    var tokens = ( typeof eventType !== 'string' ? eventType : Emitter._tokenizeEventType(eventType) );
-    var tree = {};
-    var branch = tree;
+Emitter._ListenerTreeNode.prototype.appendTree = function(eventTypeTokens) {
+    var branch = this;
 
     // create a tree where the root is the 0th name, it's child the 1st name, a leaf of that child the 2nd name, etc.
     for (var i = 0, n = tokens.length; i < n; ++i) {
         var token = tokens[i];
 
-        if (i+1 !== n) {
-            branch[token] = {'*': [], '>': []};
-            branch = branch[token];
+        if (branch.name() === token) {
+            continue;
+        } else if (branch.hasChild(token)) {
+            branch = branch.child(token);
         } else {
-            branch[token] = null;
+            branch = branch.addChild(new Emitter._ListenerTreeNode(branch, token));
         }
     }
 
-    return tree;
+    return branch;
 };
 
-Emitter._copyEventTypeTokenTree = function(sourceTree, destinationTree) {
-    var sourceBranch = sourceTree;
-    var destinationBranch = destinationTree;
-
-    for (var key in sourceBranch) {
-        if (typeof destinationBranch[key] === 'undefined') {
-            destinationBranch[key] = {};
-        }
-
-        if (typeof sourceBranch[key] === 'object') {
-            Emitter._copyEventTypeTokenTree(sourceBranch[key], destinationBranch[key]);
-        }
-    }
-};
-
-Emitter._findListeners = function(eventTypeTokens, listenerTree) {
+Emitter.prototype_findListeners = function(eventType) {
     var listeners = [];
+    var eventTypeTokens = Emitter._tokenizeEventType(eventType);
+    var branch = this._listenerTree;
 
-    // add all listeners of exactly that type
-    var listenerBranch = this._getListenerBranch(eventTypeTokens);
-    if (Array.isArray(listenerBranch[Emitter._listenersKey])) {
-        listeners = listeners.concat(listenerBranch[Emitter._listenersKey]);
-    }
+    for (var i = 0, n = eventTypeTokens.length; i < n; ++i) {
+        var token = eventTypeTokens[i];
+        var branch = branch.child(eventTypeTokens[i]);
+        if (branch === null) {
+            break;
+        }
 
-    // add all listeners that are listening to type/*
-    listenerBranch = this._getListenerBranch(eventTypeTokens);
-    if (Array.isArray(listenerBranch[Emitter.wildcard])) {
-        listeners = listeners.concat(listenerBranch[Emitter.wildcard]);
+        if (i+1 === n) { // last node, get exact listeners
+            listeners = listeners.concat(branch.getListeners());
+        } else { // preceding node, get child listeners
+            listeners = listeners.concat(branch.getChildListeners());
+        }
     }
 
     return listeners;
@@ -209,21 +197,7 @@ Emitter.prototype.on = function(eventType, callback) {
 Emitter.prototype._subscribe = function(eventType, callback, temporary) {
     var listener = new Emitter._Listener(eventType, callback, this._nextSubscriptionId(), temporary);
     var eventTypeTokens = Emitter._tokenizeEventType(eventType);
-    var eventTypeTokenTree = Emitter._createEventTypeTokenTree(eventTypeTokens);
-
-    Emitter._copyEventTypeTokenTree(eventTypeTokenTree, this._listenerTree);
-
-    // iterate down namespace tree and add the listener as the last leaf child
-    var branch = this._listenerTree;
-    for (var i = 0; i < eventTypeTokens.length; ++i) {
-        branch = branch[eventTypeTokens[i]];
-    }
-
-	if (typeof branch[Emitter._listenersKey] !== 'array') {
-		branch[Emitter._listenersKey] = [];
-	}
-
-	branch[Emitter._listenersKey].push(listener);
+    var branch = this._listenerTree.appendTree(eventTypeTokens);
 
 	if (!this._listening) {
 	    this._listening = true;

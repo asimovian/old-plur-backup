@@ -33,6 +33,24 @@ TreeNode.prototype.parent = function() {
     return this._parent;
 };
 
+TreeNode.prototype.child = function(index) {
+    return this._children[index];
+};
+
+TreeNode.prototype.hasChild = function(indexOrChild) {
+    if (indexOrChild instanceof TreeNode) {
+        for (var i = 0, n = this._children.length; i < n; ++i) {
+            if (this._children[i] === indexOrChild) {
+                return true;
+            }
+        }
+
+        return false;
+    } else {
+        return ( typeof this._children[indexOrChild] !== 'undefined' );
+    }
+};
+
 TreeNode.prototype.addChild = function(child) {
     if (!child instanceof TreeNode) {
         throw Error('Invalid child node');
