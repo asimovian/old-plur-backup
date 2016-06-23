@@ -34,7 +34,7 @@ TreeNode.prototype.parent = function() {
 };
 
 TreeNode.prototype.child = function(index) {
-    return this._children[index];
+    return ( this._children[index] || null );
 };
 
 TreeNode.prototype.hasChild = function(indexOrChild) {
@@ -57,6 +57,7 @@ TreeNode.prototype.addChild = function(child) {
     }
 
     children.push(child);
+    return child;
 };
 
 TreeNode.prototype.removeChild = function(child) {

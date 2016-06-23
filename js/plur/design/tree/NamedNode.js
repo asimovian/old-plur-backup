@@ -37,6 +37,8 @@ NamedTreeNode.prototype.addChild = function(child, name) {
     } else {
         this._children[child.name] = child;
     }
+
+    return child;
 };
 
 NamedTreeNode.prototype.removeChild = function(nameOrChild) {

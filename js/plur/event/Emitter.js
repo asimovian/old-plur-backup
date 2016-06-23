@@ -8,13 +8,15 @@ define([
     'plur/error/Assertion',
     'plur/error/Type',
     'plur/error/State',
-    'plur/event/Event' ],
+    'plur/event/Event',
+    'plur/design/tree/NamedNode' ],
 function(
     PlurObject,
     Assertion,
     PlurTypeError,
     PlurStateError,
-    Event ) {
+    Event,
+    NamedTreeNode ) {
 	
 /**
  * Provides publish-subscribe functionality for Event objects.
@@ -116,25 +118,26 @@ Emitter._ListenerTreeNode.prototype.removeListener = function(subscriptionId) {
     delete this.childListeners[listner.subscriptionId];
 };
 
+
+Emitter._ListenerTreeNode.prototype.getListeners = function() {
+    return Object.values(this.listeners);
+};
+
+Emitter._ListenerTreeNode.prototype.geChildtListeners = function() {
+    return Object.values(this.childListeners);
+};
+
 Emitter._ListenerTreeNode.prototype.empty = function() {
     return ( NamedTreeNode.prototype.empty.call(this)
         && Object.keys(this.listeners).length === 0 && Object.keys(this.childListeners) === 0);
-};
-
-Emitter.wildcard = '*';
-
-Emitter._listenersKey = '>';
-
-Emitter._tokenizeEventType = function(eventType) {
-    return eventType.split(/[\/\.]/);
 };
 
 Emitter._ListenerTreeNode.prototype.appendTree = function(eventTypeTokens) {
     var branch = this;
 
     // create a tree where the root is the 0th name, it's child the 1st name, a leaf of that child the 2nd name, etc.
-    for (var i = 0, n = tokens.length; i < n; ++i) {
-        var token = tokens[i];
+    for (var i = 0, n = eventTypeTokens.length; i < n; ++i) {
+        var token = eventTypeTokens[i];
 
         if (branch.name() === token) {
             continue;
@@ -148,7 +151,13 @@ Emitter._ListenerTreeNode.prototype.appendTree = function(eventTypeTokens) {
     return branch;
 };
 
-Emitter.prototype_findListeners = function(eventTypeTokens) {
+Emitter.wildcard = '*';
+
+Emitter._tokenizeEventType = function(eventType) {
+    return eventType.split(/[\/\.]/);
+};
+
+Emitter.prototype._findListeners = function(eventTypeTokens) {
     var listeners = [];
     var branch = this._listenerTree;
 
