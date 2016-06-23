@@ -69,5 +69,26 @@ TreeNode.prototype.removeChild = function(child) {
     }
 };
 
+TreeNode.prototype.isRoot = function() {
+    return ( this._parent === null );
+};
+
+TreeNode.prototype.root = function() {
+    var branch = this;
+    while (branch._parent !== null) {
+        branch = branch._parent;
+    }
+
+    return branch;
+};
+
+TreeNode.prototype.empty = function() {
+    return ( this._children.length === 0 );
+};
+
+TreeNode.prototype.isLeaf = function() {
+    return (this._parent !== null && this.empty() );
+};
+
 return TreeNode;
 });

@@ -56,5 +56,9 @@ NamedTreeNode.prototype.children = function() {
     return Object.values(this._children);
 };
 
+NamedTreeNode.prototype.empty = function() {
+    return ( Object.values(this._children).length === 0 );
+};
+
 return NamedTreeNode;
 });

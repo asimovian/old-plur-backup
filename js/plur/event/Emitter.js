@@ -39,7 +39,7 @@ var Emitter = function() {
 	/* Destroyed emitters are totally shutdown and cannot resume further operation. */
 	this._destroyed = false;
 	/* An index of subscription Ids currently listening. */
-	this._subscriptionIds = {};
+	this._subscriptionTreeMap = {};
 	/* Used for incrementally assigning subscription ids to new listeners. */
 	this._subscriptionIdIndex = 0;
 	/* Map with event type tokens (words split by . or /) organized as nested branches. Leaf objects with a key
@@ -116,6 +116,11 @@ Emitter._ListenerTreeNode.prototype.removeListener = function(subscriptionId) {
     delete this.childListeners[listner.subscriptionId];
 };
 
+Emitter._ListenerTreeNode.prototype.empty = function() {
+    return ( NamedTreeNode.prototype.empty.call(this)
+        && Object.keys(this.listeners).length === 0 && Object.keys(this.childListeners) === 0);
+};
+
 Emitter.wildcard = '*';
 
 Emitter._listenersKey = '>';
@@ -143,9 +148,8 @@ Emitter._ListenerTreeNode.prototype.appendTree = function(eventTypeTokens) {
     return branch;
 };
 
-Emitter.prototype_findListeners = function(eventType) {
+Emitter.prototype_findListeners = function(eventTypeTokens) {
     var listeners = [];
-    var eventTypeTokens = Emitter._tokenizeEventType(eventType);
     var branch = this._listenerTree;
 
     for (var i = 0, n = eventTypeTokens.length; i < n; ++i) {
@@ -203,7 +207,7 @@ Emitter.prototype._subscribe = function(eventType, callback, temporary) {
 	    this._listening = true;
 	}
 
-    this._subscriptionIds[listener.subscriptionId] = eventTypeTokens;
+    this._subscriptionTreeMap[listener.subscriptionId] = branch;
 
 	return listener.subscriptionId;
 };
@@ -215,7 +219,7 @@ Emitter.prototype._nextSubscriptionId = function() {
             id = this._subscriptionIdIndex = 1;
         }
 
-        if (typeof this._subscriptionIds[id] !== 'undefined') {
+        if (typeof this._subscriptionTreeMap[id] !== 'undefined') {
             id = null;
         }
     }
@@ -243,76 +247,26 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
     Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
 
     // ignore non-existant subscriptions
-    if (typeof this._subscriptionIds[subscriptionId] === 'undefined') {
+    if (typeof this._subscriptionTreeMap[subscriptionId] === 'undefined') {
         return;
     }
 
-    // use tokens to walk the tree
-    var eventTypeTokens = this._subscriptionIds[subscriptionId];
-
 	//delete the listener from the tree.
-	var listenerBranch = this._getListenerBranch(eventTypeTokens);
-	if (listenerBranch === null) {
-	    throw Error('Listener branch missing.');
-	}
+	var listenerBranch = this._subscriptionTreeMap[subscriptionId];
+	AssertionError.assert(listenerBranch !== null, 'Listener branch is missing.')
 
-    var found = false;
-	for (var i = 0; !found && i < listenerBranch[Emitter.wildcard].length; ++i) {
-	    if (listenerBranch[Emitter.wildcard][i].subscriptionId === subscriptionId) {
-	        delete listenerBranch[Emitter.wildcard][i];
-	        found = true;
-	    }
-	}
-
-    // if not found, continue searching in listeners
-	for (var i = 0; !found && i < listenerBranch[Emitter._listenersKey].length; ++i) {
-	    if (listenerBranch[Emitter._listenersKey][i].subscriptionId === subscriptionId) {
-	        delete listenerBranch[Emitter._listenersKey][i];
-	    }
-	}
+    listenerBranch.removeListener(subscriptionId);
 
 	// prune childless tree nodes.
-    while (this._listenerBranchEmpty(listenerBranch)) {
-        if (listenerBranch !== this._listenerTree) {
-            delete listenerBranch;
-            listenerBranch = this._getListenerBranch(eventTypeTokens, eventTypeTokens.length - 2);
-        } else {
-            break;
-        }
+    while (!listenerBranch().isRoot() && listenerBranch.empty()) {
+        var child = listenerBranch;
+        listenerBranch = listenerBranch.parent();
+        listenerBranch.removeChild(child);
     }
 
-    if (this._listenerBranchEmpty(this._listenerTree)) {
+    if (this._listenerTree.empty()) {
         this._listening = false;
     }
-};
-
-Emitter.prototype._listenerBranchEmpty = function(listenerBranch) {
-    if (listenerBranch[Emitter._listenerKey].length > 1) {
-        return false;
-    } else if (listenerBranch[Emitter.wildcard].length > 1) {
-        return false;
-    }
-
-    for (var key in listenerBranch) {
-        if (key !== Emitter.wildcard && key !== Emitter._listenerKey) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
-Emitter.prototype._getListenerBranch = function(eventTypeTokens, branchIndex) {
-	var listenerBranch = this._listenerTree;
-    for (var i = 0, n = (branchIndex ? branchIndex+1 : eventTypeTokens.length); i < n; ++i) {
-        if (typeof listenerBranch[eventTypeTokens[i]] !== 'object') {
-            return null;
-        }
-
-        listenerBranch = listenerBranch[eventTypeTokens[i]];
-    }
-
-    return listenerBranch;
 };
 
 /**
@@ -358,7 +312,7 @@ Emitter.prototype.destroy = function() {
 	this._listening = false;
 	this._destroyed = true;
 	this._listenerTree = null;
-	this._subscriptionIds = {};
+	this._subscriptionTreeMap = {};
 	this._subscriptionIdIndex = 0;
 };
 

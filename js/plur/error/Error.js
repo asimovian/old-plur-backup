@@ -25,6 +25,12 @@ var PlurError = function(message, data) {
     Error.captureStackTrace(this, this.constructor);
 };
 
+PlurError.throwIf = function(testResult, message, data) {
+    if (testResult) {
+        throw new PlurError(message, data);
+    }
+};
+
 PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
 
 PlurError.prototype.toString = function() {
