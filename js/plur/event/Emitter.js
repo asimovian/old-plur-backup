@@ -337,7 +337,7 @@ Emitter.prototype.emit = function(eventType, eventData, persistent) {
 	var event = new Event(eventType, eventData);
 
 	// find listeners for event type
-	var listeners = Emitter._findListeners(eventType, this._listenerTree);
+	var listeners = this._findListeners(Emitter._tokenizeEventType(eventType));
 	for (var i = 0, n = listeners.length; i < n; ++i) {
 		var listener = listeners[i];
 
