@@ -32,7 +32,7 @@ var AssertionError = function(message, data) {
 
 AssertionError.prototype = PlurObject.create('plur/error/Assertion', AssertionError, PlurError);
 
-AssertionError.assert = function(errorConstructor, result, message) {
+AssertionError.assert = function(result, errorConstructor, message) {
     if (!result) {
         throw new errorConstructor(message, message || 'Assertion failed');
     }

@@ -46,13 +46,14 @@ EmitterTest.prototype.testOn = function() {
     // test for exact event type matches
     this._assertListen(emitter, 'on.1', 1); // emitted once
     this._assertListen(emitter, 'on.2', 2); // emitted twice
-    // test wildcards - should collect three calls
-    this._assertListen(emitter, 'on.*', 3); // emitted for both on.1 and on.2; thrice!
+    // test wildcards - should collect four calls
+    this._assertListen(emitter, 'on.*', 4); // emitted for both on.1 and on.2 (twice); as well as on.3.next
 
     // emit
     this._assertEmit(emitter, 'on.1');
     this._assertEmit(emitter, 'on.2'); // emit this twice
     this._assertEmit(emitter, 'on.2');
+    this._assertEmit(emitter, 'on.3.next');
 
     this._assertExpectedEmissions();
 };
