@@ -108,5 +108,14 @@ PlurObject.implement = function(constructor, interfaceConstructor) {
     return PlurObject;
 };
 
+PlurObject.values = function(object) {
+    var values = [];
+    for (var key in object) {
+        values.push(object[key]);
+    }
+
+    return values;
+};
+
 return PlurObject;
 });

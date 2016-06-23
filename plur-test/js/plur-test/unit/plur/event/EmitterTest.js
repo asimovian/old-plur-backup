@@ -48,7 +48,6 @@ EmitterTest.prototype.testOn = function() {
     this._assertListen(emitter, 'on.2', 2); // emitted twice
     // test wildcards - should collect four calls
     this._assertListen(emitter, 'on.*', 4); // emitted for both on.1 and on.2 (twice); as well as on.3.next
-
     // emit
     this._assertEmit(emitter, 'on.1');
     this._assertEmit(emitter, 'on.2'); // emit this twice
@@ -70,7 +69,7 @@ EmitterTest.prototype.testOnce = function() {
     this._assertListenOnce(emitter, 'once.0', 0); // never emitted
     // test for exact event type matches
     this._assertListenOnce(emitter, 'once.1', 1); // emitted once
-    this._assertListenOnce(emitter, 'once.2', 2); // emitted once, second time, not listening
+    this._assertListenOnce(emitter, 'once.2', 1); // emitted once, second time, not listening
 
     // test wildcards and test re-subscribing on the same event type. should be called after each emit to resub.
     this._assertListenOnce(emitter, 'once.*', 3); // emitted for both on.1 and on.2; thrice!
@@ -80,7 +79,7 @@ EmitterTest.prototype.testOnce = function() {
     this._assertListenOnce(emitter, 'once.*', 3); // for re-sub test #2
     this._assertEmit(emitter, 'once.2'); // emit this twice ... #1
     this._assertListenOnce(emitter, 'once.*', 3); // for re-sub test #3
-    this._assertEmit(emitter, 'once.2'); // #2
+    this._assertEmit(emitter, 'once.3'); // #2
 
     this._assertExpectedEmissions();
 };
@@ -102,7 +101,14 @@ EmitterTest.prototype.testListening = function() {
     this._assertEmit(emitter, 'listening.1');
     this.assert(!emitter.listening(), 'Emitter is listening after once()+emit()');
 
-    //TODO: Fix failure ^
+    // once more ...
+
+    this._assertListenOnce(emitter, 'listening.1', 1);
+    this.assert(emitter.listening(), 'Emitter is not listening after once()');
+
+    this._assertEmit(emitter, 'listening.1');
+    this.assert(!emitter.listening(), 'Emitter is listening after once()+emit()');
+
 };
 
 EmitterTest.prototype._assertListenOnce = function(emitter, eventType, expectedCount) {
@@ -122,7 +128,8 @@ EmitterTest.prototype._assertListenOnce = function(emitter, eventType, expectedC
  */
 EmitterTest.prototype._assertListen = function(emitter, eventType, expectedCount, _once) {
     var self = this;
-    var once = ( !!once );
+    var once = ( !!_once );
+
     var fullEventType = this.eventNamepath + eventType;
 
     // set actual and expected counts for later testing

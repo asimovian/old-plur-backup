@@ -35,31 +35,41 @@ NamedTreeNode.prototype.addChild = function(child, name) {
     if (typeof name !== 'undefined') {
         this._children[name] = child;
     } else {
-        this._children[child.name] = child;
+        this._children[child._name] = child;
     }
 
     return child;
 };
 
 NamedTreeNode.prototype.removeChild = function(nameOrChild) {
-    if (nameOrChild instanceof TreeNode) {
-        return TreeNode.prototype.removeChild.call(this, child);
-    }
+    if (nameOrChild instanceof NamedTreeNode) {
+        var child = nameOrChild;
+        if (typeof this._children[child.name()] === 'undefined') {
+            throw new Assertion('Child not found')
+        }
 
-    var name = nameOrChild;
-    var child = this._children[nameOrChild];
-    if (child instanceof TreeNode) {
+        child._parent = null;
+        delete this._children[child.name()];
+    } else if (typeof nameOrChild === 'string') {
+        var name = nameOrChild;
+        if (typeof this._children[name] === 'undefined') {
+            throw new Assertion('Child not found')
+        }
+
+        var child = this._children[name];
         child._parent = null;
         delete this._children[name];
+    } else {
+        throw Assertion('Invalid argument');
     }
 };
 
 NamedTreeNode.prototype.children = function() {
-    return Object.values(this._children);
+    return PlurObject.values(this._children);
 };
 
 NamedTreeNode.prototype.empty = function() {
-    return ( Object.values(this._children).length === 0 );
+    return ( PlurObject.values(this._children).length === 0 );
 };
 
 return NamedTreeNode;
