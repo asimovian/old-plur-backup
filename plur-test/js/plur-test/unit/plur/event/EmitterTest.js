@@ -95,7 +95,7 @@ EmitterTest.prototype.testListening = function() {
 
     this.assert(!emitter.listening(), 'Emitter is listening on creation');
 
-    this._assertListenOnce(emitter, 'listening.1', 1);
+    this._assertListenOnce(emitter, 'listening.1', 2);
     this.assert(emitter.listening(), 'Emitter is not listening after once()');
 
     this._assertEmit(emitter, 'listening.1');
@@ -103,12 +103,23 @@ EmitterTest.prototype.testListening = function() {
 
     // once more ...
 
-    this._assertListenOnce(emitter, 'listening.1', 1);
+    this._assertListenOnce(emitter, 'listening.1', 2);
     this.assert(emitter.listening(), 'Emitter is not listening after once()');
 
     this._assertEmit(emitter, 'listening.1');
     this.assert(!emitter.listening(), 'Emitter is listening after once()+emit()');
 
+};
+
+EmitterTest.prototype.testUnsubscribe = function() {
+    var emitter = new Emitter();
+
+    var subscriptionId = this._assertListen(emitter,'unsubscribe.1', 1);
+    this._assertEmit(emitter, 'unsubscribe.1');
+    emitter.unsubscribe(subscriptionId);
+    this._assertEmit(emitter, 'unsubscribe.1');
+
+    this._assertExpectedEmissions();
 };
 
 EmitterTest.prototype._assertListenOnce = function(emitter, eventType, expectedCount) {
