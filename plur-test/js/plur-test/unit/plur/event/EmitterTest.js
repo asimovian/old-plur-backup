@@ -122,6 +122,15 @@ EmitterTest.prototype.testUnsubscribe = function() {
     this._assertExpectedEmissions();
 };
 
+EmitterTest.prototype.testEmit = function() {
+    var emitter = new Emitter();
+
+    this._assertListenOnce(emitter, 'emit.1', 1);
+    this._assertEmit(emitter, 'emit.1')
+
+    this._assertExpectedEmissions()
+};
+
 EmitterTest.prototype._assertListenOnce = function(emitter, eventType, expectedCount) {
     return this._assertListen(emitter, eventType, expectedCount, true);
 };
