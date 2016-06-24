@@ -9,14 +9,14 @@ define([
     'plur/error/Type',
     'plur/error/State',
     'plur/event/Event',
-    'plur/design/tree/NamedNode' ],
+    'plur/design/tree/MapNode' ],
 function(
     PlurObject,
     Assertion,
     PlurTypeError,
     PlurStateError,
     Event,
-    NamedTreeNode ) {
+    MapTreeNode ) {
 	
 /**
  * Provides publish-subscribe functionality for Event objects.
@@ -61,6 +61,10 @@ Emitter.prototype = PlurObject.create('plur/event/Emitter', Emitter);
  *
  * @constructor plur/event/Emitter._Listener
  **
+ * @param string eventType
+ * @param Function(plur/event/Event event) callback
+ * @param int subscriptionId
+ * @param boolean temporary
  */
 Emitter._Listener = function(eventType, callback, subscriptionId, temporary) {
 	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed');
@@ -90,20 +94,20 @@ Emitter._Listener = function(eventType, callback, subscriptionId, temporary) {
  * events for both "car/wheel" and "car/trunk".
  *
  * @constructor plur/event/Emitter._ListenerTreeNode
- * @extends plur/design/tree/NamedNode
+ * @extends plur/design/tree/MapNode
  **
  * @param plur/event/Emitter._ListenerTreeNode|undefined parent
  * @param string|undefined name
  */
 Emitter._ListenerTreeNode = function(parent, name) {
-    NamedTreeNode.call(this, parent, name);
+    MapTreeNode.call(this, parent, name);
 
     this.listeners = {}; // map: subscriptionId => listener
     this.childListeners = {}; // map: subscriptionId => listener
 };
 
 Emitter._ListenerTreeNode.prototype = PlurObject.create(
-    'plur/event/Emitter._ListenerTreeNode', Emitter._ListenerTreeNode, NamedTreeNode);
+    'plur/event/Emitter._ListenerTreeNode', Emitter._ListenerTreeNode, MapTreeNode);
 
 Emitter._ListenerTreeNode.prototype.addListener = function(listener) {
     this.listeners[listener.subscriptionId] = listener;
@@ -134,7 +138,7 @@ Emitter._ListenerTreeNode.prototype.getChildListeners = function() {
  * @returns boolean isEmpty TRUE if empty, FALSE if not
  */
 Emitter._ListenerTreeNode.prototype.empty = function() {
-    return ( NamedTreeNode.prototype.empty.call(this)
+    return ( MapTreeNode.prototype.empty.call(this)
         && Object.keys(this.listeners).length === 0 && Object.keys(this.childListeners).length === 0);
 };
 

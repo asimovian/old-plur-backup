@@ -24,6 +24,19 @@ var PlurObject = function() {
 PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
+
+/**
+ * Determines whether the given function is a valid PlurObject constructor.
+ *
+ * @function PlurObject.isConstructor
+ * @param Function constructor
+ * @returns boolean TRUE if constructor FALSE if not
+ */
+PlurObject.isConstructor = function(constructor) {
+    return ( constructor instanceof Function && typeof constructor.namepath !== 'undefined' );
+};
+
+
 PlurObject.implementing = function(object, interfaceConstructor) {
     var constructor = Object.getPrototypeOf(object).constructor;
     return ( typeof constructor.implemented !== 'undefined'

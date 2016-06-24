@@ -6,39 +6,43 @@
  'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/design/tree/INode' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    ITreeNode ) {
 
 /**
  * Tree Node
  *
  * @constructor plur/design/tree/Node
+ * @implements plur/design/tree/INode
  **
  */
-var TreeNode = function(parent) {
+var ListTreeNode = function(parent) {
     this._children = [];
-    this._parent = ( parent instanceof TreeNode ? parent : null );
+    this._parent = ( parent instanceof ListTreeNode ? parent : null );
 };
 
-TreeNode.prototype = PlurObject.create('plur/design/tree/Node', TreeNode);
+ListTreeNode.prototype = PlurObject.create('plur/design/tree/ListNode', ListTreeNode);
+PlurObject.implement(ListTreeNode, ITreeNode);
 
-TreeNode.prototype.children = function(constructors) {
+ListTreeNode.prototype.children = function(constructors) {
     if (typeof constructors === 'undefined') {
         return this._children;
     }
 };
 
-TreeNode.prototype.parent = function() {
+ListTreeNode.prototype.parent = function() {
     return this._parent;
 };
 
-TreeNode.prototype.child = function(index) {
+ListTreeNode.prototype.child = function(index) {
     return ( this._children[index] || null );
 };
 
-TreeNode.prototype.hasChild = function(indexOrChild) {
-    if (indexOrChild instanceof TreeNode) {
+ListTreeNode.prototype.hasChild = function(indexOrChild) {
+    if (indexOrChild instanceof ListTreeNode) {
         for (var i = 0, n = this._children.length; i < n; ++i) {
             if (this._children[i] === indexOrChild) {
                 return true;
@@ -51,8 +55,8 @@ TreeNode.prototype.hasChild = function(indexOrChild) {
     }
 };
 
-TreeNode.prototype.addChild = function(child) {
-    if (!child instanceof TreeNode) {
+ListTreeNode.prototype.addChild = function(child) {
+    if (!child instanceof ListTreeNode) {
         throw Error('Invalid child node');
     }
 
@@ -60,7 +64,7 @@ TreeNode.prototype.addChild = function(child) {
     return child;
 };
 
-TreeNode.prototype.removeChild = function(child) {
+ListTreeNode.prototype.removeChild = function(child) {
     for (var i = 0, n = this._children.length; i < n; ++i) {
         if (this._children[i] === child) {
             child._parent = null;
@@ -70,11 +74,11 @@ TreeNode.prototype.removeChild = function(child) {
     }
 };
 
-TreeNode.prototype.isRoot = function() {
+ListTreeNode.prototype.isRoot = function() {
     return ( this._parent === null );
 };
 
-TreeNode.prototype.root = function() {
+ListTreeNode.prototype.root = function() {
     var branch = this;
     while (branch._parent !== null) {
         branch = branch._parent;
@@ -83,13 +87,13 @@ TreeNode.prototype.root = function() {
     return branch;
 };
 
-TreeNode.prototype.empty = function() {
+ListTreeNode.prototype.empty = function() {
     return ( this._children.length === 0 );
 };
 
-TreeNode.prototype.isLeaf = function() {
+ListTreeNode.prototype.isLeaf = function() {
     return (this._parent !== null && this.empty() );
 };
 
-return TreeNode;
+return ListTreeNode;
 });
