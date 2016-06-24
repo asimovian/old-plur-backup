@@ -127,36 +127,51 @@ Emitter._ListenerTreeNode.prototype.getChildListeners = function() {
     return PlurObject.values(this.childListeners);
 };
 
+/**
+ * Determines whether this node has children and/or whether it has listeners or not.
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.empty
+ * @returns boolean isEmpty TRUE if empty, FALSE if not
+ */
 Emitter._ListenerTreeNode.prototype.empty = function() {
     return ( NamedTreeNode.prototype.empty.call(this)
         && Object.keys(this.listeners).length === 0 && Object.keys(this.childListeners).length === 0);
 };
 
-Emitter._ListenerTreeNode.prototype.appendTree = function(eventTypeTokens) {
-    var branch = this;
+/**
+ *
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.appendTree
+ * @returns plur/event/Emitter._ListenerTreeNode
+ */
 
-    // create a tree where the root is the 0th name, it's child the 1st name, a leaf of that child the 2nd name, etc.
-    for (var i = 0, n = eventTypeTokens.length; i < n; ++i) {
-        var token = eventTypeTokens[i];
 
-        if (branch.name() === token) {
-            continue;
-        } else if (branch.hasChild(token)) {
-            branch = branch.child(token);
-        } else {
-            branch = branch.addChild(new Emitter._ListenerTreeNode(branch, token));
-        }
-    }
-
-    return branch;
-};
-
+/**
+ * @var string Emitter.wildcard The event type wildcard. When used, it will catch any event that has the preceding token
+ * in its path.
+ */
 Emitter.wildcard = '*';
 
+/**
+ * Splits an event type string into a string array of individual tokens. Splits on / and . characters.
+ * E.g., foo/bar.* => [ 'foo', 'bar', '*' ]
+ *
+ * @function plur/event/Emitter._tokenizeEventType
+ * @param string eventType
+ * @returns string[] eventTypeTokens
+ */
 Emitter._tokenizeEventType = function(eventType) {
     return eventType.split(/[\/\.]/);
 };
 
+
+/**
+ * Finds all listeners applicable to the provided event type.
+ *
+ * @function plur/event/Emitter.prototype._findListeners
+ * @param string[] eventTypeTokens
+ * @returns plur/event/Emitter._Listener[] listeners
+ */
 Emitter.prototype._findListeners = function(eventTypeTokens) {
     var listeners = [];
     var branch = this._listenerTree;
@@ -207,11 +222,20 @@ Emitter.prototype.on = function(eventType, callback) {
     return this._subscribe(eventType, callback, true);
 };
 
+/**
+ * Subscribes a listener callback to an eventType
+ *
+ * @function plur/event/Emitter.prototype._subscribe
+ * @param string eventType
+ * @param Function(plur/event/Event event) callback
+ * @param boolean temporary TRUE for once(), false for on()
+ * @returns int subscriptionId
+ */
 Emitter.prototype._subscribe = function(eventType, callback, temporary) {
     var listener = new Emitter._Listener(eventType, callback, this._nextSubscriptionId(), temporary);
     var eventTypeTokens = Emitter._tokenizeEventType(eventType);
     var isWildcard = ( eventTypeTokens[eventTypeTokens.length - 1] === Emitter.wildcard );
-    var branch = this._listenerTree.appendTree(isWildcard ? eventTypeTokens.slice(0, -1)  : eventTypeTokens);
+    var branch = this._listenerTree.expand(Emitter._ListenerTreeNode, ( isWildcard ? eventTypeTokens.slice(0, -1)  : eventTypeTokens));
 
 	if (!this._listening) {
 	    this._listening = true;
@@ -228,6 +252,12 @@ Emitter.prototype._subscribe = function(eventType, callback, temporary) {
 	return listener.subscriptionId;
 };
 
+/**
+ * Returns a subscription id that is not currently being used by this emitter.
+ *
+ * @function plur/event/Emitter.prototype._nextSubscriptionId
+ * @returns int
+ */
 Emitter.prototype._nextSubscriptionId = function() {
     for (var id = null; id === null ; ) {
         id = ++this._subscriptionIdIndex;
@@ -289,9 +319,6 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
  * Publishes an event (with data) to this emitter. All listeners subscribed to the event will have their provided
  * callbacks executed.
  *
- ** Callback
- * function callback(plur/Event/Event event)
- **
  * @function plur/event/Emitter.prototype.emit
  * @param {string} event
  * @param {{}|undefined} data
@@ -323,6 +350,8 @@ Emitter.prototype.emit = function(eventType, eventData, persistent) {
 
 /**
  * Unsubscribes all listeners and prevents further subscriptions to be added as well as further events to be emitted.
+ *
+ * @function plur/event/Emitter.prototype.destroy
  */
 Emitter.prototype.destroy = function() {
 	this._listening = false;

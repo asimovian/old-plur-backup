@@ -72,5 +72,31 @@ NamedTreeNode.prototype.empty = function() {
     return ( PlurObject.values(this._children).length === 0 );
 };
 
+/**
+ * Factory method that creates new child tree nodes (as needed) starting from this branch that correspond to the provided names.
+ *
+ * @function plur/design/tree/NamedNode.prototype.appendTree
+ * @param string[] names
+ * @returns plur/design/tree/NamedNode leafBranch
+ */
+ NamedTreeNode.prototype.expand = function(treeNodeConstructor, names) {
+    var branch = this;
+
+    for (var i = 0, n = names.length; i < n; ++i) {
+        var name = names[i];
+
+        if (branch.name() === name) {
+            continue;
+        } else if (branch.hasChild(name)) {
+            branch = branch.child(name);
+        } else {
+            branch = branch.addChild(new treeNodeConstructor(branch, name));
+        }
+    }
+
+    return branch;
+};
+
+
 return NamedTreeNode;
 });
