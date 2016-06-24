@@ -35,7 +35,7 @@ PromiseTest.prototype.testThen = function() {
     promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
     promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
 
-    promise = new PlurPromise(function(resolve, reject) { reject(); });
+    var promise = new PlurPromise(function(resolve, reject) { reject(); });
     promise.then(this._assertResolved('then', false), this._assertRejected('then', true));
     promise.then(this._assertResolved('then', false), this._assertRejected('then', true));
     promise.then(this._assertResolved('then', false), this._assertRejected('then', true));
@@ -61,7 +61,7 @@ PromiseTest.prototype._assertRejected = function(eventTypePrefix, expected) {
     this.assertEmission(eventTypeSuffix, expected ? 1 : 0);
 
     return function() {
-        self.assertEmission(eventTypeSuffix, expected ? 1 : 0);
+        self.emit(eventTypeSuffix);
     };
 };
 
