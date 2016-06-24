@@ -5,10 +5,12 @@
  */
 define([
     'plur/PlurObject',
-    'plur/error/Assertion'],
+    'plur/error/Assertion',
+    'plur/event/Emitter' ],
 function(
     PlurObject,
-    AssertionError ) {
+    AssertionError,
+    Emitter ) {
 
 /**
  * Basic unit and integration testing.
@@ -18,9 +20,42 @@ function(
  */
 var Test = function() {
     this._promises = [];
+    this._emitter = new Emitter();
+    this._expectedEmissions = {};
+    this._actualEmissions = {};
+    this.namepathPrefix = this.namepath + '.';
 };
 
 Test.prototype = PlurObject.create('plur/test/Test', Test);
+
+Test.prototype.emitter = function() {
+    return this._emitter;
+};
+
+Test.prototype.emit = function(eventTypeSuffix, data) {
+    this._emitter.emit(this.namepathPrefix + eventTypeSuffix, data);
+}
+
+Test.prototype.assertEmission = function(eventTypeSuffix, expectedCount) {
+    var self = this;
+    var eventType = this.namepathPrefix + eventTypeSuffix;
+
+    this._expectedEmissions[eventType] = expectedCount;
+    this._actualEmissions[eventType] = 0;
+
+    var subscriptionId = this._emitter.on(eventType, function(event) {
+        self._actualEmissions[eventType]++;
+    });
+
+    return subscriptionId;
+};
+
+Test.prototype.assertExpectedEmissions = function() {
+    for (var eventType in this._expectedEmissions) {
+        var expectedCount = this._expectedEmissions[eventType];
+        this.assertEquals(this._actualEmissions[eventType], expectedCount, 'Incorrect emission count for event type: ' + eventType);
+    }
+};
 
 /**
  * Helper method that runs all test methods for this object (methods names that start with "test").

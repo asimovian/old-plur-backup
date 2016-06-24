@@ -22,19 +22,50 @@ function(
  **
  */
 var PromiseTest = function() {
+    Test.call(this);
+
+    this._promiseHandlerIndex = 0;
 };
 
 PromiseTest.prototype = PlurObject.create('plur-test/plur/es6/PromiseTest', PromiseTest, Test);
 
 PromiseTest.prototype.testPromise = function() {
-    var promise = new PlurPromise(function(resolve, reject) { resolve(true); });
-    promise.then(function() { console.log('resolved once'); }, function() { console.log('rejected once'); });
-    promise.then(function() { console.log('resolved twice'); }, function() { console.log('rejected twice'); });
+    var promise = new PlurPromise(function(resolve, reject) { resolve(); });
+    promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
+    promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
+    promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
 
-    promise = new PlurPromise(function(resolve, reject) { reject(true); });
-    promise.then(function() { console.log('resolved once'); }, function() { console.log('rejected once'); });
-    promise.then(function() { console.log('resolved twice'); }, function() { console.log('rejected twice'); });
+    promise = new PlurPromise(function(resolve, reject) { reject(); });
+    promise.then(this._assertResolved('then', false), this._assertRejected('then', true));
+    promise.then(this._assertResolved('then', false), this._assertRejected('then', true));
+    promise.then(this._assertResolved('then', false), this._assertRejected('then', true));
+
+    this.assertExpectedEmissions();
 };
+
+PromiseTest.prototype._assertResolved = function(eventTypePrefix, expected) {
+    var self = this;
+    var eventTypeSuffix = eventTypePrefix + '.resolved.' + ++this._promiseHandlerIndex;
+
+    this.assertEmission(eventTypeSuffix, expected ? 1 : 0);
+
+    return function() {
+        self.emit(eventTypeSuffix);
+    };
+};
+
+PromiseTest.prototype._assertRejected = function(eventTypePrefix, expected) {
+    var self = this;
+    var eventTypeSuffix = eventTypePrefix + '.rejected.' + ++this._promiseHandlerIndex;
+
+    this.assertEmission(eventTypeSuffix, expected ? 1 : 0);
+
+    return function() {
+        self.assertEmission(eventTypeSuffix, expected ? 1 : 0);
+    };
+};
+
+
 
 return PromiseTest;
 });

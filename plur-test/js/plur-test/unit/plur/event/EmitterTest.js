@@ -25,6 +25,8 @@ function(
  **
  */
 var EmitterTest = function() {
+    Test.call(this);
+
     this.eventNamepath = this.namepath + '.test.';
     this._expectedEmittedEvents = {};
     this._actualEmittedEvents = {};
