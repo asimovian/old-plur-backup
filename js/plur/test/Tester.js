@@ -100,7 +100,6 @@ Tester.prototype._testNextTarget = function() {
         });
     });
 
-    ++this._testTargetIndex;
     targetPromise.then(function() { self._testNextTarget() }, function(errors) { self._rejected(errors); });
 };
 

@@ -93,11 +93,11 @@ TestApp.prototype.start = function() {
         this._findTargets(function(targets) {
             self._targets = targets;
             var tester = new Tester(targets);
-            this._start(tester);
+            self._start(tester);
         });
     } else {
         var tester = new Tester(this._targets);
-        this._start(tester);
+        self._start(tester);
     }
 };
 

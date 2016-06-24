@@ -19,6 +19,7 @@ function(
  **
  */
 var PlurObjectTest = function() {
+    Test.call(this);
 };
 
 PlurObjectTest.prototype = PlurObject.create('plur-test/unit/plur/PlurObjectTest', PlurObjectTest, Test);

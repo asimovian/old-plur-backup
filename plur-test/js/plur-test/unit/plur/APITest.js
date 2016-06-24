@@ -23,6 +23,7 @@ function(
  **
  */
 var APITest = function() {
+    Test.call(this);
 };
 
 APITest.prototype = PlurObject.create('plur-test/unit/plur/APITest', APITest, Test);
