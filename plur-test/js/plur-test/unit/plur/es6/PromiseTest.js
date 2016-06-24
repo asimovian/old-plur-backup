@@ -29,7 +29,7 @@ var PromiseTest = function() {
 
 PromiseTest.prototype = PlurObject.create('plur-test/plur/es6/PromiseTest', PromiseTest, Test);
 
-PromiseTest.prototype.testPromise = function() {
+PromiseTest.prototype.testThen = function() {
     var promise = new PlurPromise(function(resolve, reject) { resolve(); });
     promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
     promise.then(this._assertResolved('then', true), this._assertRejected('then', false));
