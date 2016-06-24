@@ -28,6 +28,10 @@ var Test = function() {
 
 Test.prototype = PlurObject.create('plur/test/Test', Test);
 
+Test.prototype.sleep = function(milliseconds) {
+    sleep.sleep((milliseconds? milliseconds : 500)); // defualt 500 ms
+};
+
 Test.prototype.emitter = function() {
     return this._emitter;
 };
