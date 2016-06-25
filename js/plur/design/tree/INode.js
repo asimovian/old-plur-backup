@@ -28,6 +28,26 @@ ITreeNode.prototype = PlurObject.create('plur/design/tree/INode', ITreeNode);
  * @returns
  */
 
+
+/**
+ * Gets the value for this node.
+ *
+ * @function plur/design/tree/INode.prototype.get
+ * @virtual
+ * @returns mixed|null value
+ */
+INode.prototype.get = PlurObject.pureVirtualFunction;
+
+/**
+ * Sets the value for this node.
+ *
+ * @function plur/design/tree/INode.prototype.set
+ * @virtual
+ * @param mixed value
+ * @returns mixed|null
+ */
+INode.prototype.set = PlurObject.pureVirtualFunction;
+
 /**
  * Retrieves children of this node.
  * If a constructor is provided, only children that are instances of such will be returned.
@@ -115,17 +135,16 @@ ITreeNode.prototype.isLeaf = PlurObject.pureVirtualFunction;
 //    return (this._parent !== null && this.empty() );
 
 /**
- * Factory method that creates a new child branch chain, each subsequent child branch corresponding to a key in the
+ * Factory method that creates a new child branch chain, each subsequent child branch corresponding to its index in the
  * provided array.
  *
  * @function plur/design/tree/INode.prototype.expand
- * @param Function treeNodeConstructor The ITreeNode constructor to use when creating new nodes
+ * @param string[] treeList An array to be walked. An array of arrays specifies multiple branches, and can be complex.
+ *      | {} treeMap A map to be walked. Can be complex.
+ * @param Function valueConstructor Will construct a value object and fill the new node
  *      | Function(plur/design/tree/INode parent := plur/design/tree/INode newChild) constructionCallback
  *          A callback can be used to manually create and return each child.
- * @param string[] treeList A array to be walked. An array of arrays specifies multiple branches, and can be complex.
- *      | {} treeMap A map to be walked. Can be complex.
- * @returns plur/design/tree/INode newLeafBranch
- *        | plur/design/tree/INode[] newLeafBranches If multiple immediate children were created, an array is returned.
+ * @returns plur/design/tree/INode newLeaves[] All new leaf nodes are returned
  */
 ITreeNode.prototype.expand = PlurObject.pureVirtualFunction;
 

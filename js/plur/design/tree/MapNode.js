@@ -19,7 +19,8 @@ function(
  * @implements plur/design/tree/INode
  **
  */
-var MapTreeNode = function(parent, key) {
+var MapTreeNode = function(value, parent, key) {
+    this._value = value || null;
     this._parent = parent || null;
     this._key = key || null;
     this._children = {};
@@ -29,6 +30,29 @@ MapTreeNode.prototype = PlurObject.create('plur/design/tree/MapNode', MapTreeNod
 PlurObject.implement(MapTreeNode, ITreeNode);
 
 /**
+ * Gets the value for this node.
+ *
+ * @function plur/design/tree/MapNode.prototype.get
+ * @virtual
+ * @returns mixed|null value
+ */
+MapNode.prototype.get = function() {
+   return this._value;
+};
+
+/**
+ * Sets the value for this node.
+ *
+ * @function plur/design/tree/MapNode.prototype.set
+ * @virtual
+ * @param mixed value
+ * @returns mixed|null
+ */
+MapNode.prototype.set = function(value) {
+    this._value = value;
+};
+
+ /**
  * Retrieves children of this node.
  * If a constructor is provided, only children that are instances of such will be returned.
  *

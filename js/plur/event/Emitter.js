@@ -48,9 +48,9 @@ var Emitter = function() {
 	 * of > represent an array of Listeners subscribed to the containing branch. Leaf objects with a key of * (wildcard)
 	 * represent an array of Listeners subscribed to any branch following the containing branch. Very basic globbing.
 
-	 * @var plur/event/Emitter.this._listenerTree
+	 * @var plur/design/tree/MapNode
 	 */
-	this._listenerTree = new Emitter._ListenerTreeNode();
+	this._listenerTree = new MapTreeNode();
 	this._persistentEvents = {};
 };
 
@@ -93,46 +93,43 @@ Emitter._Listener = function(eventType, callback, subscriptionId, temporary) {
  * former would only receive events for the exact event type of "car/wheel", while the latter listener would receive
  * events for both "car/wheel" and "car/trunk".
  *
- * @constructor plur/event/Emitter._ListenerTreeNode
- * @extends plur/design/tree/MapNode
+ * @constructor plur/event/Emitter._ListenerTreeValue
  **
- * @param plur/event/Emitter._ListenerTreeNode|undefined parent
- * @param string|undefined name
+ * @param {}|undefined listeners
+ * @param {}|undefined childListeners
  */
-Emitter._ListenerTreeNode = function(parent, name) {
-    MapTreeNode.call(this, parent, name);
-
-    this.listeners = {}; // map: subscriptionId => listener
-    this.childListeners = {}; // map: subscriptionId => listener
+Emitter._ListenerTreeValue = function(listeners, childListeners) {
+    this.listeners = listeners || {}; // map: subscriptionId => listener
+    this.childListeners = childListeners || {}; // map: subscriptionId => listener
 };
 
-Emitter._ListenerTreeNode.prototype = PlurObject.create(
-    'plur/event/Emitter._ListenerTreeNode', Emitter._ListenerTreeNode, MapTreeNode);
+Emitter._ListenerTreeValue.prototype = PlurObject.create('plur/event/Emitter._ListenerTreeValue',
+    Emitter._ListenerTreeValue );
 
 /**
  * Adds a listener.
  *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.appendTree
+ * @function plur/event/Emitter._ListenerTreeValue.prototype.appendTree
  */
-Emitter._ListenerTreeNode.prototype.addListener = function(listener) {
+Emitter._ListenerTreeValue.prototype.addListener = function(listener) {
     this.listeners[listener.subscriptionId] = listener;
 };
 
 /**
  * Adds a child listener.
  *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.appendTree
+ * @function plur/event/Emitter._ListenerTreeValue.prototype.appendTree
  */
-Emitter._ListenerTreeNode.prototype.addChildListener = function(listener) {
+Emitter._ListenerTreeValue.prototype.addChildListener = function(listener) {
     this.childListeners[listener.subscriptionId] = listener;
 };
 
 /**
  * Removes a listener by its subscription id.
  *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.removeListener
+ * @function plur/event/Emitter._ListenerTreeValue.prototype.removeListener
  */
-Emitter._ListenerTreeNode.prototype.removeListener = function(subscriptionId) {
+Emitter._ListenerTreeValue.prototype.removeListener = function(subscriptionId) {
     delete this.listeners[subscriptionId];
     delete this.childListeners[subscriptionId];
 };
@@ -140,41 +137,32 @@ Emitter._ListenerTreeNode.prototype.removeListener = function(subscriptionId) {
 /**
  * Retrieves listeners.
  *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.getListeners
- * @returns plur/event/Emitter._ListenerTreeNode[]
+ * @function plur/event/Emitter._ListenerTreeValue.prototype.getListeners
+ * @returns plur/event/Emitter._ListenerTreeValue[]
  */
-Emitter._ListenerTreeNode.prototype.getListeners = function() {
+Emitter._ListenerTreeValue.prototype.getListeners = function() {
     return PlurObject.values(this.listeners);
 };
 
 /**
  * Retrieves child listeners.
  *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.getChildListeners
- * @returns plur/event/Emitter._ListenerTreeNode[]
+ * @function plur/event/Emitter._ListenerTreeValue.prototype.getChildListeners
+ * @returns plur/event/Emitter._ListenerTreeValue[]
  */
-Emitter._ListenerTreeNode.prototype.getChildListeners = function() {
+Emitter._ListenerTreeValue.prototype.getChildListeners = function() {
     return PlurObject.values(this.childListeners);
 };
 
 /**
  * Determines whether this node has children and/or whether it has listeners or not.
  *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.empty
- * @returns boolean isEmpty TRUE if empty, FALSE if not
+ * @function plur/event/Emitter._ListenerTreeValue.prototype.listening
+ * @returns boolean isEmpty TRUE if listening, FALSE if not
  */
-Emitter._ListenerTreeNode.prototype.empty = function() {
-    return ( MapTreeNode.prototype.empty.call(this)
-        && Object.keys(this.listeners).length === 0 && Object.keys(this.childListeners).length === 0);
+Emitter._ListenerTreeValue.prototype.listening = function() {
+    return ( Object.keys(this.listeners).length !== 0 || Object.keys(this.childListeners).length !== 0 );
 };
-
-/**
- *
- *
- * @function plur/event/Emitter._ListenerTreeNode.prototype.appendTree
- * @returns plur/event/Emitter._ListenerTreeNode
- */
-
 
 /**
  * @var string Emitter.wildcard The event type wildcard. When used, it will catch any event that has the preceding token
@@ -213,10 +201,12 @@ Emitter.prototype._findListeners = function(eventTypeTokens) {
             break;
         }
 
+        var branchValue = branch.get();
+
         if (i+1 === n) { // last node, get exact listeners
-            listeners = listeners.concat(branch.getListeners());
+            listeners = listeners.concat(branchValue.getListeners());
         } else { // preceding node, get child listeners
-            listeners = listeners.concat(branch.getChildListeners());
+            listeners = listeners.concat(branchValue.getChildListeners());
         }
     }
 
@@ -265,19 +255,22 @@ Emitter.prototype._subscribe = function(eventType, callback, temporary) {
     var listener = new Emitter._Listener(eventType, callback, this._nextSubscriptionId(), temporary);
     var eventTypeTokens = Emitter._tokenizeEventType(eventType);
     var isWildcard = ( eventTypeTokens[eventTypeTokens.length - 1] === Emitter.wildcard );
-    var branch = this._listenerTree.expand(Emitter._ListenerTreeNode, ( isWildcard ? eventTypeTokens.slice(0, -1)  : eventTypeTokens));
-
-	if (!this._listening) {
-	    this._listening = true;
-	}
+    var branch = null;
 
     if (isWildcard) {
-        branch.addChildListener(listener);
+        eventTypeTokens = eventTypeTokens.slice(0, -1); // remove the trailing wildcard token
+        branch = this._listenerTree.expand(eventTypeTokens, Emitter._ListenerTreeValue);
+        branch.get().addChildListener(listener);
     } else {
-        branch.addListener(listener);
+        branch = this._listenerTree.expand(eventTypeTokens, Emitter._ListenerTreeValue);
+        branch..get().addListener(listener);
     }
 
     this._subscriptionTreeMap[listener.subscriptionId] = branch;
+
+   	if (!this._listening) {
+	    this._listening = true;
+	}
 
 	return listener.subscriptionId;
 };
@@ -334,13 +327,13 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
     listenerBranch.removeListener(subscriptionId);
 
 	// prune childless tree nodes.
-    while (!listenerBranch.isRoot() && listenerBranch.empty()) {
+    while (!listenerBranch.isRoot() && listenerBranch.isLeaf() && !listenerBranch.get().listening()) {
         var child = listenerBranch;
         listenerBranch = listenerBranch.parent();
         listenerBranch.removeChild(child);
     }
 
-    if (this._listenerTree.empty()) {
+    if (this._listenerTree.isLeaf() && !this._listenerTree.get().listening()) {
         this._listening = false;
     }
 };
