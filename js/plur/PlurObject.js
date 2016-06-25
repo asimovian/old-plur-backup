@@ -33,7 +33,8 @@ PlurObject.prototype.namepath = PlurObject.namepath;
  * @returns boolean TRUE if constructor FALSE if not
  */
 PlurObject.isConstructor = function(constructor) {
-    return ( constructor instanceof Function && typeof constructor.namepath !== 'undefined' );
+    return ( constructor instanceof Function && typeof constructor.namepath === 'string'
+        && typeof constructor.prototype === 'object' );
 };
 
 

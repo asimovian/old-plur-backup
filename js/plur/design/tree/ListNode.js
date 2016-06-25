@@ -27,10 +27,29 @@ var ListTreeNode = function(parent) {
 ListTreeNode.prototype = PlurObject.create('plur/design/tree/ListNode', ListTreeNode);
 PlurObject.implement(ListTreeNode, ITreeNode);
 
-ListTreeNode.prototype.children = function(constructors) {
-    if (typeof constructors === 'undefined') {
-        return this._children;
+/**
+ * Retrieves children of this node.
+ * If a constructor is provided, only children that are instances of such will be returned.
+ *
+ * @function plur/design/tree/ListNode.prototype.children
+ * @param Function instanceOfConstructor|undefined Filters out all children that are not derived from this constructor
+ * @returns plur/design/tree/ListNode[]
+ */
+ListTreeNode.prototype.children = function(instanceOfConstructor) {
+    var children = this._children;
+
+    if (PlurObject.isConstructor(instanceOfConstructor)) {
+        var filtered = [];
+        for (var i = 0, n = children.length; ++i) {
+            if (children[i] instanceof instanceOfConstructor) {
+                filtered.push(children[i]);
+            }
+        }
+
+        children = filtered;
     }
+
+    return children;
 };
 
 ListTreeNode.prototype.parent = function() {

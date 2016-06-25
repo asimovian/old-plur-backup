@@ -28,6 +28,31 @@ var MapTreeNode = function(parent, key) {
 MapTreeNode.prototype = PlurObject.create('plur/design/tree/MapNode', MapTreeNode);
 PlurObject.implement(MapTreeNode, ITreeNode);
 
+/**
+ * Retrieves children of this node.
+ * If a constructor is provided, only children that are instances of such will be returned.
+ *
+ * @function plur/design/tree/MapNode.prototype.children
+ * @param Function instanceOfConstructor|undefined Filters out all children that are not derived from this constructor
+ * @returns plur/design/tree/MapNode[]
+ */
+MapTreeNode.prototype.children = function(instanceOfConstructor) {
+    var children = PlurObject.values(this._children);
+
+    if (PlurObject.isConstructor(instanceOfConstructor)) {
+        var filtered = [];
+        for (var i = 0, n = children.length; ++i) {
+            if (children[i] instanceof instanceOfConstructor) {
+                filtered.push(children[i]);
+            }
+        }
+
+        children = filtered;
+    }
+
+    return children;
+};
+
 MapTreeNode.prototype.key = function() {
     return this._key;
 };
@@ -65,9 +90,6 @@ MapTreeNode.prototype.removeChild = function(keyOrChild) {
     }
 };
 
-MapTreeNode.prototype.children = function() {
-    return PlurObject.values(this._children);
-};
 
 MapTreeNode.prototype.empty = function() {
     return ( PlurObject.values(this._children).length === 0 );
