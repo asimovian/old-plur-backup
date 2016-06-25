@@ -48,26 +48,6 @@ ITreeNode.prototype.children = PlurObject.pureVirtualFunction;
 ITreeNode.prototype.parent = PlurObject.pureVirtualFunction;
 
 /**
- * Retrieves a specific child by the given identifier.
- *
- * @function plur/design/tree/INode.prototype.
- * @virtual
- * @param []|{}|string|int|float identifier
- * @returns plur/design/tree/INode|null child
- */
-ITreeNode.prototype.child = PlurObject.pureVirtualFunction;
-
-/**
- * Determines whether a child with the provided identifier currently exists or not.
- *
- * @function plur/design/tree/INode.prototype.hasChild
- * @virtual
- * @param []|{}|string|int|float identifier
- * @returns boolean hasChild TRUE if child exists, FALSE if not
- */
-ITreeNode.prototype.hasChild = PlurObject.pureVirtualFunction;
-
-/**
  * Adds a child.
  *
  * @function plur/design/tree/INode.prototype.addChild
@@ -133,6 +113,21 @@ ITreeNode.prototype.empty = PlurObject.pureVirtualFunction;
 ITreeNode.prototype.isLeaf = PlurObject.pureVirtualFunction;
 //function() {
 //    return (this._parent !== null && this.empty() );
+
+/**
+ * Factory method that creates a new child branch chain, each subsequent child branch corresponding to a key in the
+ * provided array.
+ *
+ * @function plur/design/tree/INode.prototype.expand
+ * @param Function treeNodeConstructor The ITreeNode constructor to use when creating new nodes
+ *      | Function(plur/design/tree/INode parent := plur/design/tree/INode newChild) constructionCallback
+ *          A callback can be used to manually create and return each child.
+ * @param string[] treeList A array to be walked. An array of arrays specifies multiple branches, and can be complex.
+ *      | {} treeMap A map to be walked. Can be complex.
+ * @returns plur/design/tree/INode newLeafBranch
+ *        | plur/design/tree/INode[] newLeafBranches If multiple immediate children were created, an array is returned.
+ */
+ITreeNode.prototype.expand = PlurObject.pureVirtualFunction;
 
 return ITreeNode;
 });
