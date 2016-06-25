@@ -109,24 +109,50 @@ Emitter._ListenerTreeNode = function(parent, name) {
 Emitter._ListenerTreeNode.prototype = PlurObject.create(
     'plur/event/Emitter._ListenerTreeNode', Emitter._ListenerTreeNode, MapTreeNode);
 
+/**
+ * Adds a listener.
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.appendTree
+ */
 Emitter._ListenerTreeNode.prototype.addListener = function(listener) {
     this.listeners[listener.subscriptionId] = listener;
 };
 
+/**
+ * Adds a child listener.
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.appendTree
+ */
 Emitter._ListenerTreeNode.prototype.addChildListener = function(listener) {
     this.childListeners[listener.subscriptionId] = listener;
-};;
+};
 
+/**
+ * Removes a listener by its subscription id.
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.removeListener
+ */
 Emitter._ListenerTreeNode.prototype.removeListener = function(subscriptionId) {
     delete this.listeners[subscriptionId];
     delete this.childListeners[subscriptionId];
 };
 
-
+/**
+ * Retrieves listeners.
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.getListeners
+ * @returns plur/event/Emitter._ListenerTreeNode[]
+ */
 Emitter._ListenerTreeNode.prototype.getListeners = function() {
     return PlurObject.values(this.listeners);
 };
 
+/**
+ * Retrieves child listeners.
+ *
+ * @function plur/event/Emitter._ListenerTreeNode.prototype.getChildListeners
+ * @returns plur/event/Emitter._ListenerTreeNode[]
+ */
 Emitter._ListenerTreeNode.prototype.getChildListeners = function() {
     return PlurObject.values(this.childListeners);
 };
