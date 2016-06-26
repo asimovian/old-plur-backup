@@ -165,10 +165,10 @@ Emitter._ListenerTreeValue.prototype.listening = function() {
 };
 
 /**
- * @var string Emitter.wildcard The event type wildcard. When used, it will catch any event that has the preceding token
+ * @var string Emitter.WILDCARD The event type wildcard. When used, it will catch any event that has the preceding token
  * in its path.
  */
-Emitter.wildcard = '*';
+Emitter.WILDCARD = '*';
 
 /**
  * Splits an event type string into a string array of individual tokens. Splits on / and . characters.
@@ -254,7 +254,7 @@ Emitter.prototype.on = function(eventType, callback) {
 Emitter.prototype._subscribe = function(eventType, callback, temporary) {
     var listener = new Emitter._Listener(eventType, callback, this._nextSubscriptionId(), temporary);
     var eventTypeTokens = Emitter._tokenizeEventType(eventType);
-    var isWildcard = ( eventTypeTokens[eventTypeTokens.length - 1] === Emitter.wildcard );
+    var isWildcard = ( eventTypeTokens[eventTypeTokens.length - 1] === Emitter.WILDCARD );
     var branch = null;
 
     if (isWildcard) {

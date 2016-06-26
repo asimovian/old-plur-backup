@@ -5,25 +5,26 @@
  */
 define([
     'plur/PlurObject',
-    'plur/msg/Message',
+    'plur/msg/IMessage',
     'plur/rng/UUID'],
 function (
     PlurObject,
-    Message,
+    IMessage,
     UUID ) {
 
 /**
  * A simple abstract base class for all forms of requests.
  *
  * @constructor plur/msg/Request
- * @extends plur/msg/Message
+ * @implements plur/msg/IMessage
  * @abstract
  */
 var Request = function() {
     this._id = UUID.create();
 };
 
-Request.prototype = PlurObject.create('plur/msg/Request', Request, Message);
+Request.prototype = PlurObject.create('plur/msg/Request', Request);
+PlurObject.implement(Request, IMessage);
 
 /**
  * Retrieves the request identifier.

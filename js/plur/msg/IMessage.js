@@ -1,9 +1,12 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject plur/UUID
+ * @requires plur/PlurObject
  */
-define(['plur/PlurObject', 'plur/rng/UUID'], function (PlurObject, UUID) {
+define([
+    'plur/PlurObject' ],
+function (
+    PlurObject ) {
 
 /**
  * A simple abstract base class for all messages passed between node and remote services.
@@ -11,19 +14,18 @@ define(['plur/PlurObject', 'plur/rng/UUID'], function (PlurObject, UUID) {
  * @constructor plur/msg/Message
  * @abstract
  */
-var Message = function() {
-};
+var IMessage = function() {};
 
-PlurObject.create('plur/msg/Message', Message);
+IMessage.prototype = PlurObject.create('plur/msg/IMessage', IMessage);
 
 /**
  * Retrieves the message identifier.
  *
- * @function plur/msg/Message.prototype.getId
+ * @function plur/msg/IMessage.prototype.getId
  * @virtual
  * @returns string
  */
-Message.prototype.getId = PlurObject.pureVirtualFunction;
+IMessage.prototype.getId = PlurObject.pureVirtualFunction;
 
 return Message;
 });

@@ -51,7 +51,7 @@ PlurObject.implementing = function(object, interfaceConstructor) {
  * @throws Error
  */
 PlurObject.pureVirtualFunction = function() {
-    throw new Error('Unimplmeneted pure virtual function');
+    throw new Error('plur: Unimplmeneted virtual function.');
 };
 
 /**
