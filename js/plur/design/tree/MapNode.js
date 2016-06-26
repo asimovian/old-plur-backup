@@ -114,11 +114,6 @@ MapTreeNode.prototype.removeChild = function(keyOrChild) {
     }
 };
 
-
-MapTreeNode.prototype.empty = function() {
-    return ( PlurObject.values(this._children).length === 0 );
-};
-
 /**
  * Factory method that creates a new child branch chain, each subsequent child branch corresponding to a key in the
  * provided array.

@@ -14,6 +14,7 @@ function(
  * Tree Node Interface
  *
  * @constructor plur/design/tree/INode
+ * @interface
  **
  */
 var ITreeNode = function() {};
@@ -21,19 +22,10 @@ var ITreeNode = function() {};
 ITreeNode.prototype = PlurObject.create('plur/design/tree/INode', ITreeNode);
 
 /**
- *
- *
- * @function plur/design/tree/INode.prototype.
- * @param
- * @returns
- */
-
-
-/**
  * Gets the value for this node.
  *
  * @function plur/design/tree/INode.prototype.get
- * @virtual
+ * @abstract
  * @returns mixed|null value
  */
 INode.prototype.get = PlurObject.pureVirtualFunction;
@@ -42,7 +34,7 @@ INode.prototype.get = PlurObject.pureVirtualFunction;
  * Sets the value for this node.
  *
  * @function plur/design/tree/INode.prototype.set
- * @virtual
+ * @abstract
  * @param mixed value
  * @returns mixed|null
  */
@@ -62,7 +54,7 @@ ITreeNode.prototype.children = PlurObject.pureVirtualFunction;
  * Retrieves the parent.
  *
  * @function plur/design/tree/INode.prototype.parent
- * @virtual
+ * @abstract
  * @returns plur/design/tree/INode|null parent
  */
 ITreeNode.prototype.parent = PlurObject.pureVirtualFunction;
@@ -71,7 +63,7 @@ ITreeNode.prototype.parent = PlurObject.pureVirtualFunction;
  * Adds a child.
  *
  * @function plur/design/tree/INode.prototype.addChild
- * @virtual
+ * @abstract
  * @param plur/design/tree/INode child
  * @returns plur/design/tree/INode child
  * @throws PlurError On invalid child
@@ -82,7 +74,7 @@ ITreeNode.prototype.addChild = PlurObject.pureVirtualFunction;
  * Removes a child.
  *
  * @function plur/design/tree/INode.prototype.removeChild
- * @virtual
+ * @abstract
  * @param plur/design/tree/INode child
  */
 ITreeNode.prototype.removeChild = PlurObject.pureVirtualFunction;
@@ -90,49 +82,29 @@ ITreeNode.prototype.removeChild = PlurObject.pureVirtualFunction;
 /**
  * Determines whether this node is the root node of the tree or not.
  *
- * @function plur/design/tree/INode.prototype.
- * @virtual
- * @param
- * @returns
+ * @function plur/design/tree/INode.prototype.isRoot
+ * @abstract
+ * @returns boolean TRUE if this node is the root of the tree, FALSE if not
  */
 ITreeNode.prototype.isRoot = PlurObject.pureVirtualFunction;
-//function() {
-//    return ( this._parent === null );
 
 /**
  * Retrieves the root node for this tree.
  *
- * @function plur/design/tree/INode.prototype.
- * @virtual
- * @param
- * @returns
+ * @function plur/design/tree/INode.prototype.root
+ * @abstract
+ * @returns plur/design/tree/INode root
  */
 ITreeNode.prototype.root = PlurObject.pureVirtualFunction;
-//function() {
-//    return branch;
-
-/**
- * Determines whether this node is a leaf and lacks important data or not.
- *
- * @function plur/design/tree/INode.prototype.
- * @virtual
- * @returns boolean TRUE if empty, FALSE if not
- */
-ITreeNode.prototype.empty = PlurObject.pureVirtualFunction;
-//function() {
-//    return ( this._children.length === 0 );
 
 /**
  * Determines whether this node is childless or not.
  *
- * @function plur/design/tree/INode.prototype.
- * @virtual
- * @param
- * @returns
+ * @function plur/design/tree/INode.prototype.isLeaf
+ * @abstract
+ * @returns boolean
  */
 ITreeNode.prototype.isLeaf = PlurObject.pureVirtualFunction;
-//function() {
-//    return (this._parent !== null && this.empty() );
 
 /**
  * Factory method that creates a new child branch chain, each subsequent child branch corresponding to its index in the

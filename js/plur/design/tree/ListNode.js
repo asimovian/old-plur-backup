@@ -106,10 +106,6 @@ ListTreeNode.prototype.root = function() {
     return branch;
 };
 
-ListTreeNode.prototype.empty = function() {
-    return ( this._children.length === 0 );
-};
-
 ListTreeNode.prototype.isLeaf = function() {
     return (this._parent !== null && this.empty() );
 };

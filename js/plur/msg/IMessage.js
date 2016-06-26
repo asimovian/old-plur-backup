@@ -22,7 +22,7 @@ IMessage.prototype = PlurObject.create('plur/msg/IMessage', IMessage);
  * Retrieves the message identifier.
  *
  * @function plur/msg/IMessage.prototype.getId
- * @virtual
+ * @abstract
  * @returns string
  */
 IMessage.prototype.getId = PlurObject.pureVirtualFunction;

@@ -19,7 +19,7 @@ IFileSystem.prototype = PlurObject.create('plur/file/ISystem', IFileSystem);
  * Combines the provided paths together into one path.
  *
  * @function plur/file/ISystem.prototype.joinPaths
- * @virtual
+ * @abstract
  * @param ... string[] paths
  * @returns string
  */
@@ -29,7 +29,7 @@ IFileSystem.prototype.joinPaths = PlurObject.pureVirtualFunction;
  * Retrieves the home path for thie Plur software, appending all provided paths.
  *
  * @function plur/file/ISystem.prototype.getHomePath
- * @virtual
+ * @abstract
  * @param ... string[] paths
  * @returns string
  */
@@ -39,7 +39,7 @@ IFileSystem.prototype.getHomePath = PlurObject.pureVirtualFunction;
  * Retrieves the config path for this node instance, appending all provided paths.
  *
  * @function plur/file/ISystem.prototype.getConfigPath
- * @virtual
+ * @abstract
  * @param ... string[] paths
  * @returns string
  */
@@ -49,7 +49,7 @@ IFileSystem.prototype.getConfigPath = PlurObject.pureVirtualFunction;
  * Retrieves the bin path for the Plur software appending all provided paths.
  *
  * @function plur/file/ISystem.prototype.getBinPath
- * @virtual
+ * @abstract
  * @param ... string[] paths
  * @returns string
  */
