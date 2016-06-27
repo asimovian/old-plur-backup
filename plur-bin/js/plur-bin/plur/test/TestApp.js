@@ -97,7 +97,7 @@ TestApp.prototype.start = function() {
         });
     } else {
         var tester = new Tester(this._targets);
-        self._start(tester);
+        this._start(tester);
     }
 };
 

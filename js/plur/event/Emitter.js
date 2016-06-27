@@ -263,7 +263,7 @@ Emitter.prototype._subscribe = function(eventType, callback, temporary) {
         branch.get().addChildListener(listener);
     } else {
         branch = this._listenerTree.expand(eventTypeTokens, Emitter._ListenerTreeValue);
-        branch..get().addListener(listener);
+        branch.get().addListener(listener);
     }
 
     this._subscriptionTreeMap[listener.subscriptionId] = branch;
@@ -324,7 +324,7 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
 	var listenerBranch = this._subscriptionTreeMap[subscriptionId];
 	Assertion.assert(listenerBranch !== null, 'Listener branch is missing.')
 
-    listenerBranch.removeListener(subscriptionId);
+    listenerBranch.get().removeListener(subscriptionId);
 
 	// prune childless tree nodes.
     while (!listenerBranch.isRoot() && listenerBranch.isLeaf() && !listenerBranch.get().listening()) {
@@ -333,7 +333,7 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
         listenerBranch.removeChild(child);
     }
 
-    if (this._listenerTree.isLeaf() && !this._listenerTree.get().listening()) {
+    if (this._listenerTree.isLeaf()) {
         this._listening = false;
     }
 };

@@ -36,7 +36,7 @@ PlurObject.implement(MapTreeNode, ITreeNode);
  * @virtual
  * @returns mixed|null value
  */
-MapNode.prototype.get = function() {
+MapTreeNode.prototype.get = function() {
    return this._value;
 };
 
@@ -48,7 +48,7 @@ MapNode.prototype.get = function() {
  * @param mixed value
  * @returns mixed|null
  */
-MapNode.prototype.set = function(value) {
+MapTreeNode.prototype.set = function(value) {
     this._value = value;
 };
 
@@ -65,7 +65,7 @@ MapTreeNode.prototype.children = function(instanceOfConstructor) {
 
     if (PlurObject.isConstructor(instanceOfConstructor)) {
         var filtered = [];
-        for (var i = 0, n = children.length; ++i) {
+        for (var i = 0, n = children.length; i < n; ++i) {
             if (children[i] instanceof instanceOfConstructor) {
                 filtered.push(children[i]);
             }
@@ -83,7 +83,7 @@ MapTreeNode.prototype.children = function(instanceOfConstructor) {
  * @function plur/design/tree/MapNode.prototype.parent
  * @returns plur/design/tree/MapNode|null parent
  */
-ITreeNode.prototype.parent = function() {
+MapTreeNode.prototype.parent = function() {
     return this._parent;
 };
 
@@ -99,21 +99,28 @@ MapTreeNode.prototype.addChild = function(child) {
         throw new TypeError('Invalid MapTreeNode child', {child: child});
     }
 
-    this._children[child.name()] = child;
+    this._children[child.key()] = child;
     return child;
 };
 
-MapTreeNode.prototype.removeChild = function(keyOrChild) {
-    if (keyOrChild instanceof MapTreeNode) {
-        var child = keyOrChild;
+/**
+ * Removes a child.
+ *
+ * @function plur/design/tree/MapTreeNode.prototype.removeChild
+ * @param plur/design/tree/MapTreeNode childOrKey
+ *      | string key
+ */
+ MapTreeNode.prototype.removeChild = function(childOrKey) {
+    if (childOrKey instanceof MapTreeNode) {
+        var child = childOrKey;
         if (typeof this._children[child.key()] === 'undefined') {
             throw new StateError('Child not found', {key: key})
         }
 
         child._parent = null;
         delete this._children[child.key()];
-    } else if (typeof keyOrChild === 'string') {
-        var key = keyOrChild;
+    } else if (typeof childOrKey === 'string') {
+        var key = childOrKey;
         if (typeof this._children[key] === 'undefined') {
             throw new StateError('Child not found', {key: key})
         }
@@ -122,41 +129,121 @@ MapTreeNode.prototype.removeChild = function(keyOrChild) {
         child._parent = null;
         delete this._children[key];
     } else {
-        throw new TypeError('Invalid argument', {keyOrChild: keyOrChild});
+        throw new TypeError('Invalid argument', {childOrKey: childOrKey});
     }
 };
 
 /**
- * Factory method that creates a new child branch chain, each subsequent child branch corresponding to a key in the
+ * Determines whether a child exists or not.
+ *
+ * @function plur/design/tree/MapNode.prototype.hasChild
+ * @param plur/design/tree/MapNode|string childOrKey The child to search for.
+ * @returns boolean hasChild TRUE if child exists. FALSE if not.
+ */
+MapTreeNode.prototype.hasChild = function(childOrKey) {
+    if (typeof childOrKey === 'string') {
+        return ( typeof this._children[childOrKey] !== 'undefined' ) ;
+    } else if (childOrKey instanceof MapTreeNode) {
+        var child = childOrKey;
+        for (var key in this._children) {
+            if (typeof this._children[key] === child) {
+                return true;
+            }
+        }
+
+        return false;
+    } else {
+        throw new TypeError('Invalid childOrKey', {childOrKey: childOrKey});
+    }
+};
+
+
+/**
+ * Retrieves the specified child.
+ *
+ * @function plur/design/tree/MapNode.prototype.child
+ * @param string key
+ * @returns plur/design/tree/MapNode|null child NULL if not found.
+ */
+MapTreeNode.prototype.child = function(key) {
+    if (typeof this._children[key] !== 'undefined') {
+        return this._children[key];
+    }
+
+    return null;
+};
+
+/**
+ * Determines whether this node is the root node of the tree or not.
+ *
+ * @function plur/design/tree/MapNode.prototype.isRoot
+ * @returns boolean TRUE if this node is the root of the tree, FALSE if not
+ */
+MapTreeNode.prototype.isRoot = function() {
+    return ( this._parent === null );
+};
+
+/**
+ * Retrieves the root node for this tree.
+ *
+ * @function plur/design/tree/MapNode.prototype.root
+ * @returns plur/design/tree/MapNode root
+ */
+MapTreeNode.prototype.root = function() {
+    var branch = this;
+    while (branch._parent !== null) {
+        branch = branch._parent;
+    }
+
+    return branch;
+};
+
+/**
+ * Determines whether this node is childless or not.
+ *
+ * @function plur/design/tree/MapNode.prototype.isLeaf
+ * @returns boolean
+ */
+MapTreeNode.prototype.isLeaf = function() {
+    return ( Object.keys(this._children).length === 0 );
+};
+
+/**
+ * Factory method that creates a new child branch chain, each subsequent child branch corresponding to its index in the
  * provided array.
  *
+ * If the provided skeleton uses string keys as elements, children will be constructed using the constructor. Otherwise,
+ * pre-created MapTreeNode elements will be added.
+ *
  * @function plur/design/tree/MapNode.prototype.expand
- * @param Function treeNodeConstructor The MapTreeNode constructor to use when creating new nodes
- *      | Function
- * @param string[] keys
- *      | {} treeMap A map to be walked
- * @returns plur/design/tree/MapNode leafBranch
+ * @param string[] treeList An array to be walked. An array of arrays specifies multiple branches, and can be complex.
+ *      | {} treeMap A map to be walked. Can be complex.
+ * @param Function valueConstructor Will construct a value object and fill the new node
+ *      | Function(plur/design/tree/INode parent := plur/design/tree/INode newChild) constructionCallback
+ *          A callback can be used to manually create and return each child.
+ * @returns plur/design/tree/INode newLeaves[] All new leaf nodes are returned
  */
- MapTreeNode.prototype.expand = function(treeNodeConstructor, keys) {
+ MapTreeNode.prototype.expand = function(treeList, valueConstructor) {
     var branch = this;
 
-    if (Array.isArray(keys)) {
-        for (var i = 0, n = keys.length; i < n; ++i) {
-            var key = keys[i];
+    if (Array.isArray(treeList)) {
+        for (var i = 0, n = treeList.length; i < n; ++i) {
+            var key = treeList[i];
 
             if (branch.key() === key) {
                 continue;
             } else if (branch.hasChild(key)) {
                 branch = branch.child(key);
             } else {
-                //TODO: if (PlurObject.isConstructor(treeNodeConstructor)) {
-                branch = branch.addChild(new treeNodeConstructor(branch, key));
+                //TODO: if (PlurObject.isConstructor(valueConstructor)) {
+                branch = branch.addChild(new MapTreeNode(new valueConstructor(), branch, key));
             }
         }
     } else { // treeMap
-        for (var key in keys) {
-                //TODO: if (PlurObject.isConstructor(treeNodeConstructor)) {
-                branch = branch.addChild(new treeNodeConstructor(branch, key));
+        var treeMap = treeList;
+        for (var key in treeMap) {
+                //TODO: if (PlurObject.isConstructor(valueConstructor)) {
+                branch = branch.addChild(new MapTreeNode(new valueConstructor(), branch, key));
                 branch.expand(treeMap[key]);
         }
     }

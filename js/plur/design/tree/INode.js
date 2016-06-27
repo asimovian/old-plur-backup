@@ -28,7 +28,7 @@ ITreeNode.prototype = PlurObject.create('plur/design/tree/INode', ITreeNode);
  * @abstract
  * @returns mixed|null value
  */
-INode.prototype.get = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.get = PlurObject.pureVirtualFunction;
 
 /**
  * Sets the value for this node.
@@ -38,7 +38,7 @@ INode.prototype.get = PlurObject.pureVirtualFunction;
  * @param mixed value
  * @returns mixed|null
  */
-INode.prototype.set = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.set = PlurObject.pureVirtualFunction;
 
 /**
  * Retrieves children of this node.
@@ -77,6 +77,16 @@ ITreeNode.prototype.addChild = PlurObject.pureVirtualFunction;
  * @param plur/design/tree/INode child
  */
 ITreeNode.prototype.removeChild = PlurObject.pureVirtualFunction;
+
+
+/**
+ * Determines whether a child exists or not.
+ *
+ * @function plur/design/tree/INode.prototype.hasChild
+ * @param plur/design/tree/INode child The child to search for.
+ * @returns boolean hasChild TRUE if child exists. FALSE if not.
+ */
+ITreeNode.prototype.hasChild = PlurObject.pureVirtualFunction;
 
 /**
  * Determines whether this node is the root node of the tree or not.
