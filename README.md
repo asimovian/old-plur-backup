@@ -13,7 +13,7 @@ Plur networks are controlled by management services that receive and react to me
 as directives by the network administrators. Management services start, stop, and reconfigure other plur
 services dynamically, based on changing operational requirements.
 
-Typical IT software services used in production environments (e.g., PostgreSQL, Memcached, etc.) are locked down and
+Typical third-party software services used in production environments (e.g., PostgreSQL, Memcached, etc.) are locked down and
 only interacted with through plur messaging API presented by custom plur services.
 
 
