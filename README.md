@@ -2,30 +2,19 @@ plur
 ====
 [ This project is in an early development stage ]
 
-Plur is a federated application platform that is designed to scale across
-servers, web browsers, mobile devices, and drone devices.
+Plur is a distributed application platform that is intended to scale across networks of virtual machines. The framework
+is designed to improve cross-platform code re-use by allowing most of the same code be used on both backend and
+fronted applications.
 
-Each software service in a plur network communicates by message with others either directly
-or through message forwarding and routing. Inter-network and global communication
-are similarly possible.
+One or more plur services run on each plur network node (application), communicating with other services either directly
+or through message forwarding and routing either across private networks or the Internet at large.
 
-Software services may contract work for payment from others in real-time through the use of
-federated marketplaces. Marketplaces may exist at any level of communication; intra-network,
-inter-network, and global.
+Plur networks are controlled by management services that receive and react to metrics from other plur services as well
+as directives by the network administrators. Low-level management services start, stop, and reconfigure other plur
+services dynamically, based on changing operational requirements.
 
-A large application in plur would typically be comprised of many plur software services running
-on many devices and VMs in many different datacenters around the world and abroad.
-
-Plur networks are directed by management services that receive event messages from others
-in the network. Management services start, stop, and scale other services based on event input.
-Management services are configured by the end-user with specific goals that drive decision making.
-AI as a Service (AIAAS) will eventually be incorporated in this area.
-
-Control services start, stop, and communicate with software applications running on their local OS.
-Trusted local services may send requests to the control services as well as field requests for others
-on their behalf. In this way, many control services may be directed by a single management service either
-directly or indirectly.
-
+Typical IT software services used in production environments (e.g., PostgreSQL, Memcached, etc.) are locked down and
+only interacted with through plur messaging API presented by custom plur services.
 
 Contributors
 ------------
@@ -36,28 +25,18 @@ Core Stack
 ----------
 Javascript is the primary programming language used for both server-side and client-side API.
 
+Linux is the targeted server-side environment. 
+
 HTML5/CSS is used for presentation on client-side applications.
-
-Linux is the targeted server-side environment. Currently, the targeted distro is Ubuntu Server.
-
-jQuery is used in client-side applications and may be bootstrapped in server-side if needed.
-
-iOS and Android are the targeted client-side mobile environments with Apache Cordova.
 
 PostgreSQL is the primary database service used.
 
-Raspberry Pi 2 Model B + Ubuntu Linux is the current drone device platform.
-
 Git is used to distribute open-source modules and upgrades within the platform.
-
-PGP is used to encrypt messages sent between services.
-
-Bitcoin is used to purchase service contracts.
 
 
 License (MIT)
 --------------
-Copyright (c) 2015 Asimovian LLC
+Copyright (c) 2016 Asimovian LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
