@@ -10,11 +10,12 @@ One or more plur services run on each plur network node (application), communica
 or through message forwarding and routing either across private networks or the Internet at large.
 
 Plur networks are controlled by management services that receive and react to metrics from other plur services as well
-as directives by the network administrators. Low-level management services start, stop, and reconfigure other plur
+as directives by the network administrators. Management services start, stop, and reconfigure other plur
 services dynamically, based on changing operational requirements.
 
 Typical IT software services used in production environments (e.g., PostgreSQL, Memcached, etc.) are locked down and
 only interacted with through plur messaging API presented by custom plur services.
+
 
 Contributors
 ------------
