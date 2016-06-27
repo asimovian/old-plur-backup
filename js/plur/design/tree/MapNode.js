@@ -77,17 +77,29 @@ MapTreeNode.prototype.children = function(instanceOfConstructor) {
     return children;
 };
 
-MapTreeNode.prototype.key = function() {
-    return this._key;
+/**
+ * Retrieves the parent.
+ *
+ * @function plur/design/tree/MapNode.prototype.parent
+ * @returns plur/design/tree/MapNode|null parent
+ */
+ITreeNode.prototype.parent = function() {
+    return this._parent;
 };
 
-MapTreeNode.prototype.addChild = function(child, key) {
-    if (typeof key !== 'undefined') {
-        this._children[key] = child;
-    } else {
-        this._children[child._key] = child;
+/**
+ * Adds a child.
+ *
+ * @function plur/design/tree/MapNode.prototype.addChild
+ * @param plur/design/tree/MapNode child
+ * @returns plur/design/tree/MapNode child
+ */
+MapTreeNode.prototype.addChild = function(child) {
+    if (!child instanceof MapTreeNode) {
+        throw new TypeError('Invalid MapTreeNode child', {child: child});
     }
 
+    this._children[child.name()] = child;
     return child;
 };
 
@@ -95,7 +107,7 @@ MapTreeNode.prototype.removeChild = function(keyOrChild) {
     if (keyOrChild instanceof MapTreeNode) {
         var child = keyOrChild;
         if (typeof this._children[child.key()] === 'undefined') {
-            throw new Assertion('Child not found')
+            throw new StateError('Child not found', {key: key})
         }
 
         child._parent = null;
@@ -103,14 +115,14 @@ MapTreeNode.prototype.removeChild = function(keyOrChild) {
     } else if (typeof keyOrChild === 'string') {
         var key = keyOrChild;
         if (typeof this._children[key] === 'undefined') {
-            throw new Assertion('Child not found')
+            throw new StateError('Child not found', {key: key})
         }
 
         var child = this._children[key];
         child._parent = null;
         delete this._children[key];
     } else {
-        throw Assertion('Invalid argument');
+        throw new TypeError('Invalid argument', {keyOrChild: keyOrChild});
     }
 };
 
@@ -150,6 +162,11 @@ MapTreeNode.prototype.removeChild = function(keyOrChild) {
     }
 
     return branch;
+};
+
+
+MapTreeNode.prototype.key = function() {
+    return this._key;
 };
 
 return MapTreeNode;

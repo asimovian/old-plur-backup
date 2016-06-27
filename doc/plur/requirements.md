@@ -1,7 +1,7 @@
 NPM
 ===
 
-> sudo npm install -g glob  
-> sudo npm install -g google-code-closure  
-> sudo npm install -g requirejs  
-> sudo npm install -g sleep
+> sudo npm install glob  
+> sudo npm install google-code-closure  
+> sudo npm install requirejs  
+> sudo npm install web3

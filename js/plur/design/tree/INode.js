@@ -66,7 +66,6 @@ ITreeNode.prototype.parent = PlurObject.pureVirtualFunction;
  * @abstract
  * @param plur/design/tree/INode child
  * @returns plur/design/tree/INode child
- * @throws PlurError On invalid child
  */
 ITreeNode.prototype.addChild = PlurObject.pureVirtualFunction;
 
