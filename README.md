@@ -19,7 +19,7 @@ only interacted with through plur messaging API presented by custom plur service
 
 Contributors
 ------------
-* Roy Laurie <roy.laurie@gmail.com>, Asimovian LLC
+* Roy Laurie \<<roy.laurie@asimovian.software>\>, Asimovian LLC
 
 
 Core Stack
