@@ -33,7 +33,6 @@ PlurObject.implement(MapTreeNode, ITreeNode);
  * Gets the value for this node.
  *
  * @function plur/design/tree/MapNode.prototype.get
- * @virtual
  * @returns mixed|null value
  */
 MapTreeNode.prototype.get = function() {
@@ -44,7 +43,6 @@ MapTreeNode.prototype.get = function() {
  * Sets the value for this node.
  *
  * @function plur/design/tree/MapNode.prototype.set
- * @virtual
  * @param mixed value
  * @returns mixed|null
  */
