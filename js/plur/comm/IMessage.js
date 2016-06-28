@@ -11,8 +11,9 @@ function (
 /**
  * A simple abstract base class for all messages passed between node and remote services.
  *
- * @constructor plur/msg/Message
- * @abstract
+ * @constructor plur/msg/IMessage
+ * @interface
+ **
  */
 var IMessage = function() {};
 
@@ -26,6 +27,10 @@ IMessage.prototype = PlurObject.create('plur/msg/IMessage', IMessage);
  * @returns string
  */
 IMessage.prototype.getId = PlurObject.pureVirtualFunction;
+
+IMessage.prototype.getRecipientPublicKeyHash = PlurObject.pureVirtualFunction;
+
+IMessage.prototype.getSenderPublicKeyHash = PlurObject.pureVirtualFunction;
 
 return Message;
 });

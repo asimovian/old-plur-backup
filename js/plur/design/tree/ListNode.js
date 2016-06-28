@@ -146,7 +146,9 @@ ListTreeNode.prototype.insertChild = function(child, siblingOrIndex) {
             this._children.push(child);
             child._index = index;
         } else{
-            this._children = this._children.splice(0, index -1).concat([child]).concat(this._children.splice(index));
+            var children = this._children = this._children.splice(0, index -1);
+            children.push(child);
+            this._children = children.concat(this._children.splice(index));
             child._index = index;
             this._children[index+1]._index++;
         }

@@ -15,15 +15,14 @@ function(
  * @var plur/configConfig
  **
  * @function plur/config/Config
- * @param subjectNamepath The namepath of the subject
+ * @param configurableNamepath The namepath of the subject
  * @param baseConfig Optional parent configuration to be merged.
  */
-var Config = function(subjectNamepath, baseConfig) {
-	this._subjectNamepath = subjectNamepath;
+var Config = function(configurableNamepath, config) {
+	this._configurableNamepath = configurableNamepath;
+	this._tree = new MapTreeNode();
 
-	if (typeof baseConfig !== 'undefined') {
-		this.merge(baseConfig);
-	}
+	this._tree.expand(config, )
 };
 
 Config.prototype = PlurObject.create('plur/config/Config', Config);
@@ -37,10 +36,10 @@ Config.mergeEnvironment = function(configs) {
 
 	for (var i = 0; i < configs.length; ++i) {
 		var config = configs[i];
-		if (typeof this._environment[config.subjectNamepath] === 'undefined') {
-			this._environment[config.subjectNamepath] = config;
+		if (typeof this._environment[config.configurableNamepath] === 'undefined') {
+			this._environment[config.configurableNamepath] = config;
 		} else {
-			this._environment[config.subjectNamepath].merge(config);
+			this._environment[config.configurableNamepath].merge(config);
 		}
 	}
 };
@@ -66,13 +65,28 @@ Config.isConfigField = function(name, value) {
 };
 
 Config.prototype.merge = function(config) {
-    for (var key in config) {
-        if (Config.isConfigField(key, config[key])) {
-            this[key] = config[key];
+    var copy = this.copy();
+
+    if (typeof config !== 'object') {
+        /* do nothing */
+    } else if (config instanceof Config) {
+        for (var key in config.config) {
+            if (copy.config[key])
+        }
+    } else {
+        config
+        for (var key in config) {
+            if (Config.isConfigField(key, config[key])) {
+                this[key] = config[key];
+            }
         }
     }
 
-    return this;
+    if (copy.configurableNamepath !=== copy.config.configurableNamepath) {
+        copy.configurableNamepath = copy.config.configurableNamepath;
+    }
+
+    return config;
 };
 
 Config.prototype.copy = function() {
@@ -82,7 +96,7 @@ Config.prototype.copy = function() {
 };
 	
 Config.prototype.getSubjectNamepath = function() {
-    return this._subjectNamepath;
+    return this._configurableNamepath;
 };
 
 	

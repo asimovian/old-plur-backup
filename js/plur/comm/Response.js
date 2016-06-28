@@ -19,22 +19,13 @@ function (
  * @implements plur/msg/IMessage
  * @abstract
  */
-var Response = function() {
-    this._id = UUID.create();
+var Response = function(senderPublicKeyHash, recipientPublicKeyHash, requestId, data) {
+    AMessage.call(this, senderPublicKeyHash, recipientPublicKeyHash, data);
+
+    this._requestId = requestId;
 };
 
-Response.prototype = PlurObject.create('plur/msg/Response', Response);
-PlurObject.implement(Response, IMessage);
-
-/**
- * Retrieves the response identifier.
- *
- * @function Response.prototype.getId
- * @returns string
- */
-Response.prototype.getId = function() {
-    return this._id;
-};
+Response.prototype = PlurObject.create('plur/msg/Response', Response, AMessage);
 
 return Response;
 });
