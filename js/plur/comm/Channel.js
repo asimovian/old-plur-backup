@@ -39,6 +39,13 @@ Channel.prototype.close = function() {
 };
 
 Channel.prototype.connect = function(publicKeyHash, callback, isRemote) {
+    if (typeof this._connectionMap[publicKeyHash] !== 'undefined') {
+        throw new StateError('Already connected', {publicKeyHash: publicKeyHash});
+    }
+
+    var connection = new Channel._Connection(publicKeyHash, callback, isRemote);
+    this._connectionMap[publicKeyHash] = connection;
+
     var subscriptionId = this._emitter.on([
         Request.namepath + '.' + publicKeyHash + '.*',
         Notify.namepath + '.' + publicKeyHash + '.*' ],
@@ -47,51 +54,84 @@ Channel.prototype.connect = function(publicKeyHash, callback, isRemote) {
         }
     });
 
-    var connection = new Channel._Connection(publicKeyHash, callback, isRemote);
-    connection.addSubscription(subscriptionId);
-    this._connectionMap[publicKeyHash] = connection;
+    this.addSubscription(subscriptionId);
 };
 
 Channel.prototype.disconnect = function(publicKeyHash) {
+    if (typeof this._connectionMap[publicKeyHash] === 'undefined') {
+        return;
+    }
+
+    var connection = this._connectionMap[publicKeyHash];
+
+    // unsubscribe from the emitter
+    for (var i = 0, subscriptionIds = connection.getSubscriptionIds(), n = subscriptionIds.length; i < n; ++i) {
+        this._emitter.unsubscribe(subscriptionIds[i]);
+    }
+
+    // reject all pending promises for responses and clear all timers
+    connection.disconnect();
+    delete this._connectionMap[publicKeyHash];
 };
 
 Channel.prototype.request = function(request, encryptFunction, timeout) {
-    if (!request instanceof Request) {
-        throw new TypeError('Invalid request', {request: request});
-    }
+    var connections = this._validateMessage(request, Request);
+    var requestId = request.id();
 
-    var promiseReject = null;
-    var promiseResolve = null;
-    var promise = new PlurPromise(function(resolve, reject) {
-        promiseResolve = resolve;
-        promiseReject = reject;
+    var messageEvent = new MessageEvent(
+        request.getRecipientPublicKeyHash(),
+        request.getSenderPublicKeyHash(),
+        ( connections.recipient.isLocal() ? request : encryptFunction ) );
+
+    var promise = { resolve: null, reject: null };
+    new PlurPromise(function(resolve, reject) {
+        promise.resolve = resolve;
+        promise.reject = reject;
     });
 
-    var messageEvent = null;
-    if (!this.isLocalConnection(request.getRecipientPublicKeyHash()) {
-        messageEvent = new MessageEvent(request.getRecipientPublicKeyHash(), request.getSenderPublicKeyHash(), request.encryptFunction());
-    } else {
-        messageEvent = new MessageEvent(request.getRecipientPublicKeyHash(), request.getSenderPublicKeyHash(), request);
-    }
-
-    var eventType = Request.namepath + '.' + request.getRecipientPublicKeyHash() + '.' request.getSenderPublicKeyHash() '.' + request.hash());
-    var responseEventType = Response.namepath + '.' + request.getSenderPublicKeyHash() + '.' + request.getRecipientPublicKeyHash + '.' + request.hash();
-
+    //var eventType = Request.namepath + '.' + request.getRecipientPublicKeyHash() + '.' request.getSenderPublicKeyHash() '.' + requestId);
+    //var responseEventType = Response.namepath + '.' + request.getSenderPublicKeyHash() + '.' + request.getRecipientPublicKeyHash + '.' + requestId);
 
     var self = this;
-    var timeoutId = null;
     var subscriptionId = this._emitter.once(responseEventType, function(event) {
-        promiseResolve(event);
-        clearTimout(timeoutId);
+        promise.resolve(event);
+        connections.sender.removeResponseSubscription(requestId);
     });
 
-    timeoutId = setTimeout(function() {
-        promiseReject(new TimeoutError('Response timed out', {requestId: request.hash()}))
-        self._emitter.unsubscribe(subscriptionId);
+    var timeoutId = setTimeout(function() {
+        promise.reject(new TimeoutError('Response timed out', {requestId: requestId}))
+        connections.sender.removeResponeSubscription(requestId);
     }, timeout);
 
+    connection.addResponseSubscription(requestId, subscriptionId, timeoutId, promise.reject);
 
-    this._emitter.emit(eventType, request);
+    this._emitter.emit(eventType, messageEvent);
+};
+
+Channel.prototype.notify = function(notification, encryptFunction, timeout) {
+    var connections = this._validateMessage(notification);
+    var messageEvent = new MessageEvent(
+        request.getRecipientPublicKeyHash(),
+        request.getSenderPublicKeyHash(),
+        ( connections.recipient.isLocal() ? notification : encryptFunction ) );
+
+    this._emitter.emit(messageEvent.type(), messageEvent);
+};
+
+Channel.prototoype._validateMessage = function(message, expectedConstructor) {
+    if (!message instanceof expectedConstructor) {
+        throw new TypeError('Invalid message type for method', {message: message});
+    } else if (typeof this._connectionMap[message.getSenderPublicKeyHash()] === 'undefined') {
+        throw new StateError('Sender not connected', {message: message});
+    } else if (typeof this._connectionMap[message.getRecipientPublicKeyHash() === 'undefined']) {
+        throw new StateError('Recipient not connected', {message: message});
+    }
+
+    var connections = {
+        sender: this._connectionMap[message.getSenderPublicKeyHash],
+        recipient: this._connectionMap[message.getRecipientPublicKeyHash()] };
+
+    return connections;
 };
 
 Channel.prototype._getConnection = function(publicKeyHash) {
