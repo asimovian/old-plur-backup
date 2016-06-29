@@ -22,7 +22,7 @@ var ICrypt = function(config) {
 
 ICrypt.prototype = PlurObject.create('plur/crypt/ICrypt', ICrypt);
 
-ICrypt.prototype.generateKeys = function() {
+ICrypt.prototype.generateKeypair = function() {
 };
 
 ICrypt.prototype.encrypt = function(privateKey, publicKey, data) {

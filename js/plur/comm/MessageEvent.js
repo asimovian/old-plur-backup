@@ -13,13 +13,13 @@ function(
     Event ) {
 
 /**
- * Request Event
+ * An event composed of an IMessage, which may be encrypted.
+ * Works with both normal emitters and comm/Channel.
  *
  * @constructor plur/msg/AMessageEvent
  **
- * @param string
- * @param plur/msg/IMessage
- * @param {}|undefined data
+ * @param {plur/msg/IMessage} message Unencrypted. Will not be stored if encryptFunction is available.
+ * @param {Function():=string encrypted|undefined} encryptFunction Returns an encrypted copy of IMessage, no parameters passed.
  */
 var MessageEvent = function(message, encryptFunction) {
     if (!message instanceof AMessage) { // breaks contract, but faster than implenting()
@@ -28,9 +28,12 @@ var MessageEvent = function(message, encryptFunction) {
 
     Event.call(this, this.namepath + '.to.' + recipientPublicKey);
 
-    this._recipientPublicKey = ''+message.getRecipientPublicKey();
-    this._senderPublicKey = ''+message._senderPublicKey();
+    this._recipientPublicKey = message.getRecipientPublicKey();
+    this._senderPublicKey = message.getSenderPublicKey();
+    this._channelEventType = '';
+    this._channelResponseEventType = null;
     this._hash = null; // lazy-load
+
 
     if (typeof encryptFunction === 'Function') {
         this._message = encryptFunction();
@@ -38,14 +41,6 @@ var MessageEvent = function(message, encryptFunction) {
     } else {
         this._message = message;
         this._encrypted = false;
-    }
-};
-
-MessageEvent.prototype = PlurObject.create('plur/msg/MessageEvent', MessageEvent);
-
-MessageEvent.prototype.hash = function() {
-    if (this._hash !== null) {
-        return this._hash;
     }
 
     if (this._encrypted) {
@@ -56,10 +51,22 @@ MessageEvent.prototype.hash = function() {
         this._hash = this._message.hash();
     }
 
+};
+
+MessageEvent.prototype = PlurObject.create('plur/msg/MessageEvent', MessageEvent);
+
+MessageEvent.prototype.hash = function() {
     return this._hash;
 };
 
-MessageEvent.prototype.
+
+MessageEvent.prototype.getChannelEventType = function() {
+
+};
+
+MessageEvent.prototype.getChannelResponseEventType = function() {
+
+};
 
 return Event;
 });
