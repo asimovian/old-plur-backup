@@ -5,14 +5,12 @@
  */
 define([
     'plur/PlurObject',
-    'plur/error/Assertion',
     'plur/error/Type',
     'plur/error/State',
     'plur/event/Event',
     'plur/design/tree/MapNode' ],
 function(
     PlurObject,
-    Assertion,
     PlurTypeError,
     PlurStateError,
     Event,
@@ -67,7 +65,9 @@ Emitter.prototype = PlurObject.create('plur/event/Emitter', Emitter);
  * @param boolean temporary
  */
 Emitter._Listener = function(eventType, callback, subscriptionId, temporary) {
-	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed');
+	if (this._destroyed) {
+	    throw new DestroyedError('Emitter has been destroyed.');
+	};
 
     this.eventType = eventType;
     this.subscriptionId = subscriptionId;
@@ -252,6 +252,10 @@ Emitter.prototype.on = function(eventType, callback) {
  * @returns int subscriptionId
  */
 Emitter.prototype._subscribe = function(eventType, callback, temporary) {
+    if (this._destroyed) {
+        throw new DestroyedError('Emitter has been destroyed.');
+    }
+
     var listener = new Emitter._Listener(eventType, callback, this._nextSubscriptionId(), temporary);
     var eventTypeTokens = Emitter._tokenizeEventType(eventType);
     var isWildcard = ( eventTypeTokens[eventTypeTokens.length - 1] === Emitter.WILDCARD );
@@ -313,16 +317,16 @@ Emitter.prototype.listening = function() {
  * @param int subscriptionId
  */
 Emitter.prototype.unsubscribe = function(subscriptionId) {
-    Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
-
     // ignore non-existant subscriptions
     if (typeof this._subscriptionTreeMap[subscriptionId] === 'undefined') {
         return;
     }
 
-	//delete the listener from the tree.
+	// delete the listener from the tree.
 	var listenerBranch = this._subscriptionTreeMap[subscriptionId];
-	Assertion.assert(listenerBranch !== null, 'Listener branch is missing.')
+	if (listenerBranch === null) {
+	    throw new StateError('Listener branch is missing.');
+	}
 
     listenerBranch.get().removeListener(subscriptionId);
 
@@ -347,9 +351,9 @@ Emitter.prototype.unsubscribe = function(subscriptionId) {
  * @param {{}|undefined} data
  */
 Emitter.prototype.emit = function(eventType, eventData, persistent) {
-	Assertion.assert(!this._destroyed, PlurStateError, 'Emitter has been destroyed')
-
-    if (!this._listening) {
+	if (this._destroyed) {
+	    throw new DestroyedError('Emitter has been destroyed.');
+    } else if (!this._listening) {
 	    return;
 	}
 
@@ -377,8 +381,11 @@ Emitter.prototype.emit = function(eventType, eventData, persistent) {
  * @function plur/event/Emitter.prototype.destroy
  */
 Emitter.prototype.destroy = function() {
-	this._listening = false;
 	this._destroyed = true;
+	this._listening = false;
+
+    this.emit(this.namepath + '.destroyed');
+
 	this._listenerTree = null;
 	this._subscriptionTreeMap = {};
 	this._subscriptionIdIndex = 0;

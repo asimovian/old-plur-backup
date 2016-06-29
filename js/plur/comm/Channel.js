@@ -40,7 +40,7 @@ Channel.prototype.close = function() {
 
 Channel.prototype.connect = function(publicKeyHash, callback, isRemote) {
     if (typeof this._connectionMap[publicKeyHash] !== 'undefined') {
-        throw new StateError('Already connected', {publicKeyHash: publicKeyHash});
+        throw new ConnectedError('Already connected', {publicKeyHash: publicKeyHash});
     }
 
     var connection = new Channel._Connection(publicKeyHash, callback, isRemote);
@@ -122,9 +122,9 @@ Channel.prototoype._validateMessage = function(message, expectedConstructor) {
     if (!message instanceof expectedConstructor) {
         throw new TypeError('Invalid message type for method', {message: message});
     } else if (typeof this._connectionMap[message.getSenderPublicKeyHash()] === 'undefined') {
-        throw new StateError('Sender not connected', {message: message});
+        throw new DisconnectedError('Sender not connected', {message: message});
     } else if (typeof this._connectionMap[message.getRecipientPublicKeyHash() === 'undefined']) {
-        throw new StateError('Recipient not connected', {message: message});
+        throw new UnknownError('Recipient not connected', {message: message});
     }
 
     var connections = {
