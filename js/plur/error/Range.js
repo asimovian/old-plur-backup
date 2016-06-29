@@ -13,13 +13,13 @@ function(
 /**
  * Errors thrown by assertions - typically in tests.
  *
- * @constructor plur/error/Syntax
+ * @constructor plur/error/Range
  * @extends plur/error/Error
  **
  * @params {string} message
  * @params {=} data
  */
-var PlurSyntaxError = function(message, data) {
+var PlurRangeError = function(message, data) {
     if (typeof message === 'object') {
         data = message;
         message = 'Unexpected data type';
@@ -30,7 +30,7 @@ var PlurSyntaxError = function(message, data) {
     PlurError.call(this, message, data);
 };
 
-PlurSyntaxError.prototype = PlurObject.create('plur/error/Syntax', PlurSyntaxError, PlurError);
+PlurRangeError.prototype = PlurObject.create('plur/error/Range', PlurRangeError, PlurError);
 
-return PlurSyntaxError;
+return PlurRangeError;
 });

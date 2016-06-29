@@ -1,18 +1,18 @@
 /**
- * @copyright 2015 Asimovian LLC
+ * @copyright 2016 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject
+ * @requires plur/PlurObject plur/error/State plur/error/Destroyed plur/event/Event plur/design/tree/MapNode
  */
 define([
     'plur/PlurObject',
-    'plur/error/Type',
     'plur/error/State',
+    'plur/error/Destroyed',
     'plur/event/Event',
     'plur/design/tree/MapNode' ],
 function(
     PlurObject,
-    PlurTypeError,
-    PlurStateError,
+    StateError,
+    DestroyedError,
     Event,
     MapTreeNode ) {
 	

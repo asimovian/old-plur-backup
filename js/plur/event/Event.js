@@ -7,9 +7,11 @@
 'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/error/Type'],
 function(
-    PlurObject ) {
+    PlurObject,
+    PlurTypeError ) {
 
 /**
  * Basic Event
@@ -21,6 +23,10 @@ function(
  * @param {} data
  */
 var Event = function(type, data) {
+    if (typeof type !== 'string') {
+        throw new PlurTypeError('Invalid event type.', {type: type});
+    }
+
 	this._type = type;
 	this._data = ( data || {} );
 	this._timestamp = new Date().getTime();
@@ -33,7 +39,7 @@ Event.prototype = PlurObject.create('plur/event/Event', Event);
  *
  * @returns string type
  */
-Event.prototype.getType = function() {
+Event.prototype.type = function() {
     return this._type;
 };
 
@@ -42,7 +48,7 @@ Event.prototype.getType = function() {
  *
  * @returns {} data
  */
-Event.prototype.getData = function() {
+Event.prototype.data = function() {
     return this._data;
 };
 
@@ -51,7 +57,7 @@ Event.prototype.getData = function() {
  *
  * @returns int timestamp
  */
-Event.prototype.getTimestamp = function() {
+Event.prototype.timestamp = function() {
     return this._timestamp;
 };
 

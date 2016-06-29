@@ -19,7 +19,7 @@ function(
  * @params {string} message
  * @params {=} data
  */
-var TypeError = function(message, data) {
+var PlurTypeError = function(message, data) {
     if (typeof message === 'object') {
         data = message;
         message = 'Unexpected data type';
@@ -30,7 +30,7 @@ var TypeError = function(message, data) {
     PlurError.call(this, message, data);
 };
 
-TypeError.prototype = PlurObject.create('plur/error/Type', TypeError, PlurError);
+PlurTypeError.prototype = PlurObject.create('plur/error/Type', PlurTypeError, PlurError);
 
-return TypeError;
+return PlurTypeError;
 });
