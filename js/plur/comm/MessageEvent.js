@@ -30,6 +30,7 @@ var MessageEvent = function(message, encryptFunction) {
 
     Event.call(this, this.namepath + '.to.' + recipientPublicKey);
 
+    this._timestamp = message.timestamp(); // override
     this._recipientPublicKey = message.getRecipientPublicKey();
     this._senderPublicKey = message.getSenderPublicKey();
     this._channelEventType = '';

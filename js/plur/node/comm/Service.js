@@ -24,7 +24,7 @@ function(
  * @param plur/node/PlurNode
  */
 var NodeCommService = function(commServiceConfig, plurNode) {
-	Service.call(this, commServiceConfig, plurNode, SystemLog.get());
+	AService.call(this, commServiceConfig, plurNode, SystemLog.get());
 };
 
 NodeCommService.prototype = PlurObject.create('plur/node/NodeCommService', NodeCommService, Service);
@@ -33,9 +33,11 @@ NodeCommService.COMM_HELLO_EVENT = NodeCommService.namepath + '.comm.asl';
 NodeCommService.COMM_CAPABILITY_REQUEST_EVENT = NodeCommService.namepath + '.comm.capabilityRequest';
 
 NodeCommService.prototype._handshake = function() {
+    var log = this.log();
+
 	// the node introduces itself as soon as a websocket opens
 	this._websocketService.emitter().on(WebsocketService.OPEN_EVENT, function(event, data) {
-		this._log.info('Sending node hello to session: ' + data.sessionId);
+		log.info('Sending node hello to session: ' + data.sessionId);
 
 		websocketService.send(data.sessionId, NodeCommService.COMM_HELLO_EVENT, {
 			nodeId: plurNode.getHashId(),
@@ -48,12 +50,12 @@ NodeCommService.prototype._handshake = function() {
 
 	// once the node receives authentication, finalize and announce
 	websocketService.emitter().on(NodeCommService.HELLO_EVENT, function(event, data) {
-		this._log.info('Received hello from session #' + data.sessionId);
+		log.info('Received hello from session #' + data.sessionId);
 
-		this._log.info('Authenticating with session #' + data.sessionId);
+		log.info('Authenticating with session #' + data.sessionId);
 		//todo: authentication messages :/
 		plurNode.authenticateSession(data.sessionId);
-		this._log.info('Authenticated with session #' + data.sessionId);
+		log.info('Authenticated with session #' + data.sessionId);
 	});
 
 	// relay all capabilities messages from authenticated sessions

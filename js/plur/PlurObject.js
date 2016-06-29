@@ -16,16 +16,14 @@ function(
  * @constructor plur/PlurObject
  * @private
  */
-var PlurObject = function() {
-    throw Error('Cannot instantiate private constructor of PlurObject');
-};
+var PlurObject = function() { throw Error('Cannot instantiate private constructor of PlurObject'); };
 
 // Standardize PlurObject
 PlurObject.namepath = 'plur/PlurObject';
 PlurObject.prototype.namepath = PlurObject.namepath;
 
-PlurObject.isPlurPrototype = function(object) {
-    return ( typeof object.namepath !== 'undefined' );
+PlurObject.hasPlurPrototype = function(object) {
+    return ( typeof object.namepath === 'string' );
 };
 
 /**
