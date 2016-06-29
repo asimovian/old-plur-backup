@@ -26,11 +26,11 @@ IMessage.prototype = PlurObject.create('plur/msg/IMessage', IMessage);
  * @abstract
  * @returns string
  */
-IMessage.prototype.getId = PlurObject.pureVirtualFunction;
+IMessage.prototype.getId = PlurObject.abstractMethod;
 
-IMessage.prototype.getRecipientPublicKeyHash = PlurObject.pureVirtualFunction;
+IMessage.prototype.getRecipientPublicKeyHash = PlurObject.abstractMethod;
 
-IMessage.prototype.getSenderPublicKeyHash = PlurObject.pureVirtualFunction;
+IMessage.prototype.getSenderPublicKeyHash = PlurObject.abstractMethod;
 
 return Message;
 });

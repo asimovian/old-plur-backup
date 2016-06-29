@@ -33,7 +33,7 @@ ModelTransformer.prototype = PlurObject.create('plur/json/model/Transformer', Mo
  * @param {function(Object model)} callback
  * @returns {}
  */
-ModelTransformer.prototype.toModel = PlurObject.pureVirtualFunction;
+ModelTransformer.prototype.toModel = PlurObject.abstractMethod;
 
 /**
  * Transforms a data model into the subject format.
@@ -43,7 +43,7 @@ ModelTransformer.prototype.toModel = PlurObject.pureVirtualFunction;
  * @param {} model
  * @returns {}
  */
-ModelTransformer.prototype.fromModel = PlurObject.pureVirtualFunction;
+ModelTransformer.prototype.fromModel = PlurObject.abstractMethod;
 
 return ModelTransformer;
 });

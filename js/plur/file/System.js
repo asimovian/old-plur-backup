@@ -112,7 +112,7 @@ FileSystem.prototype.getBinPath = function(/* ... */) {
  * @param ... string[] paths
  * @returns string
  */
-FileSystem.prototype._getHomePath = PlurObject.pureVirtualFunction;
+FileSystem.prototype._getHomePath = PlurObject.abstractMethod;
 
 /**
  * Retrieves the path separator.
@@ -121,7 +121,7 @@ FileSystem.prototype._getHomePath = PlurObject.pureVirtualFunction;
  * @virtual
  * @returns string
  */
-FileSystem.prototype.getPathSeparator = PlurObject.pureVirtualFunction;
+FileSystem.prototype.getPathSeparator = PlurObject.abstractMethod;
 
 return FileSystem;
 });

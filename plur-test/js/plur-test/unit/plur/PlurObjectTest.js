@@ -78,7 +78,7 @@ PlurObjectTest.prototype.testCreate = function(expected) {
 PlurObjectTest.prototype.testImplement = function() {
     var IAlpha = function() {};
     IAlpha.prototype = PlurObject.create('plur-test/IAlpha', IAlpha);
-    IAlpha.prototype.alpha = PlurObject.pureVirtualFunction;
+    IAlpha.prototype.alpha = PlurObject.abstractMethod;
 
     var Alpha = function() {};
     Alpha.prototype = PlurObject.create('plur-test/Alpha', Alpha);
@@ -92,12 +92,12 @@ PlurObjectTest.prototype.testImplement = function() {
 
 /**
  * @function plur-test/unit/plur/PlurObjectTest.prototype.testPureVirtualFunction
- * @test plur/PlurObject.pureVirtualFunction
+ * @test plur/PlurObject.abstractMethod
  */
 PlurObjectTest.prototype.testPureVirtualFunction = function() {
     // this should throw an exception
     try {
-        PlurObject.pureVirtualFunction();
+        PlurObject.abstractMethod();
         // we should not get here ...
         this.fail('Pure virtual function did not throw exception.');
     } catch (e) {}

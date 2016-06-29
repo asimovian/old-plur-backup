@@ -23,7 +23,7 @@ Application.prototype = PlurObject.create('plur/app/Application', Application);
  * @function plur/app/Application.prototype.start
  * @virtual
  */
-Application.prototype.start = PlurObject.pureVirtualFunction;
+Application.prototype.start = PlurObject.abstractMethod;
 	
 /**
  * Stops the application
@@ -31,7 +31,7 @@ Application.prototype.start = PlurObject.pureVirtualFunction;
  * @function plur/app/Application.prototype.start
  * @virtual
  */
-Application.prototype.stop = PlurObject.pureVirtualFunction,
+Application.prototype.stop = PlurObject.abstractMethod,
 	
 /**
  * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
@@ -39,7 +39,7 @@ Application.prototype.stop = PlurObject.pureVirtualFunction,
  * @function plur/app/Application.prototype.heartbeat
  * @virtual
  */
-Application.prototype.heartbeat = PlurObject.pureVirtualFunction;
+Application.prototype.heartbeat = PlurObject.abstractMethod;
 
 return Application;
 });
