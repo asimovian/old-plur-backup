@@ -7,10 +7,12 @@
 
 define([
     'plur/PlurObject',
-    'plur/event/Event' ],
+    'plur/event/Event',
+    'plur/hash/Singleton'],
 function(
     PlurObject,
-    Event ) {
+    Event,
+    Hash ) {
 
 /**
  * An event composed of an IMessage, which may be encrypted.
@@ -32,40 +34,33 @@ var MessageEvent = function(message, encryptFunction) {
     this._senderPublicKey = message.getSenderPublicKey();
     this._channelEventType = '';
     this._channelResponseEventType = null;
-    this._hash = null; // lazy-load
-
 
     if (typeof encryptFunction === 'Function') {
-        this._message = encryptFunction();
         this._encrypted = true;
+        this._message = encryptFunction();
+        this._hash = Hash.get().hash(this._message);
     } else {
-        this._message = message;
         this._encrypted = false;
-    }
-
-    if (this._encrypted) {
-        // hash of encrypted message string
-        this._hash = PlurObject.hashString(this._message);
-    } else {
-        // hash of message object
+        this._message = message;
         this._hash = this._message.hash();
     }
-
 };
 
-MessageEvent.prototype = PlurObject.create('plur/msg/MessageEvent', MessageEvent);
+MessageEvent.prototype = PlurObject.create('plur/comm/MessageEvent', MessageEvent);
+PlurObject.implement(MessageEvent, Hash.IHashable);
 
 MessageEvent.prototype.hash = function() {
     return this._hash;
 };
 
-
 MessageEvent.prototype.getChannelEventType = function() {
-
 };
 
 MessageEvent.prototype.getChannelResponseEventType = function() {
+};
 
+MessageEvent.prototype.isEncrypted = function() {
+    return this._encrypted;
 };
 
 return Event;

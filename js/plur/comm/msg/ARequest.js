@@ -13,15 +13,14 @@ function (
 /**
  * A simple abstract base class for all forms of requests.
  *
- * @constructor plur/msg/Request
- * @implements plur/msg/IMessage
- * @abstract
+ * @constructor plur/msg/ARequest
+ * @extends plur/msg/AMessage
  */
-var Request = function(senderPublicKeyHash, recipientPublicKeyHash, data) {
-    AMessage.call(this, senderPublicKeyHash, recipientPublicKeyHash, data);
+var ARequest = function(senderPublicKeyHash, recipientPublicKeyHash) {
+    AMessage.call(this, senderPublicKeyHash, recipientPublicKeyHash);
 };
 
-Request.prototype = PlurObject.create('plur/msg/Request', Request, AMessage);
+ARequest.prototype = PlurObject.create('plur/comm/msg/ARequest', ARequest, AMessage);
 
-return Request;
+return ARequest;
 });

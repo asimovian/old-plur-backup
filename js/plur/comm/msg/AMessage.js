@@ -7,10 +7,12 @@
 
 define([
     'plur/PlurObject',
-    'plur/error/AbstractError' ],
+    'plur/error/AbstractError'
+    'plur/hash/Singleton' ],
 function(
     PlurObject,
-    AbstractError ) {
+    AbstractError,
+    Hash ) {
 
 /**
  * Parent prototype of Request, Response, and Notification prototypes.
@@ -30,7 +32,7 @@ var AMessage = function(senderPublicKeyHash, recipientPublicKeyHash) {
     this._hash = null;
 };
 
-AMessage.prototype = PlurObject.create('plur/msg/AMessage', AMessage);
+AMessage.prototype = PlurObject.create('plur/comm/msg/AMessage', AMessage);
 PlurObject.implement(AMessage, IMessage);
 
 AMessage.prototype.hash = function() {
@@ -38,7 +40,7 @@ AMessage.prototype.hash = function() {
         return this._hash;
     }
 
-    this._hash = PlurObject.hash(this._senderPublicKeyHash, this._recipientPublicKeyHash, this._timestamp);
+    this._hash = Hash.get().hash(this._senderPublicKeyHash, this._recipientPublicKeyHash, this._timestamp);
 
     return this._hash;
 };

@@ -5,10 +5,12 @@
  */
 define([
     'plur/PlurObject',
-    'plur/error/Interface' ],
+    'plur/error/Interface'
+    'plur/hash/IHashable' ],
 function (
     PlurObject,
-    InterfaceError ) {
+    InterfaceError,
+    IHashable ) {
 
 /**
  * A simple abstract base class for all messages passed between node and remote services.
@@ -19,13 +21,13 @@ function (
  */
 var IMessage = function() { throw new InterfaceError({'this': this}); };
 
-IMessage.prototype = PlurObject.create('plur/msg/IMessage', IMessage);
+IMessage.prototype = PlurObject.create('plur/comm/msg/IMessage', IMessage);
+PlurObject.implement(IMessage, IHashable);
 
 IMessage.prototype.getRecipientPublicKeyHash = PlurObject.abstractMethod;
 
 IMessage.prototype.getSenderPublicKeyHash = PlurObject.abstractMethod;
 
-IMessage.prototype.getHash = PlurObject.abstractMethod;
 
 return Message;
 });
