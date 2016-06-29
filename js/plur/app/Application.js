@@ -21,7 +21,7 @@ Application.prototype = PlurObject.create('plur/app/Application', Application);
  * Starts the application
  *
  * @function plur/app/Application.prototype.start
- * @virtual
+ * @abstract
  */
 Application.prototype.start = PlurObject.abstractMethod;
 	
@@ -29,7 +29,7 @@ Application.prototype.start = PlurObject.abstractMethod;
  * Stops the application
  *
  * @function plur/app/Application.prototype.start
- * @virtual
+ * @abstract
  */
 Application.prototype.stop = PlurObject.abstractMethod,
 	
@@ -37,7 +37,7 @@ Application.prototype.stop = PlurObject.abstractMethod,
  * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
  *
  * @function plur/app/Application.prototype.heartbeat
- * @virtual
+ * @abstract
  */
 Application.prototype.heartbeat = PlurObject.abstractMethod;
 

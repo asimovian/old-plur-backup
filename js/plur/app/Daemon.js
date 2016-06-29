@@ -23,7 +23,7 @@ Daemon.prototype = PlurObject.create('plur/app/Daemon', Daemon, Application);
  * Starts the application
  *
  * @function plur/app/Application.prototype.start
- * @virtual
+ * @abstract
  */
 Daemon.prototype.start = PlurObject.abstractMethod;
 	
@@ -31,7 +31,7 @@ Daemon.prototype.start = PlurObject.abstractMethod;
  * Stops the application
  *
  * @function plur/app/Application.prototype.start
- * @virtual
+ * @abstract
  */
 Daemon.prototype.stop = PlurObject.abstractMethod,
 	
@@ -39,7 +39,7 @@ Daemon.prototype.stop = PlurObject.abstractMethod,
  * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
  *
  * @function plur/app/Application.prototype.heartbeat
- * @virtual
+ * @abstract
  */
 Daemon.prototype.heartbeat = PlurObject.abstractMethod;
 

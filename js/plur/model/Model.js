@@ -24,7 +24,7 @@ Model.prototype = PlurObject.create('plur/model/Model', Model);
  * Creates a simple data model of this object.
  *
  * @function plur/model/Model.prototype.model
- * @virtual
+ * @abstract
  * @param {} object
  * @returns {} model
  */
@@ -82,7 +82,7 @@ Model.prototype.model = function(v, options) {
  * Constructs an object from a data model.
  *
  * @function plur/model/Model.prototype.model
- * @virtual
+ * @abstract
  * @param {} model
  * @returns {} object
  */

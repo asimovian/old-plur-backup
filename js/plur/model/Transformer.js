@@ -28,7 +28,7 @@ ModelTransformer.prototype = PlurObject.create('plur/json/model/Transformer', Mo
  * Transforms a subject format into a data model object.
  *
  * @function plur/model/Transformer
- * @virtual
+ * @abstract
  * @param {*}
  * @param {function(Object model)} callback
  * @returns {}
@@ -39,7 +39,7 @@ ModelTransformer.prototype.toModel = PlurObject.abstractMethod;
  * Transforms a data model into the subject format.
  *
  * @function plur/model/Transformer
- * @virtual
+ * @abstract
  * @param {} model
  * @returns {}
  */

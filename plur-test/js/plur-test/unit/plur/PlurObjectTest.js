@@ -99,7 +99,7 @@ PlurObjectTest.prototype.testPureVirtualFunction = function() {
     try {
         PlurObject.abstractMethod();
         // we should not get here ...
-        this.fail('Pure virtual function did not throw exception.');
+        this.fail('Abstract function did not throw exception.');
     } catch (e) {}
 };
 

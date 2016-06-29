@@ -44,7 +44,7 @@ FileSystem.initLocal = function(localFileSystem) {
  * Combines the provided paths together into one path.
  *
  * @function plur/file/System.prototype.joinPaths
- * @virtual
+ * @abstract
  * @param ... string[] paths
  * @returns string
  */
@@ -108,7 +108,7 @@ FileSystem.prototype.getBinPath = function(/* ... */) {
  * Retrieves the home path for thie Plur software.
  *
  * @function plur/file/System.prototype._getHomePath
- * @virtual
+ * @abstract
  * @param ... string[] paths
  * @returns string
  */
@@ -118,7 +118,7 @@ FileSystem.prototype._getHomePath = PlurObject.abstractMethod;
  * Retrieves the path separator.
  *
  * @function plur/file/System.prototype.getPathSeparator
- * @virtual
+ * @abstract
  * @returns string
  */
 FileSystem.prototype.getPathSeparator = PlurObject.abstractMethod;

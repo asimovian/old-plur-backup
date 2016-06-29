@@ -28,7 +28,7 @@ NodeJsFileSystem.prototype = PlurObject.create('plur/nodejs/file/System', NodeJs
  * Retrieves the home path for thie Plur software.
  *
  * @function plur/nodejs/file/System.prototype._getHomePath
- * @virtual
+ * @abstract
  * @param ... string path
  * @returns string
  */
@@ -40,7 +40,7 @@ NodeJsFileSystem.prototype._getHomePath = function() {
  * Retrieves the path separator.
  *
  * @function plur/nodejs/file/System.prototype.getPathSeparator
- * @virtual
+ * @abstract
  * @returns string
  */
 NodeJsFileSystem.prototype.getPathSeparator = function() {
