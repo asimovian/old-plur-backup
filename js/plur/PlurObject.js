@@ -86,7 +86,7 @@ PlurObject.create = function(namepath, constructor, parentConstructor) {
 
 /**
  * Define a subject constructor/prototype as implementing a given interface constructor.
- * Copies the interface prototype's pure abstract methods in to the subject prototype.
+ * Copies the interface prototype's abstract methods in to the subject prototype.
  * Adds the interface pathname to the subject constructor.implemented variable.
  *
  * @function plur/PlurObject.prototype.implement
@@ -104,7 +104,7 @@ PlurObject.implement = function(constructor, interfaceConstructor) {
     for (var propertyName in interfacePrototype) {
         // make sure that the interface property is assigned to PlurObject.abstractMethod
         if (interfacePrototype[propertyName] === PlurObject.abstractMethod) {
-            // set it if it's undefined. ignore if it exists and is already pure abstract. throw error otherwise.
+            // set it if it's undefined. ignore if it exists and is already abstract. throw error otherwise.
             switch(typeof prototype[propertyName]) {
             case 'undefined':
                 prototype[propertyName] = interfacePrototype[propertyName];
