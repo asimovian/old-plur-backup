@@ -47,11 +47,11 @@ PlurObject.implementing = function(object, interfaceConstructor) {
 /**
  * Meant to be assigned to abstract prototype functions that require overriding in child classes.
  *
- * @function plur/PlurObject.prototype.pureVirtualFunction
+ * @function plur/PlurObject.prototype.abstractMethod
  * @throws Error
  */
-PlurObject.pureVirtualFunction = function() {
-    throw new Error('plur: Unimplmeneted virtual function.');
+PlurObject.abstractMethod = function() {
+    throw new Error('plur: Cannot call abstract method.');
 };
 
 /**
@@ -102,15 +102,15 @@ PlurObject.implement = function(constructor, interfaceConstructor) {
     var prototype = constructor.prototype;
 
     for (var propertyName in interfacePrototype) {
-        // make sure that the interface property is assigned to PlurObject.pureVirtualFunction
-        if (interfacePrototype[propertyName] === PlurObject.pureVirtualFunction) {
+        // make sure that the interface property is assigned to PlurObject.abstractMethod
+        if (interfacePrototype[propertyName] === PlurObject.abstractMethod) {
             // set it if it's undefined. ignore if it exists and is already pure virtual. throw error otherwise.
             switch(typeof prototype[propertyName]) {
             case 'undefined':
                 prototype[propertyName] = interfacePrototype[propertyName];
                 break;
             default:
-                if (prototype[propertyName] !== PlurObject.pureVirtualFunction) {
+                if (prototype[propertyName] !== PlurObject.abstractMethod) {
                     throw new Error('Inheritance collision in ' + prototype.namepath + ' for ' +
                         interfaceConstructor.namepath + '.prototype.' + propertyName);
                 }

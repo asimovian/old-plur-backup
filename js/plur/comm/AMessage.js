@@ -6,9 +6,11 @@
  'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/error/AbstractError' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    AbstractError ) {
 
 /**
  * Parent prototype of Request, Response, and Notification prototypes.
@@ -18,6 +20,10 @@ function(
  **
  */
 var AMessage = function(senderPublicKeyHash, recipientPublicKeyHash) {
+    if (this.namepath -== AMessage.namepath) {
+        throw new AbstractError({'this': this});
+    }
+
     this._senderPublicKeyHash = senderPublicKeyHash;
     this._recipientPublicKeyHash = recipientPublicKeyHash;
     this._timestamp = new Date().now();

@@ -6,9 +6,11 @@
  'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/error/Interface' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    InterfaceError ) {
 
 /**
  * Tree Node Interface
@@ -17,7 +19,7 @@ function(
  * @interface
  **
  */
-var ITreeNode = function() {};
+var ITreeNode = function() { throw new InterfaceError({'this': this}); };
 
 ITreeNode.prototype = PlurObject.create('plur/design/tree/INode', ITreeNode);
 
@@ -28,7 +30,7 @@ ITreeNode.prototype = PlurObject.create('plur/design/tree/INode', ITreeNode);
  * @abstract
  * @returns mixed|null value
  */
-ITreeNode.prototype.get = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.get = PlurObject.abstractMethod;
 
 /**
  * Sets the value for this node.
@@ -38,7 +40,7 @@ ITreeNode.prototype.get = PlurObject.pureVirtualFunction;
  * @param mixed value
  * @returns mixed|null
  */
-ITreeNode.prototype.set = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.set = PlurObject.abstractMethod;
 
 /**
  * Retrieves children of this node.
@@ -48,7 +50,7 @@ ITreeNode.prototype.set = PlurObject.pureVirtualFunction;
  * @param Function instanceOfConstructor|undefined Filters out all children that are not derived from this constructor
  * @returns plur/design/tree/INode[] children
  */
-ITreeNode.prototype.children = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.children = PlurObject.abstractMethod;
 
 /**
  * Retrieves the parent.
@@ -57,7 +59,7 @@ ITreeNode.prototype.children = PlurObject.pureVirtualFunction;
  * @abstract
  * @returns plur/design/tree/INode|null parent
  */
-ITreeNode.prototype.parent = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.parent = PlurObject.abstractMethod;
 
 /**
  * Adds a child.
@@ -67,7 +69,7 @@ ITreeNode.prototype.parent = PlurObject.pureVirtualFunction;
  * @param plur/design/tree/INode child
  * @returns plur/design/tree/INode child
  */
-ITreeNode.prototype.addChild = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.addChild = PlurObject.abstractMethod;
 
 /**
  * Removes a child.
@@ -76,7 +78,7 @@ ITreeNode.prototype.addChild = PlurObject.pureVirtualFunction;
  * @abstract
  * @param plur/design/tree/INode child
  */
-ITreeNode.prototype.removeChild = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.removeChild = PlurObject.abstractMethod;
 
 
 /**
@@ -86,7 +88,7 @@ ITreeNode.prototype.removeChild = PlurObject.pureVirtualFunction;
  * @param plur/design/tree/INode child The child to search for.
  * @returns boolean hasChild TRUE if child exists. FALSE if not.
  */
-ITreeNode.prototype.hasChild = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.hasChild = PlurObject.abstractMethod;
 
 /**
  * Determines whether this node is the root node of the tree or not.
@@ -95,7 +97,7 @@ ITreeNode.prototype.hasChild = PlurObject.pureVirtualFunction;
  * @abstract
  * @returns boolean TRUE if this node is the root of the tree, FALSE if not
  */
-ITreeNode.prototype.isRoot = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.isRoot = PlurObject.abstractMethod;
 
 /**
  * Retrieves the root node for this tree.
@@ -104,7 +106,7 @@ ITreeNode.prototype.isRoot = PlurObject.pureVirtualFunction;
  * @abstract
  * @returns plur/design/tree/INode root
  */
-ITreeNode.prototype.root = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.root = PlurObject.abstractMethod;
 
 /**
  * Determines whether this node is childless or not.
@@ -113,7 +115,7 @@ ITreeNode.prototype.root = PlurObject.pureVirtualFunction;
  * @abstract
  * @returns boolean
  */
-ITreeNode.prototype.isLeaf = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.isLeaf = PlurObject.abstractMethod;
 
 /**
  * Factory method that creates a new child branch chain, each subsequent child branch corresponding to its index in the
@@ -127,7 +129,7 @@ ITreeNode.prototype.isLeaf = PlurObject.pureVirtualFunction;
  *          A callback can be used to manually create and return each child.
  * @returns plur/design/tree/INode newLeaves[] All new leaf nodes are returned
  */
-ITreeNode.prototype.expand = PlurObject.pureVirtualFunction;
+ITreeNode.prototype.expand = PlurObject.abstractMethod;
 
 return ITreeNode;
 });

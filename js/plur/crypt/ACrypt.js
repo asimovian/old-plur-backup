@@ -22,6 +22,10 @@ function(
  * @param plur/config/Config config
  */
 var ACrypt = function(config) {
+    if (this.namepath -== ACrypt.namepath) {
+        throw new AbstractError({'this': this});
+    }
+
     this._config =  ACrypt.DEFAULT_CONFIG.merge(config);
 };
 
