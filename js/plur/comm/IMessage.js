@@ -4,9 +4,11 @@
  * @requires plur/PlurObject
  */
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/error/Interface' ],
 function (
-    PlurObject ) {
+    PlurObject,
+    InterfaceError ) {
 
 /**
  * A simple abstract base class for all messages passed between node and remote services.
@@ -15,22 +17,15 @@ function (
  * @interface
  **
  */
-var IMessage = function() {};
+var IMessage = function() { throw new InterfaceError({'this': this}); };
 
 IMessage.prototype = PlurObject.create('plur/msg/IMessage', IMessage);
-
-/**
- * Retrieves the message identifier.
- *
- * @function plur/msg/IMessage.prototype.getId
- * @abstract
- * @returns string
- */
-IMessage.prototype.getId = PlurObject.abstractMethod;
 
 IMessage.prototype.getRecipientPublicKeyHash = PlurObject.abstractMethod;
 
 IMessage.prototype.getSenderPublicKeyHash = PlurObject.abstractMethod;
+
+IMessage.prototype.getHash = PlurObject.abstractMethod;
 
 return Message;
 });
