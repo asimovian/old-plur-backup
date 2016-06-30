@@ -6,33 +6,41 @@
  'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/crypt/ICrypt' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    ICrypt ) {
 
 /**
- * ICryptographic utilities.
+ * Cryptographic software interface.
  *
  * @constructor plur/crypt/ICrypt
+ * @interface
  **
  */
-var ICrypt = function(config) {
-    this._config = config || {};
-};
+var ICrypt = function() { throw new InterfaceError({'this': this}); };
 
 ICrypt.prototype = PlurObject.create('plur/crypt/ICrypt', ICrypt);
 
-ICrypt.prototype.generateKeypair = function() {
+// promise
+ICrypt.prototype.generateKeyset = function() {
 };
 
-ICrypt.prototype.encrypt = function(privateKey, publicKey, data) {
+// promise
+ICrypt.prototype.encrypt = function(to, from, data) {
 };
 
-ICrypt.prototype.decrypt = function(privateKey, publicKey, data) {
+// promise
+ICrypt.prototype.decrypt = function(to, from, data) {
 };
 
-ICrypt.prototype.decryptObject = function(privateKey, publicKey, data) {
+// promise
+ICrypt.prototype.decryptModel = function(to, from, data, modelTransformer) {
 };
+
+// promise
+ICrypt.prototype.encryptModel = function(to, from, model, modelTransformer)
 
 return ICrypt;
 });

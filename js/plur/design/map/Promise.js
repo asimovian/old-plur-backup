@@ -11,22 +11,22 @@ function(
     PlurObject ) {
 
 /**
- * FutureMap
+ * PromiseMap
  *
- * @constructor plur/design/FutureMap
+ * @constructor plur/design/PromiseMap
  * @implements plur/design/IMap
  **
  */
-var FutureMap = function() {
+var PromiseMap = function() {
     this._map = {};
 };
 
-FutureMap.prototype = PlurObject.create('plur/design/FutureMap', FutureMap);
-PlurObject.implement(FutureMap, IMap);
+PromiseMap.prototype = PlurObject.create('plur/design/PromiseMap', PromiseMap);
+PlurObject.implement(PromiseMap, IMap);
 
-FutureMap.prototype.get = function(key) {
+PromiseMap.prototype.get = function(key) {
     if (typeof this._map[key] !== 'undefined' ) {
-        throw NotFoundError('FutureMap entry not found.', {key: key});
+        throw NotFoundError('PromiseMap entry not found.', {key: key});
     } else if (this._map[key] instanceof PlurPromise) {
         return this._map[key];
     }
@@ -34,7 +34,7 @@ FutureMap.prototype.get = function(key) {
     return new PlurPromise(function(resolve, reject) { resolve(this._map[key]); });
 };
 
-FutureMap.prototype.put = function(key, value) {
+PromiseMap.prototype.put = function(key, value) {
     this._map[key] = value;
 
     if (value instanceof PlurPromise) {
@@ -49,17 +49,17 @@ FutureMap.prototype.put = function(key, value) {
     }
 };
 
-FutureMap.prototype.remove = function(key) {
+PromiseMap.prototype.remove = function(key) {
     delete this._map[key];
 };
 
-FutureMap.prototype.has = function(key) {
+PromiseMap.prototype.has = function(key) {
     return ( typeof this._map[key] !== 'undefined' );
 };
 
-FutureMap.prototype.resolved = function(key) {
+PromiseMap.prototype.resolved = function(key) {
     return ( !this._map[key] instanceof PlurPromise );
 };
 
-return FutureMap;
+return PromiseMap;
 });

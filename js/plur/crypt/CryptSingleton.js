@@ -21,33 +21,44 @@ function(
  * @extends plur/design/Singleton
  **
  */
-var CryptPromiseMapSingleton = function() {
-    var available = [ICrypt.PGP]
+var CryptSingleton = function() {
     PromiseMapSingleton.call(this, function(key) {
-        if (typeof )
+        var cryptConfig = CryptSingleton.CipherConfigs[key];
+        var promise = new PlurPromise(function(resolve, reject) {
+            Bootstrap.get().require([cryptoConfig.configuredNamepath], function(cryptConstructor) {
+                resolve(new cryptConstructor(cryptConfig));
+            });
+        };
     });
 
-    var cryptConfig = CryptSingleton._createCryptConfig();
-    //TODO: research race condition on .get() before Bootstrap.require() has finished
-    // add promises to require()?
-    Bootstrap.get().require([cryptoConfig.subjectNamepath], function(cryptConstructor) {
-        Singleton.call(this, new cryptConstructor(cryptConfig));
-    });
+    this._config = CryptSingleton.DEFAULT_CONFIG;
+
+    // load ciphers
+    var ciphers = this._config.config().ciphers;
+    for (var key in ciphers) {
+        CryptSingleton.Ciphers[key] = key;
+        CryptSingleton.CipherConfigs[key] = ciphers[key];
+    }
 };
 
-CryptPromiseMapSingleton.prototype = PlurObject.create('plur/crypt/CryptSingleton', CryptPromiseMapSingleton, AFutureMapSingleton);
+CryptSingleton.DEFAULT_CONFIG = new Config(CryptSingleton, {
+    ciphers: {
+        PGP: new Config('plur/crypt/core/PGP', {}),
 
-CryptPromiseMapSingleton.prototype. = function(configKey) {
-};
-
-Crypt.get().get(Crypt.PGP).then(function(crypt) {
-    crypt.decrypt().then(function(decrypted) {
-        // blah ...
-    });
+        AES256: new Config('plur/crypt/core/AES', {
+            keySize: 256
+        })
+    }
 });
 
-Crypt.get().put(Crypt.PGP)
+CryptSingleton.prototype = PlurObject.create('plur/crypt/CryptSingleton', CryptSingleton, APromiseMapSingleton);
 
+/**
+ * Cryptographic configurations available to the core platform.
+ */
+CryptSingleton.Ciphers = {};
 
-return new CryptPromiseMapSingleton();
+CryptSingleton.CipherConfigs = {}
+
+return new CryptSingleton();
 });

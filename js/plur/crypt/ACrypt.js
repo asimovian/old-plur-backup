@@ -29,9 +29,7 @@ var ACrypt = function(config) {
     this._config =  ACrypt.DEFAULT_CONFIG.merge(config);
 };
 
-ACrypt.DEFAULT_CONFIG = new Config(ACrypt.namepath, {
-
-});
+ACrypt.DEFAULT_CONFIG = new Config(ACrypt.namepath, {});
 
 ACrypt.prototype = PlurObject.create('plur/crypt/ACrypt', ACrypt);
 PlurObject.implement(ACrypt, ICrypt);

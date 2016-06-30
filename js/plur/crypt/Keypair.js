@@ -30,6 +30,7 @@ var Keypair = function(privateKey, publicKey) {
 };
 
 Keypair.prototype = PlurObject.create('plur/crypt/Keypair', Keypair);
+PlurObject.implement(Keypair, IKeyset);
 
 Keypair.prototype.getPrivateKey = function() {
     return this.__getPrivateKey();
