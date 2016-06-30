@@ -6,7 +6,7 @@
 define(['plur/PlurObject', 'plur/lib/broofa/node-uuid/uuid.js'], function(PlurObject, broofaUUID) {
 
 /**
- * Provides UUIDs using the best RNGs available.
+ * Provides UUIDs.
  * Currently uses broofa/node-uuid internally.
  *
  * @var plur/random/UUID
@@ -27,10 +27,6 @@ UUID.prototype.create = function() {
     return broofaUUID.v4();
 };
 
-/**
- * @var UUID plur/random/UUID.singleton
- */
-UUID.singleton = new UUID();
 
-return UUID.singleton;
+return new UUID();
 });

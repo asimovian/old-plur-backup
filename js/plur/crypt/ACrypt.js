@@ -39,5 +39,9 @@ ACrypt.prototype.getConfig = function() {
     return this._config;
 };
 
+ACrypt.prototype.createUUID = function() {
+    return UUID.get().create();
+};
+
 return ACrypt;
 });
