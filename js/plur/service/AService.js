@@ -40,62 +40,7 @@ var AService = function(plurNode, config) {
    	};
 };
 
-AService._Private = function(service) {
-    this.cipherKeyMap = new PromiseMap(); // PGP => Keypair
-    this.sessionKeyMap = new PromiseMap(); // <PGP Public Key Hash> => Keyset
-    this.emitter = new Emitter();
-};
 
-AService.prototype = PlurObject.create('plur/service/AService._Private', AService._Private);
-
-AService.prototype.generateKeys = function(cipher) {
-    var promise = new PlurPromise(function(resolve, reject) {
-        Crypt.get(cipher).then(function(crypt) {
-            generateKeys().then(function(keys) {
-                resolve(keys);
-            });
-        });
-    });
-
-    __cipherKeyMap.put(cipher, promise);
-    return promise;
-};
-
-AService.prototype.encryptData = function(cipher, key, data) {
-    var promise = new PlurPromise(function(resolve, reject) {
-        Crypt.get(cipher).then(function(crypt) {
-            if (!__cipherKeyMap.has(cipher)) {
-                generateKeys(cipher);
-            }
-
-            __cipherKeyMap.get(cipher).then(function(keyset) {
-                crypt.encrypt(key, keyset, data).then(function(encryptedData) {
-                    resolve(encryptedData);
-                });
-            });
-        });
-    });
-
-    return promise;
-};
-
-	        decryptData: function(cipher, key, data) {
-	            return Crypt.get().decrypt(keys.getPrivateKey(), publicKey, data);
-	        },
-
-	        createEncryptModelCallback: function(model) {
-	            return function(cipher, key, modelTransformer) {
-	                return encryptData(cipher, key, modelTransformer.encode(model));
-	            };
-	        },
-
-	        createEncryptNextKeyCallback: function() {
-	            return function(cipher, publicKey);
-	        },
-
-	        decryptModel: function(cipher, publicKey, data, modelTransformer) {
-	            return modelTransformer.decode(__private.decryptData(cipher, publicKey, data));
-	        }
 
 /** Generic Events **/
 
@@ -134,8 +79,14 @@ AService.prototype.start = function() {
         throw new DestroyedError({'this': this});
     }
 
-    this._running = true;
+    var __private = (function() {
+        return {
+            cryptSession: new CryptSession();
+            emitter: new Emitter();
+        };
+    })();
 
+    this._running = true;
     this.__startPrivateEmitter();
 
 	// generic announce to entire node

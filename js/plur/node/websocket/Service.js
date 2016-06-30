@@ -78,13 +78,13 @@ NodeWebsocketService.prototype.start = function() {
             self._addConnection(connection, connectionRequest.publicKey);
 
             plurNode.comm().connect(Hash.get().hash(connectionRequest.publicKey), function(messageEvent) {
-                var data = messageEvent.model();
+                var data = messageEvent.createEnvelope().toData();
                 websocketService.send(connection, data);
             }, true);
 
-            var subscriptionId = websocketService.onData(connection, function(data) {
-                var messageEvent = MessageEvent.fromModel(data);
-                plurNode.comm().emit(messageEvent);
+            var subscriptionId = websocketService.onData(connection, function(encryptedData) {
+                var envelope = MessageEvent.Envelope.fromData(data);
+                plurNode.comm().emit(envelope.getMessageEvent(messageEvent));
             });
 
             // respond to request

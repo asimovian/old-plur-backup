@@ -108,5 +108,65 @@ MessageEvent.prototype.isEncrypted = function() {
     return this._encrypted;
 };
 
+MessageEvent.prototype.createEnvelope = function() {
+    var envelope = new Envelope(this);
+    return envelope;
+};
+
+var Envelope = function(messageEvent) {
+    this._encryptedCryptMeta = '';
+    this._encryptedMessage =  messageEvent.getMessage();
+    this._encryptedMessageEvent = '';
+
+};
+
+Envelope.fromData = function(data) {
+    var pos = 0;
+    for (var i = 0, pos = -1; i < 3; ++i) {
+        pos = data.indexOf('.', ++pos);
+        if (pos === -1) {
+            throw new InvalidError('Invalid envelope data.', {data: data});
+        }
+    }
+
+    var index = data.slice(pos++); // pos is now pointing at the first real data character
+    index = index.split('.');
+    if (index.length !== 3) {
+        throw new InvalidError('Invalid envelope data.', {data: data});
+    }
+
+    var encryptedCryptMeta = data.slice(pos, pos+index[0]);
+    pos += index[0];
+    if (encryptedCryptMeta.length !== index[0]) {
+        throw new InvalidError('Invalid envelope data.', {data: data});
+    }
+
+    var encryptedMessageEvent = data.slice(pos, pos+index[1]);
+    pos += index[1];
+    if (encryptedMessageEvent.length !== index[1]) {
+        throw new InvalidError('Invalid envelope data.', {data: data});
+    }
+
+    var encryptedMessage = data.slice(pos, pos+index[2]);
+    pos += index[2];
+    if (encryptedMessage.length !== index[2]) {
+        throw new InvalidError('Invalid envelope data.', {data: data});
+    }
+
+    return new Envelope(encryptedCryptMeta, encryptedMessageEvent, encryptedMessage);
+};
+
+Envelope.prototype.getSizeIndex = function() {
+    var index = this._encryptedCryptMeta.length
+        + '.' + this._encryptedMessageEvent.length
+        + '.' + this._encryptedMessage.length;
+
+    return index;
+};
+
+Envelope.prototype.getData = function() {
+    return this.getSizeIndex() + this._encryptedCryptMeta + this._encryptedMessageEvent + this._encryptedMessage;
+};
+
 return Event;
 });
