@@ -74,20 +74,16 @@ Channel.prototype.disconnect = function(publicKeyHash) {
     delete this._connectionMap[publicKeyHash];
 };
 
-Channel.prototype.request = function(request, encryptFunction, timeout) {
+Channel.prototype.request = function(request, encryptFunction, encryptNexKeyFunction, timeout) {
     var connections = this._validateMessage(request, Request);
     var requestId = request.id();
 
-
-
     var promise = { promise: null, resolve: null, reject: null };
     new PlurPromise(function(resolve, reject) {
-
-
         if (!connections.recipient.isLocal()) {
             var modelTransformer = connections.recipient.getModelTransformer();
 
-            MessageEvent.createEncrypted(request, encryptFunction, modelTransformer)
+            MessageEvent.createEncrypted(request, encryptFunction, modelTransformer, encryptNexKeyFunction)
             .then(function(messageEvent) {
                 resolve(messageEvent);
             });

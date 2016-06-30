@@ -16,14 +16,16 @@ function(
 
 /**
  * An event composed of an IMessage, which may be encrypted.
+ * Universal message envelope for all inter-node and intra-node communications.
  * Works with both normal emitters and comm/Channel.
  *
  * @constructor plur/msg/AMessageEvent
  **
  * @param {plur/msg/IMessage} message Unencrypted. Will not be stored if encryptFunction is available.
  * @param {string} encryptedMessage This will be transmitted instead of the unencrypted message contents.
+ * @param {string} encryptedNextKey Provided for use with Symmetric ciphers.
  */
-var MessageEvent = function(message, encryptedMessage) {
+var MessageEvent = function(message, encryptedMessage, encryptedNextKey) {
     Event.call(this);
 
     if (!message instanceof AMessage) { // breaks contract, but faster than implenting()
@@ -41,22 +43,51 @@ var MessageEvent = function(message, encryptedMessage) {
     if (typeof encryptedMessage !== 'undefined') {
         this._encrypted = true;
         this._message = encryptedMessage;
+        this._encryptedNextKey = encryptedNextKey;
     } else {
         this._encrypted = false;
         this._message = message;
+        this._encryptedNextKey = null;
     }
 
     this._hash = Hash.get().hash(this._message);
 };
 
  //* @param {Function():=string encrypted|undefined} encryptFunction Returns an encrypted copy of IMessage, no parameters passed.
-MessageEvent.createEncrypted = function(message, encryptFunction, modelTransformer) {
-    var promise = new PlurPromise(function(resolve, reject) {
+MessageEvent.createEncrypted = function(message, encryptFunction, modelTransformer, encryptNextKeyFunction) {
+    var dataEncryptionPromise = null;
+    var keyEncryptionPromise = null;
+    var encryptedModel = null;
+    var encryptedNextKey;
+
+    if (typeof encryptNextKeyFunction === 'function') {
+        keyEncryptionPromise = new PlurPromise(function(resolve, reject) {
+            encryptNextKeyFunction().then(function(encryptedData) {
+                encryptedNextKey = encryptedData;
+                resolve();
+            });
+        });
+    } else {
+        keyEncryptionPromise = new PlurPromise(PlurPromise.noop);
+    }
+
+    dataEncryptionPromise = new PlurPromise(function(resolve, reject) {
         encryptFunction(modelTransformer).then(function(encryptedData) {
-            resolve(new MessageEvent(message, encryptedData));
+            encryptedModel = encryptedData;
+            resolve());
         });
     });
 
+    var promise = new PlurPromise(function(resolve, reject) {
+        PlurPromise.all([keyEncryptionPromise, dataEncryptionPromise]).then(function() {
+            resolve(new MessageEvent(message, encryptedModel, encryptedNextKey));
+        });
+    });
+
+    return promise;
+};
+
+new MessageEvent(message, encryptedData
     return promise;
 };
 

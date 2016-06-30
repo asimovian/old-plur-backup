@@ -24,40 +24,10 @@ var AService = function(plurNode, config) {
 	this._emitter = new Emitter();
 	this._nodeEmitterSubscriptionIds = [];
 
-	// Maintain a private key and a private emitter for each
-	var __private = (function() {
-	    var keys = Crypt.get().generateKeys();
+    var __private = new AService._Private(this);
 
-	    return {
-	        keys: keys,
-
-	        generateKeys: function() {
-	            keys = Crypt.get().generateKeys();
-	        };
-
-	        encryptData: function(publicKey, data) {
-	            return Crypt.get().encrypt(keys.getPrivateKey(), publicKey, data);
-	        };
-
-	        decryptData: function(publicKey, data) {
-	            return Crypt.get().decrypt(keys.getPrivateKey(), publicKey, data);
-	        },
-
-	        encryptModelCallback: function(model) {
-	            return function(publicKey, modelTransformer) {
-	                return encryptData(publicKey, modelTransformer.encode(model));
-	            };
-	        },
-
-	        decryptModel: function(publicKey, data, modelTransformer) {
-	            return modelTransformer.decode(__private.decryptData(publicKey, data));
-	        }
-
-	    };
-	})();
-
-	this.__publicKey = function() { return __private.keys.getPublicKey(); };
-	this.__publicKeyHash = function() { return __private.keys.getPublicKeyHash(); };
+	this.__publicKey = function() { return __private.getPublicKey(); };
+	this.__publicKeyHash = function() { return __private.getPublicKeyHash(); };
 
 	this.__startPrivateEmitter = function() {
 	    this._startPrivateEmitter(__private);
@@ -69,6 +39,63 @@ var AService = function(plurNode, config) {
    	    __private.keys = null;
    	};
 };
+
+AService._Private = function(service) {
+    this.cipherKeyMap = new PromiseMap(); // PGP => Keypair
+    this.sessionKeyMap = new PromiseMap(); // <PGP Public Key Hash> => Keyset
+    this.emitter = new Emitter();
+};
+
+AService.prototype = PlurObject.create('plur/service/AService._Private', AService._Private);
+
+AService.prototype.generateKeys = function(cipher) {
+    var promise = new PlurPromise(function(resolve, reject) {
+        Crypt.get(cipher).then(function(crypt) {
+            generateKeys().then(function(keys) {
+                resolve(keys);
+            });
+        });
+    });
+
+    __cipherKeyMap.put(cipher, promise);
+    return promise;
+};
+
+AService.prototype.encryptData = function(cipher, key, data) {
+    var promise = new PlurPromise(function(resolve, reject) {
+        Crypt.get(cipher).then(function(crypt) {
+            if (!__cipherKeyMap.has(cipher)) {
+                generateKeys(cipher);
+            }
+
+            __cipherKeyMap.get(cipher).then(function(keyset) {
+                crypt.encrypt(key, keyset, data).then(function(encryptedData) {
+                    resolve(encryptedData);
+                });
+            });
+        });
+    });
+
+    return promise;
+};
+
+	        decryptData: function(cipher, key, data) {
+	            return Crypt.get().decrypt(keys.getPrivateKey(), publicKey, data);
+	        },
+
+	        createEncryptModelCallback: function(model) {
+	            return function(cipher, key, modelTransformer) {
+	                return encryptData(cipher, key, modelTransformer.encode(model));
+	            };
+	        },
+
+	        createEncryptNextKeyCallback: function() {
+	            return function(cipher, publicKey);
+	        },
+
+	        decryptModel: function(cipher, publicKey, data, modelTransformer) {
+	            return modelTransformer.decode(__private.decryptData(cipher, publicKey, data));
+	        }
 
 /** Generic Events **/
 
@@ -168,36 +195,39 @@ AService.prototype.getPlurNode = function() {
 };
 
 AService.prototype._startPrivateEmitter = function(__private) {
-		if (this.running()) {
-			return;
-		}
+    if (this.running()) {
+        return;
+    }
 
-        var comm = this._plurNode.comm();
-		var subscriptionId = comm.on([
-    		'plur/msg/Notification.to.' + this._servicePubKeyHash,
-    		'plur/msg/Request.to.' + this._servicePubKeyHash,
-    		'plur/msg/Response.to.' + this._servicePubKeyHash ],
-    		function(messageEvent) {
-    		    if (!PlurObject.implementing(messageEvent, IMessage)) {
-    		        return;
-    		    }
+    var comm = this._plurNode.comm();
+    var subscriptionId = comm.on([
+        'plur/msg/Notification.to.' + this._servicePubKeyHash,
+        'plur/msg/Request.to.' + this._servicePubKeyHash,
+        'plur/msg/Response.to.' + this._servicePubKeyHash ],
+        function(messageEvent) {
+            if (!PlurObject.implementing(messageEvent, IMessage)) {
+                return;
+            }
 
-                if (messageEvent.isEncrypted()) {
-                    var connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
-    		        var message = __private.decryptModel(
-    		            connection.getPublicKey(),
-    		            messageEvent.getMessage(),
-    		            connection.getTransformer()
-    		        );
+            if (messageEvent.isEncrypted()) {
+                var connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
+                var message = __private.decryptModel(
+                    connection.getPublicKey(),
+                    messageEvent.getMessage(),
+                    connection.getTransformer()
+                );
 
-                    messageEvent = new MessageEvent(message);
-    		    }
+                messageEvent = new MessageEvent(message);
+            }
 
-                __private.emitter().emit(messageEvent);
-    		}
-    	);
+            __private.emitter().emit(messageEvent);
+        }
+    );
 
-	    this._nodeCommSubscriptionIds.push(subscriptionId);
+    this._nodeCommSubscriptionIds.push(subscriptionId);
+
+    var msg = new NoopNotification(this);
+	comm.notify(msg, __private.encryptModelCallback(msg), __private.encryptNextKeyCallback());
 };
 
 return AService;
