@@ -26,20 +26,38 @@ var AService = function(plurNode, config) {
 
 	// Maintain a private key and a private emitter for each
 	var __private = (function() {
-	    return {
-	        keys: Crypt.get().generateKeys();
+	    var keys = Crypt.get().generateKeys();
 
-	        encrypt: function(publicKey, data) {
+	    return {
+	        keys: keys,
+
+	        generateKeys: function() {
+	            keys = Crypt.get().generateKeys();
+	        };
+
+	        encryptData: function(publicKey, data) {
 	            return Crypt.get().encrypt(keys.getPrivateKey(), publicKey, data);
 	        };
 
-	        decrypt: function(publicKey, data) {
-	            return Crypt.get().decryptObject(keys.getPrivateKey(), publicKey, data);
-	        };
+	        decryptData: function(publicKey, data) {
+	            return Crypt.get().decrypt(keys.getPrivateKey(), publicKey, data);
+	        },
+
+	        encryptModelCallback: function(model) {
+	            return function(publicKey, modelTransformer) {
+	                return encryptData(publicKey, modelTransformer.encode(model));
+	            };
+	        },
+
+	        decryptModel: function(publicKey, data, modelTransformer) {
+	            return modelTransformer.decode(__private.decryptData(publicKey, data));
+	        }
+
 	    };
 	})();
 
 	this.__publicKey = function() { return __private.keys.getPublicKey(); };
+	this.__publicKeyHash = function() { return __private.keys.getPublicKeyHash(); };
 
 	this.__startPrivateEmitter = function() {
 	    this._startPrivateEmitter(__private);
@@ -55,7 +73,7 @@ var AService = function(plurNode, config) {
 /** Generic Events **/
 
 AService.StartEvent = function(service) {
-    this.data.service = service;
+    this.service = service;
 };
 
 AService.StartEvent.prototype = PlurObject.create('plur/service/AService.StartEvent', AService.StartEvent);
@@ -63,7 +81,7 @@ AService.StartEvent.prototype = PlurObject.create('plur/service/AService.StartEv
 AService.prototype = PlurObject.create('plur/service/AService', AService);
 
 AService.StopEvent = function(service) {
-    this.data.service = service;
+    this.service = service;
 };
 
 AService.StopEvent.prototype = PlurObject.create('plur/service/AService.StopEvent', AService.StopEvent);
@@ -78,6 +96,9 @@ AService.prototype.publicKey = function() {
     return this.__publicKey();
 };
 
+AService.prototype.publicKeyHash = function() {
+    return this.__publicKeyHash();
+};
 
 AService.prototype.start = function() {
 	if (this.running()) {
@@ -151,7 +172,8 @@ AService.prototype._startPrivateEmitter = function(__private) {
 			return;
 		}
 
-		var subscriptionId = this._plurNode.comm().on([
+        var comm = this._plurNode.comm();
+		var subscriptionId = comm.on([
     		'plur/msg/Notification.to.' + this._servicePubKeyHash,
     		'plur/msg/Request.to.' + this._servicePubKeyHash,
     		'plur/msg/Response.to.' + this._servicePubKeyHash ],
@@ -161,7 +183,13 @@ AService.prototype._startPrivateEmitter = function(__private) {
     		    }
 
                 if (messageEvent.isEncrypted()) {
-    		        var message = __private.decryptObject(event.getSenderPublicKey(), messageEvent.getMessage())
+                    var connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
+    		        var message = __private.decryptModel(
+    		            connection.getPublicKey(),
+    		            messageEvent.getMessage(),
+    		            connection.getTransformer()
+    		        );
+
                     messageEvent = new MessageEvent(message);
     		    }
 

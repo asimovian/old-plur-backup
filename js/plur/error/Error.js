@@ -32,6 +32,11 @@ PlurError.throwIf = function(testResult, message, data) {
 };
 
 PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
+PlurObject.implement(PlurError, IModel);
+
+PlurError.fromModel = function(model) {
+   return new PlurError(model.message, model.data);
+};
 
 PlurError.prototype.toString = function() {
     if (this.data === null)
@@ -48,6 +53,13 @@ PlurError._stringifyReplacer = function(key, value) {
         return '[Function]';
     default:
         return value;
+    };
+};
+
+PlurError.prototype.model = function() {
+    return {
+        message: this.message,
+        data: IModel.model(this.data)
     };
 };
 

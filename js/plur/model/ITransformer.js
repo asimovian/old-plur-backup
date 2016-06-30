@@ -5,45 +5,42 @@
  */
 define([
     'plur/PlurObject',
-    'plur/error/Error',
-     'plur/model/Transformer' ],
+    'plur/error/Interface' ],
 function(
     PlurObject,
-    PlurError,
-    ModelTransformer ) {
+    InterfaceError ) {
 
 /**
  * Transforms data objects to and from other formats (e.g., JSON, XML, ProtoBuff, etc.).
  *
- * @constructor plur/model/Transformer
- * @abstract
+ * @constructor plur/model/ITransformer
+ * @interface
  **
  */
-var ModelTransformer = function() {
-};
+var IModelTransformer = function() { throw new };
 
-ModelTransformer.prototype = PlurObject.create('plur/json/model/Transformer', ModelTransformer);
+IModelTransformer.prototype = PlurObject.create('plur/model/ITransformer', IModelTransformer);
 
 /**
  * Transforms a subject format into a data model object.
  *
- * @function plur/model/Transformer
+ * @function plur/model/ITransformer.prototype.encode
  * @abstract
  * @param {*}
- * @param {function(Object model)} callback
  * @returns {}
  */
-ModelTransformer.prototype.toModel = PlurObject.abstractMethod;
+IModelTransformer.prototype.encode = PlurObject.abstractMethod;
 
 /**
  * Transforms a data model into the subject format.
  *
- * @function plur/model/Transformer
+ * @function plur/model/Transformer.prototype.decode
  * @abstract
  * @param {} model
  * @returns {}
  */
-ModelTransformer.prototype.fromModel = PlurObject.abstractMethod;
+IModelTransformer.prototype.decode = PlurObject.abstractMethod;
+
 
 return ModelTransformer;
 });

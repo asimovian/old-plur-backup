@@ -21,30 +21,43 @@ function(
  * @constructor plur/msg/AMessageEvent
  **
  * @param {plur/msg/IMessage} message Unencrypted. Will not be stored if encryptFunction is available.
- * @param {Function():=string encrypted|undefined} encryptFunction Returns an encrypted copy of IMessage, no parameters passed.
+ * @param {string} encryptedMessage This will be transmitted instead of the unencrypted message contents.
  */
-var MessageEvent = function(message, encryptFunction) {
+var MessageEvent = function(message, encryptedMessage) {
+    Event.call(this);
+
     if (!message instanceof AMessage) { // breaks contract, but faster than implenting()
         throw new TypeError('Invalid message', {message: message});
+    } else if (typeof encryptedMessage !== 'undefined' && typeof encryptedMessage !== 'string') {
+        throw new TypeError('Encrypted message is not a string', {encryptedMessage: encryptedMessage});
     }
 
-    Event.call(this, this.namepath + '.to.' + recipientPublicKey);
-
-    this._timestamp = message.timestamp(); // override
-    this._recipientPublicKey = message.getRecipientPublicKey();
-    this._senderPublicKey = message.getSenderPublicKey();
-    this._channelEventType = '';
+    this._timestamp = message.getTimestamp(); // override
+    this._recipientPublicKeyHash = message.getRecipientPublicKeyHash();
+    this._senderPublicKeyHash = message.getSenderPublicKeyHash();
+    this._channelEventType = null;
     this._channelResponseEventType = null;
 
-    if (typeof encryptFunction === 'Function') {
+    if (typeof encryptedMessage !== 'undefined') {
         this._encrypted = true;
-        this._message = encryptFunction();
-        this._hash = Hash.get().hash(this._message);
+        this._message = encryptedMessage;
     } else {
         this._encrypted = false;
         this._message = message;
-        this._hash = this._message.hash();
     }
+
+    this._hash = Hash.get().hash(this._message);
+};
+
+ //* @param {Function():=string encrypted|undefined} encryptFunction Returns an encrypted copy of IMessage, no parameters passed.
+MessageEvent.createEncrypted = function(message, encryptFunction, modelTransformer) {
+    var promise = new PlurPromise(function(resolve, reject) {
+        encryptFunction(modelTransformer).then(function(encryptedData) {
+            resolve(new MessageEvent(message, encryptedData));
+        });
+    });
+
+    return promise;
 };
 
 MessageEvent.prototype = PlurObject.create('plur/comm/MessageEvent', MessageEvent);

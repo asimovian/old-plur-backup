@@ -6,33 +6,34 @@
 define([
     'plur/PlurObject',
     'plur/error/Error',
-    'plur/model/Transformer' ],
+    'plur/model/Transformer',
+    'plur/pson/Singleton' ],
 function(
     PlurObject,
     PlurError,
-    ModelTransformer ) {
+    Pson ) {
 
 /**
  * Encodes and decodes data objects to and from JSON.
  *
- * @constructor plur/json/model/Transformer
+ * @constructor plur/pson/model/Transformer
  * @extends plur/model/ModelTransformer
  **
  */
-var JsonModelTransformer = function() {
+var PsonModelTransformer = function() {
 };
 
-JsonModelTransformer.prototype = PlurObject.create('plur/json/model/Transformer', ModelTransformer);
+PsonModelTransformer.prototype = PlurObject.create('plur/pson/model/Transformer', ModelTransformer);
 
 /**
  * Transforms a JSON string into a data model.
  *
- * @function plur/json/model/Transformer
- * @param {string} json
+ * @function plur/pson/model/Transformer
+ * @param {string} pson
  * @returns {}
  */
-JsonModelTransformer.prototype.decode = function(json) {
-    var model = JSON.parse(json);
+PsonModelTransformer.prototype.decode = function(pson) {
+    var model = Pson.get().decode(pson);
     return model;
 };
 
@@ -43,10 +44,10 @@ JsonModelTransformer.prototype.decode = function(json) {
  * @param {} model
  * @returns {string}
  */
-JsonModelTransformer.prototype.encode = function(model) {
-    var json = JSON.stringify(model);
-    return json;
+PsonModelTransformer.prototype.encode = function(model) {
+    var pson = Pson.get().encode(model);
+    return pson;
 };
 
-return JsonModelTransformer;
+return PsonModelTransformer;
 });

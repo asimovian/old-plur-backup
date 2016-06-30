@@ -78,15 +78,28 @@ Channel.prototype.request = function(request, encryptFunction, timeout) {
     var connections = this._validateMessage(request, Request);
     var requestId = request.id();
 
-    var messageEvent = new MessageEvent(
-        request.getRecipientPublicKeyHash(),
-        request.getSenderPublicKeyHash(),
-        ( connections.recipient.isLocal() ? request : encryptFunction ) );
 
-    var promise = { resolve: null, reject: null };
+
+    var promise = { promise: null, resolve: null, reject: null };
     new PlurPromise(function(resolve, reject) {
-        promise.resolve = resolve;
-        promise.reject = reject;
+
+
+        if (!connections.recipient.isLocal()) {
+            var modelTransformer = connections.recipient.getModelTransformer();
+
+            MessageEvent.createEncrypted(request, encryptFunction, modelTransformer)
+            .then(function(messageEvent) {
+                resolve(messageEvent);
+            });
+        } else {
+            resolve(new MessageEvent(request());
+
+        }
+    }).then(function(result) {
+        promise.promise = new PlurPromise(function(resolve, reject) {
+            promise.resolve = resolve;
+            promise.reject = reject;
+        });
     });
 
     //var eventType = Request.namepath + '.' + request.getRecipientPublicKeyHash() + '.' request.getSenderPublicKeyHash() '.' + requestId);
@@ -106,6 +119,7 @@ Channel.prototype.request = function(request, encryptFunction, timeout) {
     connection.addResponseSubscription(requestId, subscriptionId, timeoutId, promise.reject);
 
     this._emitter.emit(eventType, messageEvent);
+    return promise.promise;
 };
 
 Channel.prototype.notify = function(notification, encryptFunction, timeout) {
