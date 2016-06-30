@@ -21,7 +21,12 @@ function(
  * @extends plur/design/Singleton
  **
  */
-var CryptSingleton = function() {
+var CryptPromiseMapSingleton = function() {
+    var available = [ICrypt.PGP]
+    PromiseMapSingleton.call(this, function(key) {
+        if (typeof )
+    });
+
     var cryptConfig = CryptSingleton._createCryptConfig();
     //TODO: research race condition on .get() before Bootstrap.require() has finished
     // add promises to require()?
@@ -30,7 +35,19 @@ var CryptSingleton = function() {
     });
 };
 
-CryptSingleton.prototype = PlurObject.create('plur/crypt/CryptSingleton', CryptSingleton, Singleton);
+CryptPromiseMapSingleton.prototype = PlurObject.create('plur/crypt/CryptSingleton', CryptPromiseMapSingleton, AFutureMapSingleton);
 
-return new CryptSingleton();
+CryptPromiseMapSingleton.prototype. = function(configKey) {
+};
+
+Crypt.get().get(Crypt.PGP).then(function(crypt) {
+    crypt.decrypt().then(function(decrypted) {
+        // blah ...
+    });
+});
+
+Crypt.get().put(Crypt.PGP)
+
+
+return new CryptPromiseMapSingleton();
 });
