@@ -6,7 +6,7 @@ plur
 
 Plur is a distributed application platform that is intended to scale across networks of virtual machines. The framework
 is designed to improve cross-platform code reuse by allowing most of the same libraries to be imported on both backend and
-fronted applications.
+frontend applications.
 
 One or more plur services run on each plur network node (application), communicating with local services directly
 and with remote services through encrypted message forwarding.
