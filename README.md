@@ -5,18 +5,17 @@ plur
 (This project is in an early development stage.)
 
 Plur is a distributed application platform that is intended to scale across networks of virtual machines. The framework
-is designed to improve cross-platform code re-use by allowing most of the same libraries to be used on both backend and
+is designed to improve cross-platform code reuse by allowing most of the same libraries to be imported on both backend and
 fronted applications.
 
-One or more plur services run on each plur network node (application), communicating with other services either directly
-or through message forwarding and routing either across private networks or the Internet at large.
+One or more plur services run on each plur network node (application), communicating with local services directly
+and with remote services through encrypted message forwarding.
 
 Plur networks are controlled by management services that receive and react to metrics from other plur services as well
-as directives by the network administrators. Management services start, stop, and reconfigure other plur
+as to new directives by the network administrators. Management services start, stop, and reconfigure other plur
 services dynamically, based on changing operational requirements.
 
-Typical third-party software services used in production environments (e.g., PostgreSQL, Memcached, etc.) are locked down and
-only interacted with through plur messaging API presented by custom plur services.
+Common third-party software services (e.g., PostgreSQL, Memcached, etc.) are locked down and only interacted with through plur the messaging API provided by the specific plur service controlling that software (e.g., PostgreSQLService, MemcachedService, etc.).
 
 
 Contributors
