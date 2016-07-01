@@ -1,6 +1,6 @@
-plur
-====
 ![Image of "plur"] (https://raw.githubusercontent.com/asimovian/plur/master/doc/plur.png)
+====
+
 
 [ This project is in an early development stage ]
 
