@@ -70,7 +70,7 @@ PGP.prototype.decrypt = function(publicKey, privateKey, encryptedData) {
         openpgp.decrypt(options).then(function(plaintext) {
             resolve(plaintext.data);
         });
-    })
+    });
 
     return promise;
 };

@@ -22,7 +22,7 @@ function(
  **
  */
 var AMessage = function(senderPublicKeyHash, recipientPublicKeyHash) {
-    if (this.namepath -== AMessage.namepath) {
+    if (this.namepath === AMessage.namepath) {
         throw new AbstractError({'this': this});
     }
 

@@ -151,10 +151,7 @@ AService.prototype._startPrivateEmitter = function(__private) {
     }
 
     var comm = this._plurNode.comm();
-    var subscriptionId = comm.on([
-        'plur/msg/Notification.to.' + this._servicePubKeyHash,
-        'plur/msg/Request.to.' + this._servicePubKeyHash,
-        'plur/msg/Response.to.' + this._servicePubKeyHash ],
+    var subscriptionId = comm.on(this.publicKeyHash(),
         function(messageEvent) {
             if (!PlurObject.implementing(messageEvent, IMessage)) {
                 return;
@@ -167,6 +164,11 @@ AService.prototype._startPrivateEmitter = function(__private) {
                     messageEvent.getMessage(),
                     connection.getTransformer()
                 );
+
+                if (typeof message.__NEXTKEY !== 'undefined') {
+                   __private.cryptSession.setNextSessionKey(messageEvent.__NEXTKEY);
+                    delete messageEvent.__NEXTKEY;
+                }
 
                 messageEvent = new MessageEvent(message);
             }

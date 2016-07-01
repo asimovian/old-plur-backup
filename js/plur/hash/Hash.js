@@ -26,6 +26,14 @@ Hash.IHashable = IHashable;
 
 Hash.prototype = PlurObject.create('plur/hash/Hash', Hash);
 
+Hash.prototype.sha3 = function(data) {
+    return cryptojs.SHA3(data, { outputLength: 256 });
+};
+
+Hash.prototype.uuid = function() {
+    return broofaUUID.v4();
+};
+
 Hash.prototype.hash = function(/* ... */) {
     var hash = 0;
 
