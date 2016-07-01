@@ -1,9 +1,8 @@
-![Image of "plur"] (https://raw.githubusercontent.com/asimovian/plur/master/doc/plur.png)
 plur
 ====
+![Image of "plur"] (https://raw.githubusercontent.com/asimovian/plur/master/doc/plur.png)
 
-
-[ This project is in an early development stage ]
+(This project is in an early development stage.)
 
 Plur is a distributed application platform that is intended to scale across networks of virtual machines. The framework
 is designed to improve cross-platform code re-use by allowing most of the same libraries to be used on both backend and
