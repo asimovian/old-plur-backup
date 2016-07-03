@@ -7,10 +7,10 @@
 
 define([
     'plur/PlurObject',
-    'plur/crypt/ICrypt' ],
+    'plur/error/Interface' ],
 function(
     PlurObject,
-    ICrypt ) {
+    InterfaceError ) {
 
 /**
  * Cryptographic software interface.
@@ -24,23 +24,22 @@ var ICrypt = function() { throw new InterfaceError({'this': this}); };
 ICrypt.prototype = PlurObject.create('plur/crypt/ICrypt', ICrypt);
 
 // promise
-ICrypt.prototype.generateKeyset = function() {
-};
+ICrypt.prototype.init = PlurObject.abstractMethod;
 
 // promise
-ICrypt.prototype.encrypt = function(to, from, data) {
-};
+ICrypt.prototype.generateKeyset = PlurObject.abstractMethod;
 
 // promise
-ICrypt.prototype.decrypt = function(to, from, data) {
-};
+ICrypt.prototype.encrypt = PlurObject.abstractMethod;
 
 // promise
-ICrypt.prototype.decryptModel = function(to, from, data, modelTransformer) {
-};
+ICrypt.prototype.decrypt = PlurObject.abstractMethod;
 
 // promise
-ICrypt.prototype.encryptModel = function(to, from, model, modelTransformer)
+ICrypt.prototype.decryptModel = PlurObject.abstractMethod;
+
+// promise
+ICrypt.prototype.encryptModel = PlurObject.abstractMethod;
 
 return ICrypt;
 });

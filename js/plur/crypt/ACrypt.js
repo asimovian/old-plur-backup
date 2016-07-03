@@ -7,12 +7,10 @@
 
 define([
     'plur/PlurObject',
-    'plur/config/Config',
-    'plur/config/IConfigurable' ],
+    'plur/config/Config' ],
 function(
     PlurObject,
-    Config,
-    IConfigurable ) {
+    Config ) {
 
 /**
  * Base class for ICrypt implementations.
@@ -22,21 +20,30 @@ function(
  * @param plur/config/Config config
  */
 var ACrypt = function(config) {
-    if (this.namepath -== ACrypt.namepath) {
+    if (this.namepath === ACrypt.namepath) {
         throw new AbstractError({'this': this});
     }
 
-    this._config =  ACrypt.DEFAULT_CONFIG.merge(config);
+    this._config =  ACrypt.getDefaultConfig().merge(config);
 };
 
-ACrypt.DEFAULT_CONFIG = new Config(ACrypt.namepath, {});
 
 ACrypt.prototype = PlurObject.create('plur/crypt/ACrypt', ACrypt);
 PlurObject.implement(ACrypt, ICrypt);
-PlurObject.implement(ACrypt, IConfigurable);
+PlurObject.implement(ACrypt, Config.IConfigured);
+
+ACrypt._DEFAULT_CONFIG = new Config(ACrypt.namepath, {});
+
+ACrypt.getDefaultConfig = function() {
+    return ACrypt._DEFAULT_CONFIG;
+};
 
 ACrypt.prototype.getConfig = function() {
     return this._config;
+};
+
+ACrypt.prototype.config = function() {
+    return this._config.config();
 };
 
 ACrypt.prototype.createUUID = function() {

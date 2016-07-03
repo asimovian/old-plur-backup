@@ -6,20 +6,24 @@
  'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/error/Interface' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    InterfaceError ) {
 
 /**
  * Cryptographic keyset interface.
  *
  * @constructor plur/crypt/IKeyset
+ * @interface
  **
  */
-var IKeyset = function() {
-};
+var IKeyset = function() { throw new InterfaceError({'this':this}); };
 
 IKeyset.prototype = PlurObject.create('plur/crypt/IKeyset', IKeyset);
+
+IKeyset.prototype.getGenerationTimestamp = PlurObject.abstractMethod;
 
 return IKeyset;
 });

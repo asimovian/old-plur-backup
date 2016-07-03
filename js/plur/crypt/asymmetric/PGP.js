@@ -19,27 +19,30 @@ function(
  **
  */
 var PGP = function(config) {
-    ACrypt.call(this, PGP.getDefaultConfig());
+    AASymmetricCrypt.call(this, PGP.getDefaultConfig().merge(config));
 };
 
-PGP._DEFAULT_CONFIG = new Config(PGP, {
-});
+PGP.prototype = PlurObject.create('plur/crypto/core/PGP', PGP, AASymmetricCrypt);
 
-PGP._CONFIGS = [ PGP._DEFAULT_CONFIG ];
+PGP._DEFAULT_CONFIG = new Config(PGP, AASymmetricCrypt, {
+    keySize: Config.enum([1024, 2048, 4096], 4096),
+    maxDataSize: Config.range([0, Math.MAX_INT], Math.MAX_INT);
+    pgp: {
+        aeadProtect: Config.bool(true)
+    },
+});
 
 PGP.getDefaultConfig = function() {
     return PGP._DEFAULT_CONFIG;
 };
 
-PGP.getConfigs = function() {
-    return PGP._CONFIGS;
-};
-
-PGP.prototype = PlurObject.create('plur/crypto/core/PGP', PGP, ACrypt);
 
 PGP.prototype.init = function() {
+    if (this.config().pgp.aeadProtect) {
+        openpgp.config.aead_protect = true; // enable AES-GCM
+    }
+
     openpgp.initWorker({path: 'openpgp.worker.js'}); // start worker
-    openpgp.config.aead_protect = true; // enable AES-GCM
     return new Promise(Promise.noop);
 };
 

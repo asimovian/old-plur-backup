@@ -28,7 +28,7 @@ function(
 var MessageEvent = function(message, encryptedMessage, encryptedNextKey) {
     Event.call(this);
 
-    if (!message instanceof AMessage) { // breaks contract, but faster than implenting()
+    if (!PlurObject.implementing(message, IMessage)) {
         throw new TypeError('Invalid message', {message: message});
     } else if (typeof encryptedMessage !== 'undefined' && typeof encryptedMessage !== 'string') {
         throw new TypeError('Encrypted message is not a string', {encryptedMessage: encryptedMessage});
@@ -52,6 +52,10 @@ var MessageEvent = function(message, encryptedMessage, encryptedNextKey) {
 
     this._hash = Hash.get().hash(this._message);
 };
+
+MessageEvent.prototype = PlurObject.create('plur/comm/MessageEvent', MessageEvent);
+PlurObject.implement(MessageEvent, Hash.IHashable);
+
 
  //* @param {Function():=string encrypted|undefined} encryptFunction Returns an encrypted copy of IMessage, no parameters passed.
 MessageEvent.createEncrypted = function(message, encryptFunction, modelTransformer, encryptNextKeyFunction) {
@@ -87,86 +91,10 @@ MessageEvent.createEncrypted = function(message, encryptFunction, modelTransform
     return promise;
 };
 
-new MessageEvent(message, encryptedData
-    return promise;
-};
-
-MessageEvent.prototype = PlurObject.create('plur/comm/MessageEvent', MessageEvent);
-PlurObject.implement(MessageEvent, Hash.IHashable);
-
 MessageEvent.prototype.hash = function() {
     return this._hash;
 };
 
-MessageEvent.prototype.getChannelEventType = function() {
-};
-
-MessageEvent.prototype.getChannelResponseEventType = function() {
-};
-
-MessageEvent.prototype.isEncrypted = function() {
-    return this._encrypted;
-};
-
-MessageEvent.prototype.createEnvelope = function() {
-    var envelope = new Envelope(this);
-    return envelope;
-};
-
-var Envelope = function(messageEvent) {
-    this._encryptedCryptMeta = '';
-    this._encryptedMessage =  messageEvent.getMessage();
-    this._encryptedMessageEvent = '';
-
-};
-
-Envelope.fromData = function(data) {
-    var pos = 0;
-    for (var i = 0, pos = -1; i < 3; ++i) {
-        pos = data.indexOf('.', ++pos);
-        if (pos === -1) {
-            throw new InvalidError('Invalid envelope data.', {data: data});
-        }
-    }
-
-    var index = data.slice(pos++); // pos is now pointing at the first real data character
-    index = index.split('.');
-    if (index.length !== 3) {
-        throw new InvalidError('Invalid envelope data.', {data: data});
-    }
-
-    var encryptedCryptMeta = data.slice(pos, pos+index[0]);
-    pos += index[0];
-    if (encryptedCryptMeta.length !== index[0]) {
-        throw new InvalidError('Invalid envelope data.', {data: data});
-    }
-
-    var encryptedMessageEvent = data.slice(pos, pos+index[1]);
-    pos += index[1];
-    if (encryptedMessageEvent.length !== index[1]) {
-        throw new InvalidError('Invalid envelope data.', {data: data});
-    }
-
-    var encryptedMessage = data.slice(pos, pos+index[2]);
-    pos += index[2];
-    if (encryptedMessage.length !== index[2]) {
-        throw new InvalidError('Invalid envelope data.', {data: data});
-    }
-
-    return new Envelope(encryptedCryptMeta, encryptedMessageEvent, encryptedMessage);
-};
-
-Envelope.prototype.getSizeIndex = function() {
-    var index = this._encryptedCryptMeta.length
-        + '.' + this._encryptedMessageEvent.length
-        + '.' + this._encryptedMessage.length;
-
-    return index;
-};
-
-Envelope.prototype.getData = function() {
-    return this.getSizeIndex() + this._encryptedCryptMeta + this._encryptedMessageEvent + this._encryptedMessage;
-};
 
 return Event;
 });

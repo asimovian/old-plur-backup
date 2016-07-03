@@ -21,8 +21,8 @@ function(
  */
 var Keypair = function(privateKey, publicKey) {
     var __private = {
-        privateKey: ''+privateKey; // copy to new string
-        publicKey: ''+publicKey; // copy to new string
+        privateKey: privateKey; // copy to new string
+        publicKey: publicKey; // copy to new string
     };
 
     this.__getPrivateKey = function() { return ''+__private.privateKey; };
