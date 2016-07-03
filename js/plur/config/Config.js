@@ -43,6 +43,10 @@ Config.prototype.merge = function(config) {
     }
 };
 
+Config.prototype.mergeJson = function(json) {
+    return this.merge(JSON.parse(json));
+};
+
 Config.prototype._merge = function(primitiveMap) {
     var config = this.copy();
     this._fillWithPrimitiveMap(config, this._configTree, primitiveMap)

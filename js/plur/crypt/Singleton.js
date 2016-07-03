@@ -8,11 +8,11 @@
 define([
     'plur/PlurObject',
     'plur/design/Singleton',
-    'plur/crypt/Crypt' ],
+    'plur-config/plur/crypt/Singleton' ],
 function(
     PlurObject,
     Singleton,
-    Crypt ) {
+    _RUNTIME_CONFIG ) {
 
 /**
  * Singleton container for Crypt.
@@ -23,7 +23,7 @@ function(
  */
 var CryptSingleton = function() {
     PromiseMapSingleton.call(this, function(key) {
-        var cryptConfig = CryptSingleton.CipherConfigs[key];
+        var cryptConfig = Config.fromModel(CryptSingleton.CipherConfigs[key]);
         var promise = new PlurPromise(function(resolve, reject) {
             Bootstrap.get().require([cryptoConfig.configuredNamepath], function(cryptConstructor) {
                 resolve(new cryptConstructor(cryptConfig));
@@ -34,31 +34,37 @@ var CryptSingleton = function() {
     this._config = CryptSingleton.DEFAULT_CONFIG;
 
     // load ciphers
-    var ciphers = this._config.config().ciphers;
+    var ciphers = this.config().ciphers;
     for (var key in ciphers) {
         CryptSingleton.Ciphers[key] = key;
         CryptSingleton.CipherConfigs[key] = ciphers[key];
     }
+
+    this.Ciphers = this.getCiphers();
 };
 
 CryptSingleton.DEFAULT_CONFIG = new Config(CryptSingleton, {
     ciphers: {
-        PGP: new Config('plur/crypt/core/PGP', {}),
+        PGP: new Config('plur/crypt/asymmetric/PGP'),
 
-        AES256: new Config('plur/crypt/core/AES', {
+        AES256: new Config('plur/crypt/symmetric/AES', {
             keySize: 256
         })
     }
-});
+}).merge(_RUNTIME_CONFIG);
 
-CryptSingleton.prototype = PlurObject.create('plur/crypt/CryptSingleton', CryptSingleton, APromiseMapSingleton);
+CryptSingleton.prototype = PlurObject.create('plur/crypt/Singleton', CryptSingleton, APromiseMapSingleton);
 
 /**
  * Cryptographic configurations available to the core platform.
  */
-CryptSingleton.Ciphers = {};
+CryptSingleton.prototype.getCiphers = function() {
+    return this._ciphers;
+};
 
-CryptSingleton.CipherConfigs = {}
+CryptSingleton.prototype.getCipherConfigs = function() {
+    return this._cipherConfigs;
+};
 
 return new CryptSingleton();
 });

@@ -7,10 +7,12 @@
  
 define([
     'plur/PlurObject',
-    'plur/lib/openpgpjs/openpgpjs/openpgp'],
+    'plur/lib/openpgpjs/openpgpjs/openpgp',
+    'plur-config/plur/crypt/asymmetric/PGP' ],
 function(
     PlurObject,
-    openpgp) {
+    openpgp,
+    _RUNTIME_CONFIG ) {
 
 /**
  * PGP Cryptography
@@ -30,7 +32,7 @@ PGP._DEFAULT_CONFIG = new Config(PGP, AASymmetricCrypt, {
     pgp: {
         aeadProtect: Config.bool(true)
     },
-});
+}).merge(_RUNTIME_CONFIG);
 
 PGP.getDefaultConfig = function() {
     return PGP._DEFAULT_CONFIG;
