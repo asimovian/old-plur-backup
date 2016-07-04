@@ -30,38 +30,57 @@ function(
  * in nature.
  *
  * By convention, when referencing singleton prototypes with require() / define(), the variable name should be prefixed
- * with a 'g' and suffixed with the word 'Singleton'.
+ * with a 'g' and suffixed with the word 'ASingleton'.
  *
- * @constructor plur/design/Singleton
+ * @constructor plur/design/ASingleton
  * @abstract
  **
  */
-var Singleton = function(object) {
-    this.object = null;
+var ASingleton = function(object) {
+    this._object = null;
 
     if (typeof object === 'object') {
-        this.set(object);
+        this._set(object);
     }
 };
 
-Singleton.prototype = PlurObject.create('plur/design/Singleton', Singleton);
+ASingleton.prototype = PlurObject.create('plur/design/ASingleton', ASingleton);
+PlurObject.implement(ASingleton, ISingleton);
 
 /**
  * Sets the singleton object.
  *
- * @function plur/design/Singleton.prototype.set
+ * @function plur/design/ASingleton.prototype._set
  * @param {} object
  * @throws plur/error/State If the singleton object has already bee initialized
  */
-Singleton.prototype.set = function(object) {
-    if (this.object !== null) {
-        throw new PlurStateError('Singleton for ' + this.namepath + ' has already been initialized');
+ASingleton.prototype._set = function(object) {
+    if (this._object !== null) {
+        throw new ExistsError('Singleton for ' + this.namepath + ' has already been initialized');
     }
 
-    this.object = object;
+    this._object = object;
 
     var self = this;
-    this.object.getSingleton = function() { return self; };
+    this._object.getASingleton = function() { return self; };
+};
+
+/**
+ * Resets the singleton object.
+ *
+ * @function plur/design/ASingleton.prototype._reset
+ * @param {} object
+ * @throws plur/error/State If the singleton object has already bee initialized
+ */
+ASingleton.prototype._reset = function(object) {
+    if (this._object !== null) {
+        delete this._object.getSingleton;
+    }
+
+    this._object = object;
+
+    var self = this;
+    this._object.getSingleton = function() { return self; };
 };
 
 /**
@@ -70,13 +89,13 @@ Singleton.prototype.set = function(object) {
  * @returns {}
  * @throws plur/Error/State If uninitialized.
  */
-Singleton.prototype.get = function() {
-    if (this.object === null) {
-        throw new PlurStateError('Singleton for ' + this.namepath + ' has not been initialized');
+ASingleton.prototype.get = function() {
+    if (this._object === null) {
+        throw new UninitializedError('Singleton for ' + this.namepath + ' has not been initialized');
     }
 
-    return this.object;
+    return this._object;
 };
 
-return Singleton;
+return ASingleton;
 });

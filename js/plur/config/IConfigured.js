@@ -22,8 +22,6 @@ IConfigured.prototype = PlurObject.create('plur/config/IConfigured', IConfigured
 
 IConfigured.IConstructor.getDefaultConfig = PlurObject.abstractMethod;
 
-IConfigured.IConstructor.getConfigs = PlurObject.abstractMethod;
-
 IConfigured.prototype.getConfig = PlurObject.abstractMethod;
 
 IConfigured.prototype.config = PlurObject.abstractMethod;

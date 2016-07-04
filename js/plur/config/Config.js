@@ -29,6 +29,12 @@ var Config = function(configurable, parentConfigurable, config) {
 
 Config.prototype = PlurObject.create('plur/config/Config', Config);
 
+Config.string = function(regex, value);
+Config.int = function(range, value);
+Config.float = function(range, precision, value);
+Config.bool = function (value);
+Config.enum = function(values, value);
+
 Config.prototype.getConfigurableNamepath = function() {
     return this._configurableNamepath;
 };
@@ -37,9 +43,9 @@ Config.prototype.merge = function(config) {
     if (typeof config === 'undefined') {
         return this;
     } else if (config instanceof Config) {
-        return config;
-    } else {
         return this._merge(config);
+    } else {
+        return this._mergePrimitive(config);
     }
 };
 
@@ -47,7 +53,7 @@ Config.prototype.mergeJson = function(json) {
     return this.merge(JSON.parse(json));
 };
 
-Config.prototype._merge = function(primitiveMap) {
+Config.prototype._mergePrimitive = function(primitiveMap) {
     var config = this.copy();
     this._fillWithPrimitiveMap(config, this._configTree, primitiveMap)
     config._update();

@@ -32,7 +32,7 @@ ACrypt.prototype = PlurObject.create('plur/crypt/ACrypt', ACrypt);
 PlurObject.implement(ACrypt, ICrypt);
 PlurObject.implement(ACrypt, Config.IConfigured);
 
-ACrypt._DEFAULT_CONFIG = new Config(ACrypt.namepath, {});
+ACrypt._DEFAULT_CONFIG = new ConstructorConfig(ACrypt, null, {});
 
 ACrypt.getDefaultConfig = function() {
     return ACrypt._DEFAULT_CONFIG;

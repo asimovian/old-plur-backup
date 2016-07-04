@@ -12,7 +12,7 @@ define([
 function(
     PlurObject,
     Singleton,
-    _RUNTIME_CONFIG ) {
+    _FILE_CONFIG ) {
 
 /**
  * Singleton container for Crypt.
@@ -31,7 +31,7 @@ var CryptSingleton = function() {
         };
     });
 
-    this._config = CryptSingleton.DEFAULT_CONFIG;
+    this._config = CryptSingleton.getDefaultConfig();;
 
     // load ciphers
     var ciphers = this.config().ciphers;
@@ -43,17 +43,24 @@ var CryptSingleton = function() {
     this.Ciphers = this.getCiphers();
 };
 
-CryptSingleton.DEFAULT_CONFIG = new Config(CryptSingleton, {
-    ciphers: {
-        PGP: new Config('plur/crypt/asymmetric/PGP'),
-
-        AES256: new Config('plur/crypt/symmetric/AES', {
-            keySize: 256
-        })
-    }
-}).merge(_RUNTIME_CONFIG);
-
 CryptSingleton.prototype = PlurObject.create('plur/crypt/Singleton', CryptSingleton, APromiseMapSingleton);
+
+CryptSingleton._DEFAULT_CONFIG = new ConstructorConfig(CryptSingleton, ASingleton, __FILE_CONFIG, {
+    crypt: {
+        ciphers: {
+            PGP: new Config('plur/crypt/asymmetric/PGP'),
+
+            AES256: new Config('plur/crypt/symmetric/AES', {
+                keySize: 256
+            })
+        }
+    }
+});
+
+CryptSingleton.getDefaultConfig = function() {
+    return CryptSingleton._DEFAULT_CONFIG;
+};
+
 
 /**
  * Cryptographic configurations available to the core platform.

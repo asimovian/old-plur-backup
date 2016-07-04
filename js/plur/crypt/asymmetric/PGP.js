@@ -12,7 +12,7 @@ define([
 function(
     PlurObject,
     openpgp,
-    _RUNTIME_CONFIG ) {
+    _FILECONFIG ) {
 
 /**
  * PGP Cryptography
@@ -26,13 +26,13 @@ var PGP = function(config) {
 
 PGP.prototype = PlurObject.create('plur/crypto/core/PGP', PGP, AASymmetricCrypt);
 
-PGP._DEFAULT_CONFIG = new Config(PGP, AASymmetricCrypt, {
+PGP._DEFAULT_CONFIG = new ConstructorConfig(PGP, AASymmetricCrypt, __FILE_CONFIG, {
     keySize: Config.enum([1024, 2048, 4096], 4096),
     maxDataSize: Config.range([0, Math.MAX_INT], Math.MAX_INT);
     pgp: {
         aeadProtect: Config.bool(true)
     },
-}).merge(_RUNTIME_CONFIG);
+});
 
 PGP.getDefaultConfig = function() {
     return PGP._DEFAULT_CONFIG;
