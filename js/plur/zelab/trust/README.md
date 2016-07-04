@@ -5,19 +5,19 @@ Let "trust" represent an actor's *prediction* of output quality for a another ac
 various expectations, **relative** to its own prediction for *other* known actors/subjects within the same
 context.
 
-An actor could be a Application, Service, Node, IP, User, Network, Session, Cloud, etc.
+An actor could be an Application, Service, Node, IP, User, Network, Session, Cloud, etc.
 
-A subject could be a Config, Review, Vote, Change, etc.
+A subject could be a Service, Config, Service+Config, Review, Vote, Change, etc.
 
 Context could be result quality (incorrect results), response time, network relationship, aggregate contexts, etc. 
 
 Expectations could include:
  * Whether a Service was developed by the same Author or not
  * Whether a Node has been sending more than 100 errors per hour or not.
- * Whether an Author's Configs have are trusted by other groups of actors or not
+ * Whether an Author's Configs are trusted by other groups of actors or not
  * Whether other Services on the Actor's Node trusts another Node or not
  
-With each expectation, logic surround a trust decision must compare whether Actor A is more trusted than Actor B for
+With each expectation, the logic surrounding a trust decision must compare whether Actor A is more trusted than Actor B for
 every actor it wishes to compare. The aggregate result of these comparisons are then used to create an Ordered List
 with each entry trusted less.
 
@@ -31,14 +31,14 @@ If an (App) Node does not have a running SQL Service, but another (SQL) Node in 
 will trust the SQL Node to provide correct SQL Service Responses more than it will itself to do the same.
 
 Grouping contexts together to form aggregate contexts allow the concept of "trust" to be more generally conceptualized.
-It allows to determine whether an actor/subject is trusted *in general*, without having to calculate the contextual
+It allows determining of whether an actor/subject is trusted *in general*, without having to calculate the contextual
 details (network, author, quality, etc.).
 
 
 Trust Networks
 --------------
 
-By sharing trusts lists with each other, actors can further **predict** trust of actors/subjects by comparing the 
+By sharing trust lists with each other, actors can further **predict** trust of actors/subjects by comparing the 
 trust predictions of others. Opinions from actors that are trusted more than others will affect the opinion of the
 comparing actor in a weighted manner.
 
@@ -50,13 +50,13 @@ If Node A is neutral about Node A, but Node B has communicated to Node A that it
 SQL Service Requests, Node A will decide to trust Node D more.
 
 If another Node, Node Z, joins Network A and communicates, with Node A, it too will decide to trust Node D more than
-Node C. This can occur done any prior communication between Node Z and the foreign Nodes C and D, as well as without
-any prior communication between the Node B - completely via a trusted proxy decision.
+Node C. This can occur whtout any prior communication between Node Z and the foreign Nodes C and D, as well as without
+any prior communication the Node B - completely via a trusted proxy decision.
 
 Trust Network Registries
 ------------------------
 
-Trust Network Registries are Services that accept membership registration from actors and in term allows them to
+Trust Network Registries are Services that accept membership registration from actors and in turn allows them to
 search for other trust opinions on a given actor/subject and context as well as aggregate metrics on such. It also
 allows members to subscribe to changes in trust levels.
 
