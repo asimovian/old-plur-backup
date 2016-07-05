@@ -38,23 +38,24 @@ Channel.prototype.close = function() {
     this._open = false;
 };
 
-Channel.prototype.connect = function(publicKeyHash, callback, isRemote) {
+Channel.prototype.connect = function(publicKeyHash, callback) {
     if (typeof this._connectionMap[publicKeyHash] !== 'undefined') {
         throw new ConnectedError('Already connected', {publicKeyHash: publicKeyHash});
     }
 
-    var connection = new Channel._Connection(publicKeyHash, callback, isRemote);
+    var connection = new Channel._Connection(publicKeyHash, callback);
     this._connectionMap[publicKeyHash] = connection;
 
-    var subscriptionId = this._emitter.on([
-        Request.namepath + '.' + publicKeyHash + '.*',
-        Notify.namepath + '.' + publicKeyHash + '.*' ],
+    var subscriptionId = this._emitter.on(publicKeyHash,
         function(event) {
             callback(event);
         }
     });
 
     this.addSubscription(subscriptionId);
+};
+
+Channel.prototype.connectRemote = function() {
 };
 
 Channel.prototype.disconnect = function(publicKeyHash) {
@@ -83,7 +84,7 @@ Channel.prototype.request = function(request, encryptFunction, encryptNexKeyFunc
         if (!connections.recipient.isLocal()) {
             var modelTransformer = connections.recipient.getModelTransformer();
 
-            MessageEvent.createEncrypted(request, encryptFunction, modelTransformer, encryptNexKeyFunction)
+            EncryptedMessageEvent.create(request, encryptFunction, modelTransformer, encryptNexKeyFunction)
             .then(function(messageEvent) {
                 resolve(messageEvent);
             });
