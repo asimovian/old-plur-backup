@@ -50,7 +50,7 @@ If Node A is neutral about Node A, but Node B has communicated to Node A that it
 SQL Service Requests, Node A will decide to trust Node D more.
 
 If another Node, Node Z, joins Network A and communicates, with Node A, it too will decide to trust Node D more than
-Node C. This can occur whtout any prior communication between Node Z and the foreign Nodes C and D, as well as without
+Node C. This can occur without any prior communication between Node Z and the foreign Nodes C and D, as well as without
 any prior communication the Node B - completely via a trusted proxy decision.
 
 Trust Network Registries
