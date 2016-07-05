@@ -47,18 +47,84 @@ CryptSingleton.prototype = PlurObject.create('plur/crypt/Singleton', CryptSingle
 
 CryptSingleton._DEFAULT_CONFIG = new ConstructorConfig(CryptSingleton, ASingleton, __FILE_CONFIG, {
     crypt: {
-        ciphers: {
-            PGP: new Config('plur/crypt/asymmetric/PGP'),
+        SecurityLevel.Levels.PUBLIC: {
+            symmetric: {
+                ciphers: {
+                    AES256: new Config('plur/crypt/symmetric/AES', {
+                        keySize: 256
+                    })
+                }
+            },
 
-            AES256: new Config('plur/crypt/symmetric/AES', {
-                keySize: 256
-            })
-        }
+            asymmetric: {
+                ciphers: {
+                    PGP: new Config('plur/crypt/asymmetric/PGP'),
+                }
+            }
+        },
+
+        SecurityLevel.Levels.CONFIDENTIAL: {
+            symmetric: {
+                ciphers: {
+                    AES256: new Config('plur/crypt/symmetric/AES', {
+                        keySize: 256
+                    })
+                }
+            },
+
+            asymmetric: {
+                ciphers: {
+                    PGP: new Config('plur/crypt/asymmetric/PGP'),
+                }
+            }
+        },
+
+        SecurityLevel.Levels.SECRET: {
+            symmetric: {
+                ciphers: {
+                    AES256: new Config('plur/crypt/symmetric/AES', {
+                        keySize: 256
+                    })
+                }
+            },
+
+            asymmetric: {
+                ciphers: {
+                    PGP: new Config('plur/crypt/asymmetric/PGP'),
+                }
+            }
+        },
+
+        SecurityLevel.Levels.TOPSECRET: {
+            symmetric: {
+                ciphers: {
+                    AES256: new Config('plur/crypt/symmetric/AES', {
+                        keySize: 256
+                    })
+                }
+            },
+
+            asymmetric: {
+                ciphers: {
+                    PGP: new Config('plur/crypt/asymmetric/PGP'),
+                }
+            }
+        },
     }
 });
 
 CryptSingleton.getDefaultConfig = function() {
     return CryptSingleton._DEFAULT_CONFIG;
+};
+
+CryptSingleton.prototype.get = function(securityLevelOrCipher, symmetry) {
+    if (typeof symmetry === 'undefined') {
+        var cipher = securityLevelOrCipher;
+        return APromiseMapSingleton.call(this, cipher) ;
+    } else {
+        var securityLevel = securityLevelOrCipher;
+        return APromiseMapSingleton.call(this, this.config().crypt[securityLevel][symmetry]);
+    }
 };
 
 
