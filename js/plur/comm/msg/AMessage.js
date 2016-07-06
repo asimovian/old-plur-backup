@@ -35,7 +35,8 @@ var AMessage = function(securityLevel) {
     }
 
     this._timestamp = new Date().now();
-    this._securityLevel = ( typeof securityLevel !== 'undefined' ? securityLevel : this.config().msg.defaultSecurityLevel );
+    this._securityLevel = ( typeof securityLevel !== 'undefined'
+        ? securityLevel : this.config().msg.defaultSecurityLevel );
 };
 
 AMessage.prototype = PlurObject.create('plur/comm/msg/AMessage', AMessage);
