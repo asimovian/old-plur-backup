@@ -27,10 +27,12 @@ var PGP = function(config) {
 PGP.prototype = PlurObject.create('plur/crypto/core/PGP', PGP, AASymmetricCrypt);
 
 PGP._DEFAULT_CONFIG = new ConstructorConfig(PGP, AASymmetricCrypt, __FILE_CONFIG, {
-    keySize: Config.enum([1024, 2048, 4096], 4096),
-    maxDataSize: Config.range([0, Math.MAX_INT], Math.MAX_INT);
+    symmetric: {
+        keySize: Config.enum([1024, 2048, 4096], 4096),
+    },
+
     pgp: {
-        aeadProtect: Config.bool(true)
+        aeadProtect: Config.boolean(true)
     },
 });
 

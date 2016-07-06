@@ -22,8 +22,9 @@ function(
  **
  */
 var CryptSingleton = function() {
-    PromiseMapSingleton.call(this, function(key) {
+    APromiseMapSingleton.call(this, CryptSingleton.getDefaultConfig(), function(key) {
         var cryptConfig = Config.fromModel(CryptSingleton.CipherConfigs[key]);
+
         var promise = new PlurPromise(function(resolve, reject) {
             Bootstrap.get().require([cryptoConfig.configuredNamepath], function(cryptConstructor) {
                 resolve(new cryptConstructor(cryptConfig));
@@ -31,13 +32,16 @@ var CryptSingleton = function() {
         };
     });
 
-    this._config = CryptSingleton.getDefaultConfig();;
+    this._ciphers = {};
 
-    // load ciphers
-    var ciphers = this.config().ciphers;
-    for (var key in ciphers) {
-        CryptSingleton.Ciphers[key] = key;
-        CryptSingleton.CipherConfigs[key] = ciphers[key];
+    // create Ciphers enum
+    var ciphers = this.config().cryptSingleton.ciphers;
+    for (var key in ciphers.symmetric) {
+        this._ciphers[key] = ciphers.symmetric[key];
+    }
+
+    for (var key in ciphers.asymmetric) {
+        this._ciphers[key] = ciphers.asymmetric[key];
     }
 
     this.Ciphers = this.getCiphers();
@@ -46,7 +50,7 @@ var CryptSingleton = function() {
 CryptSingleton.prototype = PlurObject.create('plur/crypt/Singleton', CryptSingleton, APromiseMapSingleton);
 
 CryptSingleton._DEFAULT_CONFIG = new ConstructorConfig(CryptSingleton, APromiseMapSingleton, _FILE_CONFIG, {
-    crypt: {
+    cryptSingleton: {
         ciphers: {
             symmetric: {
                 AES256: new Config('plur/crypt/symmetric/AES', {
@@ -93,13 +97,12 @@ CryptSingleton.getDefaultConfig = function() {
 CryptSingleton.prototype.get = function(labelCipher, symmetry) {
     if (typeof symmetry === 'undefined') {
         var cipher = labelOrCipher;
-        return APromiseMapSingleton.call(this, cipher) ;
+        return APromiseMapSingleton.prototype.get.call(this, cipher) ;
     } else {
         var label = labelOrCipher;
-        return APromiseMapSingleton.call(this, this.config().crypt[label][symmetry]);
+        return APromiseMapSingleton.prototype.get.call(this, this.config().cryptSingleton.ciphers.labels[label][symmetry]);
     }
 };
-
 
 /**
  * Cryptographic configurations available to the core platform.

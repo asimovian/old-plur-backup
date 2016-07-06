@@ -22,11 +22,6 @@ function (
 var IMessage = function() { throw new InterfaceError({'this': this}); };
 
 IMessage.prototype = PlurObject.create('plur/comm/msg/IMessage', IMessage);
-PlurObject.implement(IMessage, IHashable);
-
-IMessage.prototype.getRecipientPublicKeyHash = PlurObject.abstractMethod;
-
-IMessage.prototype.getSenderPublicKeyHash = PlurObject.abstractMethod;
 
 
 return Message;

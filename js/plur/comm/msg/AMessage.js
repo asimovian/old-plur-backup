@@ -7,43 +7,90 @@
 
 define([
     'plur/PlurObject',
-    'plur/error/AbstractError'
-    'plur/hash/Singleton' ],
+    'plur/config/IConfigured',
+    'plur/security/Level',
+    'plur/error/Abstract',
+    'plur-config/plur/comm/msg/AMessage' ],
 function(
     PlurObject,
+    IConfigured
+    SecurityLevel,
     AbstractError,
-    Hash ) {
+    _FILE_CONFIG ) {
 
 /**
  * Parent prototype of Request, Response, and Notification prototypes.
  *
- * @constructor plur/msg/AMessage
+ * @constructor plur/comm/msg/AMessage
  * @abstract
+ * @implements plur/comm/msg/IMessage
+ * @implements plur/config/IConfigured
  **
+ * @param {plur/security/Level|undefined} securityLevel
+ * @throws AbstractError On attempt to instantiate directly.
  */
-var AMessage = function(senderPublicKeyHash, recipientPublicKeyHash) {
+var AMessage = function(securityLevel) {
     if (this.namepath === AMessage.namepath) {
         throw new AbstractError({'this': this});
     }
 
-    this._senderPublicKeyHash = senderPublicKeyHash;
-    this._recipientPublicKeyHash = recipientPublicKeyHash;
     this._timestamp = new Date().now();
-    this._hash = null;
+    this._securityLevel = ( typeof securityLevel !== 'undefined' ? securityLevel : this.config().msg.defaultSecurityLevel );
 };
 
 AMessage.prototype = PlurObject.create('plur/comm/msg/AMessage', AMessage);
 PlurObject.implement(AMessage, IMessage);
+PlurObject.implement(AMessage, IConfigured);
 
-AMessage.prototype.hash = function() {
-    if (this._hash !== null) {
-        return this._hash;
+Amessage._DEFAULT_CONFIG = new ConstructorConfig(AMessage, null, _FILE_CONFIG, {
+    msg: {
+        defaultSecurityLevel: SecurityLevel.Levels.CONFIDENTIAL
     }
+});
 
-    this._hash = Hash.get().hash(this._senderPublicKeyHash, this._recipientPublicKeyHash, this._timestamp);
-
-    return this._hash;
+AMessage.getDefaultConfig = function() {
+    return AMessage._DEFAULT_CONFIG;
 };
 
-return ;
+/**
+ * Retrieves the current config.
+ *
+ * @function plur/comm/msg/AMessage.prototype.getConfig
+ * @returns
+ */
+AMessage.prototype.getConfig = function() {
+    return this._config;
+};
+
+/**
+ * Retrieves the current configuration.
+ *
+ * @function plur/comm/msg/AMessage.prototype.config
+ * @returns
+ */
+AMessage.prototype.config = function() {
+    return this._config.config();
+};
+
+/**
+ * Retrieves the creation timestamp.
+ *
+ * @function plur/comm/msg/AMessage.prototype.getTimestamp
+ * @returns int
+ */
+AMessage.prototype.getTimestamp = function() {
+    return this._timestmap;
+};
+
+/**
+ * Retrieves the security level.
+ *
+ * @function plur/comm/msg/AMessage.prototype.getSecurityLevel
+ * @returns plur/security/Level
+ */
+AMessage.prototype.getSecurityLevel = function() {
+    return this._securityLevel;
+};
+
+return AMessage;
 });
