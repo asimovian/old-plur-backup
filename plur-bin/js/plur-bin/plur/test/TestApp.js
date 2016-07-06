@@ -40,6 +40,7 @@ var TestApp = function() {
 };
 
 TestApp.prototype = PlurObject.create('plur-bin/plur/test', TestApp);
+PlurObject.implement(TestApp, IApplication);
 
 TestApp.prototype._findTargets = function(callback) {
     var targets = [];
@@ -129,6 +130,10 @@ TestApp.prototype._onTesterPromiseRejected = function(error) {
 
 TestApp.prototype.stop = function(success) {
     process.exit(success ? 0 : 1 );
+};
+
+TestApp.prototype.heartbeat = function() {
+    return true;
 };
 
 return TestApp;

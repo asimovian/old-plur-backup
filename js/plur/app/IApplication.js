@@ -10,12 +10,11 @@ function(
 
 /**
  * @constructor plur/app/Application
- * @abstract
+ * @interface
  */
-var Application = function() {
-};
+var IApplication = function() { throw new InterfaceError({'this': this}); };
 
-Application.prototype = PlurObject.create('plur/app/Application', Application);
+IApplication.prototype = PlurObject.create('plur/app/IApplication', IApplication);
 
 /**
  * Starts the application
@@ -23,7 +22,7 @@ Application.prototype = PlurObject.create('plur/app/Application', Application);
  * @function plur/app/Application.prototype.start
  * @abstract
  */
-Application.prototype.start = PlurObject.abstractMethod;
+IApplication.prototype.start = PlurObject.abstractMethod;
 	
 /**
  * Stops the application
@@ -31,7 +30,7 @@ Application.prototype.start = PlurObject.abstractMethod;
  * @function plur/app/Application.prototype.start
  * @abstract
  */
-Application.prototype.stop = PlurObject.abstractMethod,
+IApplication.prototype.stop = PlurObject.abstractMethod,
 	
 /**
  * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
@@ -39,7 +38,7 @@ Application.prototype.stop = PlurObject.abstractMethod,
  * @function plur/app/Application.prototype.heartbeat
  * @abstract
  */
-Application.prototype.heartbeat = PlurObject.abstractMethod;
+IApplication.prototype.heartbeat = PlurObject.abstractMethod;
 
-return Application;
+return IApplication;
 });
