@@ -1,12 +1,20 @@
 {
-    "ciphers": [
-        "PGP": { "namepath": "plur/config/Config", "configuredNamepath": "plur/crypt/asymmetric/PGP",
-            "pgp": {
-                "aeadProtect": true
+    "ciphers": {
+        "symmetric": {
+            "PGP": { "namepath": "plur/config/Config", "configuredNamepath": "plur/crypt/asymmetric/PGP",
+                "pgp": {
+                    "aeadProtect": true
+                }
             }
         },
-        "AES": { "namepath": "plur/config/Config", "configuredNamepath": "plur/crypt/symmetric/AES",
-            "keySize": 256
+
+        "asymmetric": {
+            "AES256": { "namepath": "plur/config/Config", "configuredNamepath": "plur/crypt/symmetric/AES",
+                "keySize": 256
+            },
+            "AES192": { "namepath": "plur/config/Config", "configuredNamepath": "plur/crypt/symmetric/AES",
+                "keySize": 192
+            }
         }
-    ]
+    }
 }

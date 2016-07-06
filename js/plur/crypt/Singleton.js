@@ -45,70 +45,43 @@ var CryptSingleton = function() {
 
 CryptSingleton.prototype = PlurObject.create('plur/crypt/Singleton', CryptSingleton, APromiseMapSingleton);
 
-CryptSingleton._DEFAULT_CONFIG = new ConstructorConfig(CryptSingleton, ASingleton, __FILE_CONFIG, {
+CryptSingleton._DEFAULT_CONFIG = new ConstructorConfig(CryptSingleton, APromiseMapSingleton, _FILE_CONFIG, {
     crypt: {
-        SecurityLevel.Levels.PUBLIC: {
+        ciphers: {
             symmetric: {
-                ciphers: {
-                    AES256: new Config('plur/crypt/symmetric/AES', {
-                        keySize: 256
-                    })
-                }
+                AES256: new Config('plur/crypt/symmetric/AES', {
+                    keySize: 256
+                }),
+                AES192: new Config('plur/crypt/symmetric/AES', {
+                    keySize: 192
+                })
             },
 
             asymmetric: {
-                ciphers: {
-                    PGP: new Config('plur/crypt/asymmetric/PGP'),
-                }
-            }
-        },
-
-        SecurityLevel.Levels.CONFIDENTIAL: {
-            symmetric: {
-                ciphers: {
-                    AES256: new Config('plur/crypt/symmetric/AES', {
-                        keySize: 256
-                    })
-                }
+                PGP: new Config('plur/crypt/asymmetric/PGP'),
             },
 
-            asymmetric: {
-                ciphers: {
-                    PGP: new Config('plur/crypt/asymmetric/PGP'),
-                }
-            }
-        },
+            labels: {
+                SecurityLevel.Levels.PUBLIC: {
+                    symmetric: 'PGP',
+                    asymmetric: 'AES192'
+                },
 
-        SecurityLevel.Levels.SECRET: {
-            symmetric: {
-                ciphers: {
-                    AES256: new Config('plur/crypt/symmetric/AES', {
-                        keySize: 256
-                    })
-                }
+                SecurityLevel.Levels.CONFIDENTIAL: {
+                    symmetric: 'PGP',
+                    asymmetric: 'AES256'
+                },
+
+                SecurityLevel.Levels.SECRET: {
+                    symmetric: 'PGP',
+                    asymmetric: 'AES256'
+                },
+
+                SecurityLevel.Levels.TOPSECRET: {
+                    symmetric: 'PGP',
+                    asymmetric: 'AES256'
+                },
             },
-
-            asymmetric: {
-                ciphers: {
-                    PGP: new Config('plur/crypt/asymmetric/PGP'),
-                }
-            }
-        },
-
-        SecurityLevel.Levels.TOPSECRET: {
-            symmetric: {
-                ciphers: {
-                    AES256: new Config('plur/crypt/symmetric/AES', {
-                        keySize: 256
-                    })
-                }
-            },
-
-            asymmetric: {
-                ciphers: {
-                    PGP: new Config('plur/crypt/asymmetric/PGP'),
-                }
-            }
         },
     }
 });
@@ -117,13 +90,13 @@ CryptSingleton.getDefaultConfig = function() {
     return CryptSingleton._DEFAULT_CONFIG;
 };
 
-CryptSingleton.prototype.get = function(securityLevelOrCipher, symmetry) {
+CryptSingleton.prototype.get = function(labelCipher, symmetry) {
     if (typeof symmetry === 'undefined') {
-        var cipher = securityLevelOrCipher;
+        var cipher = labelOrCipher;
         return APromiseMapSingleton.call(this, cipher) ;
     } else {
-        var securityLevel = securityLevelOrCipher;
-        return APromiseMapSingleton.call(this, this.config().crypt[securityLevel][symmetry]);
+        var label = labelOrCipher;
+        return APromiseMapSingleton.call(this, this.config().crypt[label][symmetry]);
     }
 };
 
