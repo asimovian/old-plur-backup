@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: es6/Promise.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: es6/Promise.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @copyright 2015 Asimovian LLC
+ * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @requires plur/PlurObject
+ */
+ 'use strict';
+
+define([
+    'plur/PlurObject' ],
+function(
+    PlurObject ) {
+
+/**
+ * PlurPromise wrapper pre-ES6.
+ *
+ * @constructor plur/es6/Promise
+ **
+ */
+var PlurPromise = function(fn) {
+  if (typeof this !== 'object') {
+    throw new TypeError('PlurPromises must be constructed via new');
+  } else if (typeof fn !== 'function') {
+    throw new TypeError('not a function');
+  }
+
+  this._state = 0;
+  this._value = null;
+  this._deferreds = [];
+
+  if (fn !== PlurPromise.noop) {
+    PlurPromise._doResolve(fn, this);
+  }
+};
+
+PlurPromise.prototype = PlurObject.create('plur/es6/Promise', PlurPromise);
+
+PlurPromise.noop = function() {};
+
+// States:
+//
+// 0 - pending
+// 1 - fulfilled with _value
+// 2 - PlurPromise._rejected with _value
+// 3 - adopted the state of another promise, _value
+//
+// once the state is no longer pending (0) it is immutable
+
+// All `_` prefixed properties will be reduced to `_{random number}`
+// at build time to obfuscate them and discourage their use.
+// We don't use symbols or Object.defineProperty to fully hide them
+// because the performance isn't good enough.
+
+// to avoid using try/catch inside critical functions, we
+// extract them to here.
+PlurPromise._LAST_ERROR = null;
+
+PlurPromise._IS_ERROR = {};
+
+PlurPromise._getThen = function(obj) {
+  try {
+    return obj.then;
+  } catch (ex) {
+    PlurPromise._LAST_ERROR = ex;
+    return PlurPromise._IS_ERROR;
+  }
+};
+
+PlurPromise._tryCallOne = function(fn, a) {
+  try {
+    return fn(a);
+  } catch (ex) {
+    PlurPromise._LAST_ERROR = ex;
+    return PlurPromise._IS_ERROR;
+  }
+};
+
+PlurPromise._tryCallTwo = function(fn, a, b) {
+  try {
+    fn(a, b);
+  } catch (ex) {
+    PlurPromise._LAST_ERROR = ex;
+    return PlurPromise._IS_ERROR;
+  }
+};
+
+
+PlurPromise._safeThen = function(self, onFulfilled, onRejected) {
+  return new self.constructor(function (resolve, reject) {
+    var res = new PlurPromise(PlurPromise.noop);
+    res.then(PlurPromise._resolve, PlurPromise._reject);
+    PlurPromise._handle(self, new PlurPromise._Handler(onFulfilled, onRejected, res));
+  });
+};
+
+PlurPromise._handle = function(self, deferred) {
+  while (self._state === 3) {
+    self = self._value;
+  }
+
+  if (self._state === 0) {
+    self._deferreds.push(deferred);
+    return;
+  }
+
+  (function() {
+    var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
+    if (cb === null) {
+      if (self._state === 1) {
+        PlurPromise._resolve(deferred.promise, self._value);
+      } else {
+        PlurPromise._reject(deferred.promise, self._value);
+      }
+      return;
+    }
+    var ret = PlurPromise._tryCallOne(cb, self._value);
+    if (ret === PlurPromise._IS_ERROR) {
+      PlurPromise._reject(deferred.promise, PlurPromise._LAST_ERROR);
+    } else {
+      PlurPromise._resolve(deferred.promise, ret);
+    }
+  })();
+};
+
+PlurPromise._resolve = function(self, newValue) {
+  // PlurPromise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+  if (newValue === self) {
+    return PlurPromise._reject(
+      self,
+      new TypeError('A promise cannot be PlurPromise._resolved with itself.')
+    );
+  }
+  if (
+    newValue &amp;&amp;
+    (typeof newValue === 'object' || typeof newValue === 'function')
+  ) {
+    var then = PlurPromise._getThen(newValue);
+    if (then === PlurPromise._IS_ERROR) {
+      return PlurPromise._reject(self, PlurPromise._LAST_ERROR);
+    }
+    if (
+      then === self.then &amp;&amp;
+      newValue instanceof PlurPromise
+    ) {
+      self._state = 3;
+      self._value = newValue;
+      PlurPromise._finale(self);
+      return;
+    } else if (typeof then === 'function') {
+      PlurPromise._doResolve(then.bind(newValue), self);
+      return;
+    }
+  }
+  self._state = 1;
+  self._value = newValue;
+  PlurPromise._finale(self);
+};
+
+PlurPromise._reject = function(self, newValue) {
+  self._state = 2;
+  self._value = newValue;
+  PlurPromise._finale(self);
+};
+
+PlurPromise._finale = function(self) {
+  for (var i = 0; i &lt; self._deferreds.length; i++) {
+    PlurPromise._handle(self, self._deferreds[i]);
+  }
+
+  self._deferreds = null;
+};
+
+PlurPromise._Handler = function(onFulfilled, onRejected, promise){
+  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
+  this.onRejected = typeof onRejected === 'function' ? onRejected : null;
+  this.promise = promise;
+};
+
+/**
+ * Take a potentially misbehaving PlurPromise._resolver function and make sure
+ * onFulfilled and onRejected are only called once.
+ *
+ * Makes no guarantees about asynchrony.
+ */
+PlurPromise._doResolve = function(fn, promise) {
+  var done = false;
+  var res = PlurPromise._tryCallTwo(fn, function (value) {
+    if (done) return;
+    done = true;
+    PlurPromise._resolve(promise, value);
+  }, function (reason) {
+    if (done) return;
+    done = true;
+    PlurPromise._reject(promise, reason);
+  })
+  if (!done &amp;&amp; res === PlurPromise._IS_ERROR) {
+    done = true;
+    PlurPromise._reject(promise, PlurPromise._LAST_ERROR);
+  }
+};
+
+PlurPromise._value = function(value) {
+  var p = new PlurPromise(PlurPromise.noop);
+  p._state = 1;
+  p._value = value;
+  return p;
+};
+
+PlurPromise._TRUE = PlurPromise._value(true);
+PlurPromise._FALSE = PlurPromise._value(false);
+PlurPromise._NULL = PlurPromise._value(null);
+PlurPromise._UNDEFINED = PlurPromise._value(undefined);
+PlurPromise._ZERO = PlurPromise._value(0);
+PlurPromise._EMPTRYSTRING = PlurPromise._value('');
+
+PlurPromise.resolve = function (value) {
+  if (value instanceof PlurPromise) return value;
+
+  if (value === null) return PlurPromise._NULL;
+  if (value === undefined) return PlurPromise._UNDEFINED;
+  if (value === true) return PlurPromise._TRUE;
+  if (value === false) return PlurPromise._FALSE;
+  if (value === 0) return PlurPromise._ZERO;
+  if (value === '') return PlurPromise._EMPTRYSTRING;
+
+  if (typeof value === 'object' || typeof value === 'function') {
+    try {
+      var then = value.then;
+      if (typeof then === 'function') {
+        return new PlurPromise(then.bind(value));
+      }
+    } catch (ex) {
+      return new PlurPromise(function (resolve, reject) {
+        PlurPromise._reject(ex);
+      });
+    }
+  }
+
+  return PlurPromise._value(value);
+};
+
+PlurPromise.all = function (arr) {
+  var args = Array.prototype.slice.call(arr);
+
+  return new PlurPromise(function (resolve, reject) {
+    if (args.length === 0) return PlurPromise._resolve([]);
+    var remaining = args.length;
+    function res(i, val) {
+      if (val &amp;&amp; (typeof val === 'object' || typeof val === 'function')) {
+        if (val instanceof PlurPromise &amp;&amp; val.then === PlurPromise.prototype.then) {
+          while (val._state === 3) {
+            val = val._value;
+          }
+          if (val._state === 1) return res(i, val._value);
+          if (val._state === 2) PlurPromise._reject(val._value);
+          val.then(function (val) {
+            res(i, val);
+          }, PlurPromise._reject);
+          return;
+        } else {
+          var then = val.then;
+          if (typeof then === 'function') {
+            var p = new PlurPromise(then.bind(val));
+            p.then(function (val) {
+              res(i, val);
+            }, PlurPromise._reject);
+            return;
+          }
+        }
+      }
+      args[i] = val;
+      if (--remaining === 0) {
+        PlurPromise._resolve(args);
+      }
+    }
+    for (var i = 0; i &lt; args.length; i++) {
+      res(i, args[i]);
+    }
+  });
+};
+
+PlurPromise.reject = function (value) {
+  return new PlurPromise(function (resolve, reject) {
+    PlurPromise._reject(value);
+  });
+};
+
+PlurPromise.race = function (values) {
+  return new PlurPromise(function (resolve, reject) {
+    values.forEach(function(value){
+      PlurPromise._resolve(value).then(PlurPromise._resolve, PlurPromise._reject);
+    });
+  });
+};
+
+PlurPromise.prototype.then = function(onFulfilled, onRejected) {
+  if (this.constructor !== PlurPromise) {
+    return PlurPromise._safeThen(this, onFulfilled, onRejected);
+  }
+  var res = new PlurPromise(PlurPromise.noop);
+  PlurPromise._handle(this, new PlurPromise._Handler(onFulfilled, onRejected, res));
+  return res;
+};
+
+PlurPromise.prototype['catch'] = function (onRejected) {
+  return this.then(null, onRejected);
+};
+
+PlurPromise.prototype.done = function (onFulfilled, onRejected) {
+  var self = arguments.length ? this.then.apply(this, arguments) : this;
+  self.then(null, function (err) {
+    setTimeout(function () {
+      throw err;
+    }, 0);
+  });
+};
+
+return PlurPromise;
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-plur_crypt_ACrypt.html">plur/crypt/ACrypt</a></li><li><a href="module-plur_IPlurified.html">plur/IPlurified</a></li><li><a href="module-plur_PlurAPI.html">plur/PlurAPI</a></li><li><a href="module-plur_PlurObject.html">plur/PlurObject</a></li></ul><h3>Classes</h3><ul><li><a href="config_Runtime%250A_.html">config/Runtime
+*</a></li><li><a href="module-plur_crypt_ACrypt-plur_crypt_ACrypt.html">plur/crypt/ACrypt</a></li><li><a href="module-plur_PlurAPI-PlurAPI.html">PlurAPI</a></li><li><a href="module-plur_PlurObject-PlurObject.html">PlurObject</a></li><li><a href="plur_Bootstrap%250A_.html">plur/Bootstrap
+*</a></li><li><a href="plur_comm_event_Channel%250A_.html">plur/comm/event/Channel
+*</a></li><li><a href="plur_comm_event_encrypted_Channel%250A_.html">plur/comm/event/encrypted/Channel
+*</a></li><li><a href="plur_comm_event_encrypted_Transmission%250A_.html">plur/comm/event/encrypted/Transmission
+*</a></li><li><a href="plur_comm_event_Transmission%250A_.html">plur/comm/event/Transmission
+*</a></li><li><a href="plur_config_ConfigModel.html">plur/config/ConfigModel</a></li><li><a href="plur_config_Constructor%250A_.html">plur/config/Constructor
+*</a></li><li><a href="plur_config_set_runtime_Singleton%250A_.html">plur/config/set/runtime/Singleton
+*</a></li><li><a href="plur_crypt_Primes%250A_.html">plur/crypt/Primes
+*</a></li><li><a href="plur_crypto_core_PGP%250A_.html">plur/crypto/core/PGP
+*</a></li><li><a href="plur_db_message_FindRequest.html">plur/db/message/FindRequest</a></li><li><a href="plur_db_message_FindRequestQueryBuilder.html">plur/db/message/FindRequestQueryBuilder</a></li><li><a href="plur_db_msg_Request.html">plur/db/msg/Request</a></li><li><a href="global.html#plur/db/service/DbFindService">plur/db/service/DbFindService</a></li><li><a href="plur_design_APromiseMapSingleton.html">plur/design/APromiseMapSingleton</a></li><li><a href="plur_design_ASingleton.html">plur/design/ASingleton</a></li><li><a href="plur_design_Map.html">plur/design/Map</a></li><li><a href="plur_design_map_IMap%250A_.html">plur/design/map/IMap
+*</a></li><li><a href="plur_design_PromiseMap.html">plur/design/PromiseMap</a></li><li><a href="plur_design_tree_MapNode.html">plur/design/tree/MapNode</a></li><li><a href="plur_directive_Directive.html">plur/directive/Directive</a></li><li><a href="plur_error_Assertion.html">plur/error/Assertion</a></li><li><a href="plur_error_Authentication.html">plur/error/Authentication</a></li><li><a href="plur_error_Banned.html">plur/error/Banned</a></li><li><a href="plur_error_Bounds.html">plur/error/Bounds</a></li><li><a href="plur_error_Command.html">plur/error/Command</a></li><li><a href="plur_error_Configuration.html">plur/error/Configuration</a></li><li><a href="plur_error_Decoding.html">plur/error/Decoding</a></li><li><a href="plur_error_Decryption.html">plur/error/Decryption</a></li><li><a href="plur_error_Denied.html">plur/error/Denied</a></li><li><a href="plur_error_Destroyed.html">plur/error/Destroyed</a></li><li><a href="plur_error_Disconnected.html">plur/error/Disconnected</a></li><li><a href="plur_error_Empty.html">plur/error/Empty</a></li><li><a href="plur_error_Encoding.html">plur/error/Encoding</a></li><li><a href="plur_error_Encryption.html">plur/error/Encryption</a></li><li><a href="plur_error_Error.html">plur/error/Error</a></li><li><a href="plur_error_Exists.html">plur/error/Exists</a></li><li><a href="plur_error_Ignored.html">plur/error/Ignored</a></li><li><a href="plur_error_Index.html">plur/error/Index</a></li><li><a href="plur_error_Input.html">plur/error/Input</a></li><li><a href="plur_error_Invalid.html">plur/error/Invalid</a></li><li><a href="plur_error_Length.html">plur/error/Length</a></li><li><a href="plur_error_Logic.html">plur/error/Logic</a></li><li><a href="plur_error_Math.html">plur/error/Math</a></li><li><a href="plur_error_NeedsCoffee.html">plur/error/NeedsCoffee</a></li><li><a href="plur_error_NotFound.html">plur/error/NotFound</a></li><li><a href="plur_error_NotRunning.html">plur/error/NotRunning</a></li><li><a href="plur_error_Null.html">plur/error/Null</a></li><li><a href="plur_error_Numberwang.html">plur/error/Numberwang</a></li><li><a href="plur_error_Offline.html">plur/error/Offline</a></li><li><a href="plur_error_Operation.html">plur/error/Operation</a></li><li><a href="plur_error_Operator.html">plur/error/Operator</a></li><li><a href="plur_error_Output.html">plur/error/Output</a></li><li><a href="plur_error_Overflow.html">plur/error/Overflow</a></li><li><a href="plur_error_Permission.html">plur/error/Permission</a></li><li><a href="plur_error_Range.html">plur/error/Range</a></li><li><a href="plur_error_Read.html">plur/error/Read</a></li><li><a href="plur_error_Request.html">plur/error/Request</a></li><li><a href="plur_error_Running.html">plur/error/Running</a></li><li><a href="plur_error_Shutdown.html">plur/error/Shutdown</a></li><li><a href="plur_error_Size.html">plur/error/Size</a></li><li><a href="plur_error_Startup.html">plur/error/Startup</a></li><li><a href="plur_error_State.html">plur/error/State</a></li><li><a href="plur_error_Syntax.html">plur/error/Syntax</a></li><li><a href="plur_error_Timeout.html">plur/error/Timeout</a></li><li><a href="plur_error_Type.html">plur/error/Type</a></li><li><a href="plur_error_Unavailable.html">plur/error/Unavailable</a></li><li><a href="plur_error_Undefined.html">plur/error/Undefined</a></li><li><a href="plur_error_Uninitialized.html">plur/error/Uninitialized</a></li><li><a href="plur_error_Unknown.html">plur/error/Unknown</a></li><li><a href="plur_error_Unsupported.html">plur/error/Unsupported</a></li><li><a href="plur_error_Untrusted.html">plur/error/Untrusted</a></li><li><a href="plur_error_Validation.html">plur/error/Validation</a></li><li><a href="plur_error_Write.html">plur/error/Write</a></li><li><a href="plur_es6_Promise%250A_.html">plur/es6/Promise
+*</a></li><li><a href="plur_event_Emitter._Listener%250A_.html">plur/event/Emitter._Listener
+*</a></li><li><a href="plur_event_Emitter._ListenerTreeValue%250A_.html">plur/event/Emitter._ListenerTreeValue
+*</a></li><li><a href="plur_event_Emitter%250A_.html">plur/event/Emitter
+*</a></li><li><a href="plur_event_Event.html">plur/event/Event</a></li><li><a href="plur_file_System.html">plur/file/System</a></li><li><a href="plur_hash_HashSingleton.html">plur/hash/HashSingleton</a></li><li><a href="global.html#plur/json/model/Transformer">plur/json/model/Transformer</a></li><li><a href="plur_log_System%250A_.html">plur/log/System
+*</a></li><li><a href="plur_model_Model.html">plur/model/Model</a></li><li><a href="plur_msg_AMessageEvent%250A_.html">plur/msg/AMessageEvent
+*</a></li><li><a href="plur_msg_ANotification.html">plur/msg/ANotification</a></li><li><a href="plur_msg_ARequest.html">plur/msg/ARequest</a></li><li><a href="plur_msg_AResponse.html">plur/msg/AResponse</a></li><li><a href="plur_nodejs_Bootstrap.html">plur/nodejs/Bootstrap</a></li><li><a href="plur_nodejs_file_System.html">plur/nodejs/file/System</a></li><li><a href="global.html#plur/pson/model/Transformer">plur/pson/model/Transformer</a></li><li><a href="plur_test_Test%250A_.html">plur/test/Test
+*</a></li><li><a href="plur_web_Bootstrap.html">plur/web/Bootstrap</a></li></ul><h3>Interfaces</h3><ul><li><a href="-_.html">*</a></li><li><a href="module-plur_IPlurified-IPlurified.html">IPlurified</a></li><li><a href="plur_app_Application.html">plur/app/Application</a></li><li><a href="plur_app_IDaemon.html">plur/app/IDaemon</a></li><li><a href="plur_file_ISystem.html">plur/file/ISystem</a></li></ul><h3>Global</h3><ul><li><a href="global.html#plur/db/message/DbFindResponse">plur/db/message/DbFindResponse</a></li><li><a href="global.html#plur/db/message/FindQueryQueryBuilder">plur/db/message/FindQueryQueryBuilder</a></li><li><a href="global.html#plur/log/Log">plur/log/Log</a></li><li><a href="global.html#plur/model/Transformer">plur/model/Transformer</a></li><li><a href="global.html#plur/service/ServiceDirective">plur/service/ServiceDirective</a></li><li><a href="global.html#plurbootstrap">plurbootstrap</a></li><li><a href="global.html#requirejs">requirejs</a></li><li><a href="global.html#string">string</a></li><li><a href="global.html#toUrl">toUrl</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Dec 05 2016 17:59:41 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

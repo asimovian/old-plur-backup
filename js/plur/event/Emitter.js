@@ -20,7 +20,7 @@ function(
  * Provides publish-subscribe functionality for Event objects.
  *
  * Event types act as the topic, which are expected to be constructor namepaths followed by a . separated namespace.
- *   E.g., plur-test/plur/event/EmitterTest.testCreations.first
+ *   E.g., plur-tests/plur/event/EmitterTest.testCreations.first
  *
  * Simple globbing of event types is possible when subscribing to a topic. The wildcard character * will match against
  * anything prefixed before its use, whole tokens only.

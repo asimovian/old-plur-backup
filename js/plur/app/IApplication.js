@@ -1,20 +1,26 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject
+ * @module plur/app/IApplication
+ * @requires plur/PlurObject plur/app/Application
  */
+'use strict';
+
 define([
     'plur/PlurObject' ],
 function(
     PlurObject ) {
 
 /**
- * @constructor plur/app/Application
+ * @class IApplication
  * @interface
+ * @alias {module:plur/app/IApplication}
  */
-var IApplication = function() { throw new InterfaceError({'this': this}); };
-
-IApplication.prototype = PlurObject.create('plur/app/IApplication', IApplication);
+class IApplication {
+    constructor() {
+        throw new InterfaceError({'this': this});
+    };
+}
 
 /**
  * Starts the application
@@ -23,7 +29,7 @@ IApplication.prototype = PlurObject.create('plur/app/IApplication', IApplication
  * @abstract
  */
 IApplication.prototype.start = PlurObject.abstractMethod;
-	
+
 /**
  * Stops the application
  *
@@ -31,7 +37,7 @@ IApplication.prototype.start = PlurObject.abstractMethod;
  * @abstract
  */
 IApplication.prototype.stop = PlurObject.abstractMethod,
-	
+
 /**
  * Performs a heartbeat operation (e.g., periodic maintenance, metrics reporting, etc.)
  *
@@ -39,6 +45,9 @@ IApplication.prototype.stop = PlurObject.abstractMethod,
  * @abstract
  */
 IApplication.prototype.heartbeat = PlurObject.abstractMethod;
+
+
+PlurObject.plurify('plur/app/IApplication', IApplication);
 
 return IApplication;
 });

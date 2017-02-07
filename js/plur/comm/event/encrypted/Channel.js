@@ -6,9 +6,11 @@
  'use strict';
  
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/hash/Hash'],
 function(
-    PlurObject ) {
+    PlurObject,
+    Hash) {
 
 /**
  * Encrypted Channel Event

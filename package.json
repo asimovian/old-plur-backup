@@ -1,0 +1,32 @@
+{
+  "name": "plur-network",
+  "version": "0.0.0",
+  "description": "A distributed internet application platform",
+  "main": "",
+  "scripts": {
+    "test": "node ./plur-bin/bin/plur-bin/test/test.js",
+    "docgen": "jsdoc -c cfg/json/plur/jsdoc/jsdoc.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/asimovian/plur.git"
+  },
+  "keywords": [
+    "plur",
+    "js",
+    "javascript",
+    "service",
+    "api",
+    "framework",
+    "platform"
+  ],
+  "author": "Roy Laurie <roy.laurie@asimovian.software>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/asimovian/plur/issues"
+  },
+  "dependencies": {
+    "requirejs": "~2.2.0",
+    "node-json-rpc": "0.0.1"
+  }
+}

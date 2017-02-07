@@ -2,8 +2,8 @@
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject
+ * @module plur/crypt/ACrypt
  */
- 'use strict';
 
 define([
     'plur/PlurObject',
@@ -15,7 +15,8 @@ function(
 /**
  * Base class for ICrypt implementations.
  *
- * @constructor plur/crypt/ACrypt
+ * @class plur/crypt/ACrypt
+ * @alias {module:plur/crypt/ACrypt}
  **
  * @param plur/config/Config config
  */

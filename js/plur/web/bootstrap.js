@@ -15,7 +15,7 @@ var plurbootstrap = (function() {
         baseUrl: '.',
         paths: {
             'plur': 'plur/js/plur',
-            'plur-test': 'plur/plur-test/js/plur-test'
+            'plur-test': 'plur/plur-tests/js/plur-tests'
         },
         nodeRequire: require,
         enforceDefine: true

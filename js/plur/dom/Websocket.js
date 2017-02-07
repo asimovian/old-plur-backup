@@ -43,7 +43,7 @@ var DomWebsocket = function(url, options) {
 };
 
 
-DomWebsocket.prototype = PlurObject.create('www/plur/dom/websocket/DomWebsocket', DomWebsocket, PlurWebsocket);
+DomWebsocket.prototype = PlurObject.create('web/plur/dom/websocket/DomWebsocket', DomWebsocket, PlurWebsocket);
 
 DomWebsocket.prototype.send = function(data, options) {
 	this._domWebsocket.send(JSON.stringify(data));

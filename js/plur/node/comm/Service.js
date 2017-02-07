@@ -25,7 +25,7 @@ var CommService = function(plurNode, config) {
 	AService.call(this, plurNode, CommService.DEFAULT_CONFIG.merge(config));
 };
 
-CommService.prototype = PlurObject.create('plur/node/CommService', CommService, AService);
+CommService.prototype = PlurObject.create('plur/node/IndexService', CommService, AService);
 
 
 CommService.prototype.start = function() {
@@ -44,5 +44,5 @@ CommService.prototype._startPrivate = function(__private) {
     });
 };
 	
-return CommService;
+return IndexService;
 });

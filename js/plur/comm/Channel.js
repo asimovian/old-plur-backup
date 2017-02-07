@@ -1,9 +1,9 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @module plur/comm/Channel
  * @requires plur/PlurObject
  */
- 'use strict';
 
 define([
     'plur/PlurObject' ],
@@ -13,8 +13,8 @@ function(
 /**
  * Communications Channel
  *
- * @constructor plur/comm/Channel
- **
+ * @class Channel
+ * @alias {module:plur/comm/Channel}
  */
 var Channel = function() {
     this._emitter = null;

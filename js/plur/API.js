@@ -1,7 +1,8 @@
 /**
- * @copyright 2015 Asimovian LLC
+ * @copyright 2016 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @requires plur/PlurObject
+ * @module plur/PlurAPI
  */
 define([
     'plur/PlurObject' ],
@@ -11,21 +12,25 @@ function(
 /**
  * API version information
  *
- * @constructor plur/API
+ * @class PlurAPI
+ * @alias {module:plur/PlurAPI}
  **
  */
-var PlurAPI = function() {
-    this.version = '0.0.0';
-    this.scmUrl = 'git://github.com/asimovian/plur.git';
-    this.branch = 'master';
-};
+class PlurAPI {
+    constructor(version, scmUrl, branch) {
+        this.version = version;
+        this.scmUrl = scmUrl;
+        this.branch = branch;
+    };
+}
 
-PlurAPI.prototype = PlurObject.create('plur/API', PlurAPI);
+PlurObject.plurify('plur/plurAPI', PlurAPI);
 
-/**
- * @var plur/PlurAPI plur/PlurAPI.singleton
- */
-PlurAPI.singleton = new PlurAPI();
+PlurAPI.singleton = new PlurAPI(
+    '0.0.0',
+    'git://github.com/asimovian/plur.git',
+    'master'
+);
 
 return PlurAPI.singleton;
 });

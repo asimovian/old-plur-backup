@@ -1842,7 +1842,7 @@ var requirejs, require, define;
      */
     req.createNode = function (config, moduleName, url) {
         var node = config.xhtml ?
-                document.createElementNS('http://www.w3.org/1999/xhtml', 'html:script') :
+                document.createElementNS('http://web.w3.org/1999/xhtml', 'html:script') :
                 document.createElement('script');
         node.type = config.scriptType || 'text/javascript';
         node.charset = 'utf-8';

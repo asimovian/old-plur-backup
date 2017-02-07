@@ -91,7 +91,7 @@ NodeWebsocketService.prototype.start = function() {
             plurNode.comm().emit(new MessageEvent(new NodeWebsocketService.ConnectionResponse(
                 connectionRequest,
                 self.publicKey(),
-                plurNode.getService(CommService).publicKey(),
+                plurNode.getService(IndexService).publicKey(),
                 connectionRequest.publicKey() )));
         });
 	});

@@ -2,14 +2,14 @@
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
-define(['plur/PlurObject', 'plur/websocket/WebsocketClientService', 'www/plur/dom/websocket/DomWebsocket'],
+define(['plur/PlurObject', 'plur/websocket/WebsocketClientService', 'web/plur/dom/websocket/DomWebsocket'],
 function(PlurObject, WebsocketClientService, DomWebsocket) {
 	
 var DomWebsocketClientService = function(node) {
 	WebsocketClientService.call(this, node);
 };
 
-DomWebsocketClientService.prototype = PlurObject.create('www/plur/dom/websocket/DomWebsocketClientService',
+DomWebsocketClientService.prototype = PlurObject.create('web/plur/dom/websocket/DomWebsocketClientService',
 	DomWebsocketClientService,
 	WebsocketClientService
 );

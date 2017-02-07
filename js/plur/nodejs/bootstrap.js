@@ -14,7 +14,7 @@
             'plur': 'plur/js/plur',
             'plur-config': 'plur/cfg/json/plur',
             'plur-bin': 'plur/plur-bin/js/plur-bin',
-            'plur-test': 'plur/plur-test/js/plur-test'
+            'plur-test': 'plur/plur-tests/js/plur-tests'
         },
         nodeRequire: require,
         enforceDefine: true
