@@ -29,6 +29,7 @@ var Config = function(configurable, parentConfigurable, config) {
 
 Config.prototype = PlurObject.create('plur/config/Config', Config);
 
+//TODO: Config helper functions
 Config.string = function(regex, value);
 Config.int = function(range, value);
 Config.float = function(range, precision, value);

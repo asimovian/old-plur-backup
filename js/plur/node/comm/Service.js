@@ -44,5 +44,5 @@ CommService.prototype._startPrivate = function(__private) {
     });
 };
 	
-return IndexService;
+return CommService;
 });
