@@ -1,187 +1,207 @@
 /**
- * @copyright 2015 Asimovian LLC
+ * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  */
 define([
 	'plur/PlurObject',
-	'plur/event/Emitter'
-	'plur/crypt/CryptSingleton' ],
+    'plur/service/IService',
+	'plur/event/Emitter',
+    'plur/node/Node',
+	'plur/crypt/CryptSingleton',
+    'plur/node/event/Shutdown',
+    'plur/service/event/Start',
+    'plur/service/event/Stop' ],
 function(
     PlurObject,
+    IService,
     Emitter,
-    Crypt ) {
+    PlurNode,
+    Crypt,
+    PlurNodeShutdownEvent,
+    ServiceStartEvent,
+    ServiceStopEvent ) {
 
+/**
+ * Basic implementation of an IService.
+ */
+class AService {
+    constructor(plurNode, config) {
+        if (typeof plurNode === 'undefined') {
+            throw new Error('PlurNode not specified for new: ' + this.namepath);
+        }
 
+        this._status = IService.Status.OFFLINE;
+        this._plurNode = plurNode;
+        this._config = AService.DEFAULT_CONFIG.merge(config);
+        this._emitter = new Emitter();
+        this._emitterSubscriptions = [];
 
-var AService = function(plurNode, config) {
-	if (typeof plurNode === 'undefined') {
-		throw new Error('PlurNode not specified for new: ' + this.namepath);
-    }
+        let __private = (function() { return {
+            cryptSession: new CryptSession(),
+            emitter: new Emitter()
+        }})();
 
-	this._plurNode = plurNode;
-	this._config = AService.DEFAULT_CONFIG.merge(config);
-    this._running = false;
-	this._emitter = new Emitter();
-	this._nodeEmitterSubscriptionIds = [];
+        this.__publicKey = function() { return __private.getPublicKey(); };
+        this.__publicKeyHash = function() { return __private.getPublicKeyHash(); };
 
-    var __private = new AService._Private(this);
-
-	this.__publicKey = function() { return __private.getPublicKey(); };
-	this.__publicKeyHash = function() { return __private.getPublicKeyHash(); };
-
-	this.__startPrivateEmitter = function() {
-	    this._startPrivateEmitter(__private);
-   	};
-
-   	this.__destroyPrivate = function() {
-   	    __private.emitter.destroy();
-   	    __private.emitter = null;
-   	    __private.keys = null;
-   	};
-};
-
-
-
-/** Generic Events **/
-
-AService.StartEvent = function(service) {
-    this.service = service;
-};
-
-AService.StartEvent.prototype = PlurObject.create('plur/service/AService.StartEvent', AService.StartEvent);
-
-AService.prototype = PlurObject.create('plur/service/AService', AService);
-
-AService.StopEvent = function(service) {
-    this.service = service;
-};
-
-AService.StopEvent.prototype = PlurObject.create('plur/service/AService.StopEvent', AService.StopEvent);
-
-/** **/
-
-AService.prototype = PlurObject.create('plur/service/AService', AService);
-PlurObject.implement(Service, IEmitterProvider);
-PlurObject.implement(Service, ICryptoConsumer);
-
-AService.prototype.publicKey = function() {
-    return this.__publicKey();
-};
-
-AService.prototype.publicKeyHash = function() {
-    return this.__publicKeyHash();
-};
-
-AService.prototype.start = function() {
-	if (this.running()) {
-	    throw new RunningError({'this': this});
-    } else if (this._emitter === null) {
-        throw new DestroyedError({'this': this});
-    }
-
-    var __private = (function() {
-        return {
-            cryptSession: new CryptSession();
-            emitter: new Emitter();
+        this.__startPrivateEmitter = function() {
+            this._startPrivateEmitter(__private);
         };
-    })();
 
-    this._running = true;
-    this.__startPrivateEmitter();
+        this.__destroyPrivate = function() {
+            __private.emitter.destroy();
+            __private.emitter = null;
+            __private.keys = null;
+        };
+    };
 
-	// generic announce to entire node
-	var startEvent = new AService.StartEvent(this);
-	this._plurNode.emitter().emit(startEvent);
-	this._emitter.emit(startEvent);
-	var subscriptionId = this._emitter.once(PlurNode.ShutdownEvent, function(shutdownEvent) {
-	    this.stop();
-	});
+    _preStart = function() {
+        // make sure that the service isn't already running and that it hasn't ran before
+        if (this.running()) {
+            throw new RunningError({'this': this});
+        } else if (this._emitter === null) {
+            throw new DestroyedError({'this': this});
+        }
 
-	this._nodeEmitterSubscriptionIds.push(subscriptionId);
+        this._status = IService.Status.ONLINE | IService.Status.INIT;
 
-};
+        this.__startPrivateEmitter();
 
-AService.prototype.stop = function() {
-	if (!this.running()) {
-        throw new NotRunningError({'this': this});
-    }
+        // subscribe to a shutdown event from the plur node. stop on receipt.
+        let subscriptionId = this._emitter.once(PlurNodeShutdownEvent, function (shutdownEvent) {
+            this.stop();
+        });
 
-    this._running = false;
+        // register the shutdown event subscription so that it may be retracted on shutdown
+        this._subscribedToEmitter(this._emitter, subscriptionId);
+    };
 
-    var comm = this._plurNode.comm();
-    for (var i = 0, n = this._nodeCommSubscriptionIds.length; i < n; ++i) {
-        comm.unsubscribe(this._nodeCommSubscriptionIds[i]) ;
-    }
+    _postStart() {
+        this._status = IService.Status.ONLINE | IService.Status.RUNNING;
 
-    var emitter = this._plurNode.emitter();
-    for (var i = 0, n = this._nodeEmitterSubscriptionIds.length; i < n; ++i) {
-        emitter.unsubscribe(this._nodeEmitterSubscriptionIds[i]) ;
-    }
+        // broadcast the service start event
+        let startEvent = new ServiceStartEvent(this);
+        this._plurNode.emitter().emit(startEvent); // broadcast to the node
+        this._emitter.emit(startEvent); // broadcast to the service
+    };
 
-    // broadcoast service stop
-    var stopEvent = new Service.StopEvent(this);
-	this._emitter.emit(stopEvent);
-	this._plurNode.emitter().emit(stopEvent);
+    _subscribedToEmitter(emitter, subscriptionId) {
+        this._emitterSubscriptions.push([emitter, subscriptionId]); // store as a pair: 0: emitter, 1: subscription id
+    };
 
-    // destroy object thoroughly
-	this._emitter.destroy();
-	this._emitter = null;
-	this.__destroyPrivate();
-};
+    _unsubscribeFromAllEmitters() {
+        for (let i = 0, n = this._emitterSubscriptions.length; i < n; ++i) {
+            let [ emitter, subscriptionId ] = this._emitterSubscriptions[i];
+            emitter.unsubscribe(subscriptionId);
+        }
+    };
 
-AService.prototype.running = function() {
-	return this._running;
-};
+    _setStatus(on, off) {
+        if (typeof on !== 'undefined') {
+            this._status |= on;
+        }
+        if (typeof off !== 'undefined') {
+            this._status &= off;
+        }
+    };
 
-AService.prototype.emitter = function() {
-    if (!this._running) {
-        throw new NotRunningError({'this': this});
-    }
+    status() {
+        return this._status;
+    };
 
-	return this._emitter;
-};
+    running() {
+        return this._status & ( IService.Status.ONLINE | IService.Status.RUNNING );
+    };
 
-AService.prototype.getPlurNode = function() {
-	return this._plurNode;
-};
+    _preStop() {
+        // check to see if we're already stopped
+        if (!this.running()) {
+            throw new NotRunningError({'this': this});
+        }
 
-AService.prototype._startPrivateEmitter = function(__private) {
-    if (this.running()) {
-        return;
-    }
+        this._setStatus(IService.Status.STOPPED, ~IService.Status.RUNNING);
+    };
 
-    var comm = this._plurNode.comm();
-    var subscriptionId = comm.on(this.publicKeyHash(),
-        function(messageEvent) {
-            if (!PlurObject.implementing(messageEvent, IMessage)) {
-                return;
-            }
+    _postStop() {
+        // check to see if we're already stopped
+        if (!this.running()) {
+            throw new NotRunningError({'this': this});
+        }
 
-            if (messageEvent.isEncrypted()) {
-                var connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
-                var message = __private.decryptModel(
-                    connection.getPublicKey(),
-                    messageEvent.getMessage(),
-                    connection.getTransformer()
-                );
+        this._setStatus(IService.Status.OFFLINE, ~IService.Status.ONLINE);
 
-                if (typeof message.__NEXTKEY !== 'undefined') {
-                   __private.cryptSession.setNextSessionKey(messageEvent.__NEXTKEY);
-                    delete messageEvent.__NEXTKEY;
+        // broadcast service stop
+        let stopEvent = new ServiceStopEvent(this);
+        this._emitter.emit(stopEvent);
+        this._plurNode.emitter().emit(stopEvent);
+
+        // destroy object thoroughly
+        this._emitter.destroy();
+        this._emitter = null;
+        this.__destroyPrivate();
+    };
+
+    emitter() {
+        if (!this._running) {
+            throw new NotRunningError({'this': this});
+        }
+
+        return this._emitter;
+    };
+
+    getPlurNode = function() {
+        return this._plurNode;
+    };
+
+    _startPrivateEmitter(__private) {
+        if (this.running()) {
+            throw new NotRunningError({'this': this});
+        }
+
+        var comm = this._plurNode.comm();
+        var subscriptionId = comm.on(this.publicKeyHash(),
+            function(messageEvent) {
+                if (!PlurObject.implementing(messageEvent, IMessage)) {
+                    return;
                 }
 
-                messageEvent = new MessageEvent(message);
+                if (messageEvent.isEncrypted()) {
+                    var connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
+                    var message = __private.decryptModel(
+                        connection.getPublicKey(),
+                        messageEvent.getMessage(),
+                        connection.getTransformer()
+                    );
+
+                    if (typeof message.__NEXTKEY !== 'undefined') {
+                        __private.cryptSession.setNextSessionKey(messageEvent.__NEXTKEY);
+                        delete messageEvent.__NEXTKEY;
+                    }
+
+                    messageEvent = new MessageEvent(message);
+                }
+
+                __private.emitter().emit(messageEvent);
             }
+        );
 
-            __private.emitter().emit(messageEvent);
-        }
-    );
+        // record the message event subscription for later withdrawl
+        this._subscribedToEmitter(comm, subscriptionId);
 
-    this._nodeCommSubscriptionIds.push(subscriptionId);
+        var msg = new NoopNotification(this);
+        comm.notify(msg, __private.encryptModelCallback(msg), __private.encryptNextKeyCallback());
+    };
 
-    var msg = new NoopNotification(this);
-	comm.notify(msg, __private.encryptModelCallback(msg), __private.encryptNextKeyCallback());
-};
+    publicKey() {
+        return this.__publicKey();
+    };
+
+    publicKeyHash = function() {
+        return this.__publicKeyHash();
+    };
+}
+
+PlurObject.plurify('plur/service/AService', AService, [ IService, IEmitterProvider, ICryptoConsumer ]);
 
 return AService;
 });

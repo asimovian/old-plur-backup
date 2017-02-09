@@ -94,8 +94,10 @@ class PlurObject {
      *
      *** Example usage:
      * class Foo {
-     *   static namepath = PlurObject.classify('myproject/mystuff/Script');
+     *   ...
      * };
+     *
+     * PlurObject.plurify('myproject/foobars/Foo', Foo);
      ***
      *
      * Sets the provided "namepath" property into the prototype of the provided constructor.
