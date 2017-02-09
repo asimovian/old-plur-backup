@@ -75,6 +75,14 @@ Channel.prototype.disconnect = function(publicKeyHash) {
     delete this._connectionMap[publicKeyHash];
 };
 
+/**
+ * Sends a request to an endpoint through the channel.
+ * @param {{Request}} request
+ * @param encryptFunction
+ * @param encryptNexKeyFunction
+ * @param timeout
+ * @returns {null}
+ */
 Channel.prototype.request = function(request, encryptFunction, encryptNexKeyFunction, timeout) {
     var connections = this._validateMessage(request, Request);
     var requestId = request.id();
