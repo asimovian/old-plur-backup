@@ -19,6 +19,7 @@ function(
 var Channel = function() {
     this._emitter = null;
     this._open = false;
+    this._connectionMap = {};
 };
 
 Channel.prototype = PlurObject.create('plur/comm/Channel', Channel);

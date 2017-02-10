@@ -30,6 +30,8 @@ class IService {
     };
 }
 
+PlurObject.plurify('plur/app/IService', IService, [IConfigured, IEmittable]);
+
 /**
  * Bitwise status flags for use with IService.prototype.status().
  * Services may provide more flags not including those reserved here (0x00 thru 0x18).
@@ -40,15 +42,15 @@ class IService {
  *   OFFLINE | INIT | ERROR => Service crashed during INIT
  */
 IService.Status = {
-    OFFLINE:        0x00,
-    ONLINE:         0x01,
-    INIT:           0x02,
-    RUNNING:        0x04, // cannot be OFFLINE, INIT, PAUSED, STOPPED
-    PAUSED:         0x08, // cannot be INIT, RUNNING, STOPPED
-    STOPPED:        0x10, // cannot be ONLINE, RUNNING, PAUSED
-    WARNING:        0x12,
-    ERROR:          0x14, // cannot be ONLINE
-    //RESERVED:     0x18 thru 0x28
+    OFFLINE:        0x00, // not ONLINE
+    ONLINE:         0x01, // not OFFLINE
+    ERROR:          0x02,
+    WARNING:        0x04,
+    RUNNING:        0x08, // not OFFLINE, STOPPED, or PAUSED. helper flag.
+    STOPPED:        0x10, // not RUNNING
+    INIT:           0x12, // not RUNNING
+    PAUSED:         0x14, // not RUNNING or STOPPED
+    //RESERVED:     0x20 thru 0x28
 };
 
 /**
@@ -74,9 +76,6 @@ IService.prototype.stop = PlurObject.abstractMethod,
  * @abstract
  */
 IService.prototype.status = PlurObject.abstractMethod;
-
-
-PlurObject.plurify('plur/app/IService', IService);
 
 return IService;
 });
