@@ -1,6 +1,7 @@
 /**
  * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
+ * @module plur/service/AService
  */
 define([
 	'plur/PlurObject',
@@ -20,9 +21,14 @@ function(
     PlurNodeShutdownEvent,
     ServiceStartEvent,
     ServiceStopEvent ) {
-
+//TODO: Refactor out remaining code to CryptoSession and rely on that.
 /**
- * Basic implementation of an IService.
+ * Standard IService implementation that is registered with and actively runs on a PlurNode.
+ * Publishes service-specific events via the emitter().
+ * Internally connected to the node's encrypted CommChannel and may communicate with any other IService - local or remote.
+ * Maintains an active CryptoSession for use with CommChannel, identity, and verification.
+ * Identified by a SHA3 hash of its public key.
+ * Public keys are provided by the CryptoSession and are NOT permanent - they rotate often.
  */
 class AService {
     constructor(plurNode, config) {

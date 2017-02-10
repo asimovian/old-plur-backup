@@ -2,15 +2,19 @@
  * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @module plur/service/IService
- * @requires plur/PlurObject
  */
 'use strict';
 
 define([
     'plur/PlurObject',
-    'plur/error/Interface' ],
+    'plur/config/IConfigured',
+    'plur/event/IEmittable',
+    'plur/error/Interface',
+    ],
 function(
     PlurObject,
+    IConfigured,
+    IEmittable,
     InterfaceError ) {
 
 /**
@@ -22,7 +26,7 @@ function(
  *
  * @class IService
  * @interface
- * @alias {module:plur/app/IService}
+ * @alias {module:plur/service/IService}
  */
 class IService {
     constructor() {
@@ -30,7 +34,7 @@ class IService {
     };
 }
 
-PlurObject.plurify('plur/app/IService', IService, [IConfigured, IEmittable]);
+PlurObject.plurify('plur/service/IService', IService, [IConfigured, IEmittable]);
 
 /**
  * Bitwise status flags for use with IService.prototype.status().
@@ -56,7 +60,7 @@ IService.Status = {
 /**
  * Starts the plur node, registers and starts the service's main service.
  *
- * @function plur/app/Service.prototype.start
+ * @function plur/service/IService.prototype.start
  * @abstract
  */
 IService.prototype.start = PlurObject.abstractMethod;
@@ -64,7 +68,7 @@ IService.prototype.start = PlurObject.abstractMethod;
 /**
  * Stops the service, performing any cleanup necessary.
  *
- * @function plur/app/Service.prototype.start
+ * @function plur/service/IService.prototype.start
  * @abstract
  */
 IService.prototype.stop = PlurObject.abstractMethod,
@@ -72,7 +76,7 @@ IService.prototype.stop = PlurObject.abstractMethod,
 /**
  * Retrieves the current status of this service.
  *
- * @function plur/app/Service.prototype.status
+ * @function plur/service/IService.prototype.status
  * @abstract
  */
 IService.prototype.status = PlurObject.abstractMethod;
