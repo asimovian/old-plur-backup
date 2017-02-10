@@ -1,5 +1,5 @@
 /**
- * @copyright 2015 Asimovian LLC
+ * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @module plur-www/plur/www/index/Service
  * @requires plur/PlurObject plur/service/AService
@@ -11,6 +11,8 @@ function(
     PlurObject,
     AService ) {
 
+//TODO: Refactor this into IWebUIService and AWebUIService
+
 /**
  * Handles core node-to-node communication, including handshakes.
  *
@@ -18,22 +20,24 @@ function(
  * @extends plur/service/AService
  * @param plur/node/PlurNode
  */
-class IndexService {
+class IndexService extends AService {
     constructor(plurNode, config) {
-        AService.call(this, plurNode, IndexService.DEFAULT_CONFIG.merge(config));
+        super(this, plurNode, IndexService.DEFAULT_CONFIG.merge(config));
     };
 
     start() {
-        AService.prototype.start.call(this);
+        super._preStart();
+        super._postStart();
     };
 
     stop() {
-        AService.prototype.stop.call(this);
+        super._preStop();
+        super._postStop();
     };
 }
 
 
-PlurObject.plurify('plur/node/IndexService', IndexService, AService);
+PlurObject.plurify('plur-webui/plur/web/ui/index/Service', IndexService);
 
 return IndexService;
 });
