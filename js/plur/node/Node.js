@@ -2,7 +2,6 @@
  * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @module plur/node/Node
- * @requires plur/PlurObject plur/node/INode plur/event/Emitter plur/comm/Channel
  */
 'use strict';
 
@@ -30,18 +29,38 @@ function(
  * There may only be one attached node per Application and exactly one node per thread.
  */
 class PlurNode {
-    constructor() {
-        /** @type {module:plur/node/INode.Status} **/
-        this._status = IPlurNode.Status.OFFLINE;
+    /**
+     * Starts the plur node service.
+     *
+     * @param {module:plur/service/IService} plurNodeService
+     */
+    constructor(plurNodeServiceClass) {
         /** @type {module:plur/event/Emitter} **/
         this._emitter = new Emitter();
         /** @type {module:plur/comm/Channel} **/
         this._commChannel = new CommChannel();
+        /** @type { {(string):(module:plur/service/IService)} } **/
         this._serviceMap = {};
+        /** @type {module:plur/service/IService} **/
+        this._service = new plurNodeServiceClass(this);
+
+        // register the plur node service
+        this._node.registerService(plurNodeServiceClass);
     };
 
+    /**
+     * Retrieves the plur node service.
+     * @returns {module:plur/service/IService}
+     */
+    service() {
+        return this._service;
+    };
+
+    /**
+     * @returns {module:plur/service/IService.Status}
+     */
     status() {
-        return this._status;
+        return this._service.status();
     };
 
     /**
@@ -58,56 +77,70 @@ class PlurNode {
         return this._commChannel;
     };
 
+    /**
+     * @returns {string}
+     */
     publicKeyHash() {
-        return this._commChannel.getPublicKeyHash();
-    };
-
-    publicKey() {
-        return this._commChannel.getPublicKey();
+        return this._service.publicKeyHash();
     };
 
     /**
-     * Starts the node. Initiates all sessions necessary.
+     * @returns {string}
+     */
+    publicKey() {
+        return this._service.publicKey();
+    };
+
+    /**
+     * Starts the node.
+     * Starts any services already registered and configured to auto-start.
+     * Emits a 'plur.node.started' event.
      */
     start() {
         // starts any services already registered that are configured to auto-start
         for (let namepath in this._serviceMap) {
             let service = this._serviceMap[namepath];
-            if (service.shouldAutostart())
+            if (service.config().autostart)
                 this._serviceMap[namepath].start();
         }
 
         // announce
-        this._emitter.emit('plur.node.start', { publicKeyHash: this.publicKeyHash() });
+        this._emitter.emit('plur.node.started', { publicKeyHash: this.publicKeyHash() });
     };
 
     /**
-     * Registers a service with the node.
+     * Factories out a new service of type serviceClass and registers it with the node.
+     * Emits a 'plur.node.service.registered' event.
      * @param {module:plur/service/IService} service
      */
     registerService(service) {
         this._serviceMap[service.namepath] = service;
-        this._emitter.emit('plur.node.service.register', { namepath: service.namepath });
+        this._emitter.emit('plur.node.service.registered', { namepath: service.namepath });
     };
 
     /**
      * Retrieves a service registered to the node.
      * @param {string} namepath
-     * @throws {Error} if not found
+     * @throws {module:plur/error/Error} if not found
      */
     getService(namepath) {
         if (typeof this._serviceMap[namepath] === 'undefined')
-            throw new Error('Service not registered: ' + namepath);
+            throw new PlurError('Service not registered: ' + namepath);
 
         return this._serviceMap[namepath];
     };
 
+    /**
+     * @param {string} namepath
+     * @returns {boolean}
+     */
     hasService(namepath) {
         return ( typeof this._serviceMap[namepath] !== 'undefined' && this._serviceMap[namepath] !== null);
     };
 
     /**
-     * Withdraws a service registered to the node.
+     * Withdraws a service's registration to the node.
+     * @param {string} namepath
      */
     withdrawService(namepath) {
         let service = this._serviceMap[namepath];
@@ -116,14 +149,12 @@ class PlurNode {
     };
 
     /**
-     * Stops the node, destroying all sessions.
+     * Stops the node.
+     * Stops all registered services.
+     * Emits a 'plur.node.stopped' event.
+     * Disables the emitter.
      */
     stop() {
-        for (let id in this._sessionMap)
-            this._sessionMap[id].close();
-
-        this._sessionMap = [];
-
         for (let name in this._serviceMap)
             this._serviceMap[name].stop();
 

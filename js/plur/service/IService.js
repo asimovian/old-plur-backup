@@ -25,11 +25,15 @@ function(
  * main Application service.
  *
  * @class IService
- * @interface
  * @alias {module:plur/service/IService}
+ * @interface
  */
 class IService {
-    constructor() {
+    /**
+     * @param {module:plur/node/Node} plurNode
+     * @param {module:plur/config/Config} config
+     */
+    constructor(plurNode, config) {
         throw new InterfaceError({'this': this});
     };
 }

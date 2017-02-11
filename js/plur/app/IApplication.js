@@ -68,13 +68,20 @@ IApplication.prototype.start = PlurObject.abstractMethod;
 IApplication.prototype.stop = PlurObject.abstractMethod,
 
 /**
- * Retrieves the current status of this application.
+ * Retrieves the plur node attached to this application.
  *
- * @function plur/app/Application.prototype.status
+ * @returns {module:plur/node/INode}
  * @abstract
  */
-IApplication.prototype.status = PlurObject.abstractMethod;
+IApplication.prototype.plurNode = PlurObject.abstractMethod;
 
+/**
+ * Retrieves the application's main service.
+ *
+ * @returns {module:plur/service/IService}
+ * @abstract
+ */
+IApplication.prototype.service = PlurObject.abstractMethod;
 
 PlurObject.plurify('plur/app/IApplication', IApplication);
 
