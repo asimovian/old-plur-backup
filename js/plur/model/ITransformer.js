@@ -17,7 +17,7 @@ function(
  * @interface
  **
  */
-var IModelTransformer = function() { throw new };
+var IModelTransformer = function() { throw new InterfaceError(this); }
 
 IModelTransformer.prototype = PlurObject.create('plur/model/ITransformer', IModelTransformer);
 

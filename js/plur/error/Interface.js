@@ -1,7 +1,7 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject plur/error/Error
+ * @module plur/error/Interface
  */
 define([
     'plur/PlurObject',
@@ -13,24 +13,28 @@ function(
 /**
  * Thrown on an attempt to instantiate an interface prototype.
  *
- * @constructor plur/error/Type
- * @extends plur/error/Error
- **
- * @params {string} message
- * @params {=} data
+ * @class InterfaceError
+ * @alias {module:plur/error/Interface}
+ * @extends {module:plur/error/Error}
  */
-var InterfaceError = function(message, data) {
-    if (typeof message === 'object') {
-        data = message;
-        message = 'Cannot instantiate interface prototype.';
-    } else if (typeof message === 'undefined') {
-        message = 'Cannot instantiate interface prototype.';
-    }
+class InterfaceError extends PlurError {
+    /**
+     * @param {string|undefined} message
+     * @param {*} data
+     */
+    constructor(message, data) {
+        if (typeof message === 'object') {
+            data = message;
+            message = 'Cannot instantiate an interface prototype.';
+        } else if (typeof message === 'undefined') {
+            message = 'Cannot instantiate an interface prototype.';
+        }
 
-    PlurError.call(this, message, data);
-};
+        super(message, data);
+    };
+}
 
-InterfaceError.prototype = PlurObject.create('plur/error/Type', InterfaceError, PlurError);
+PlurObject.plurify('plur/error/Interface', InterfaceError);
 
 return InterfaceError;
 });

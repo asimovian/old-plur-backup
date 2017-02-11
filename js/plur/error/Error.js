@@ -1,67 +1,81 @@
 /**
  * @copyright 2015 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject
+ * @module plur/error/Error
  */
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/ITransformable' ],
 function(
-    PlurObject) {
+    PlurObject,
+    ITransformable ) {
 
 /**
  * Errors thrown by the plur internal platform.
  *
- * @constructor plur/error/Error
+ * @class PlurError
+ * @alias {module:plur/error/Error}
  * @extends Error
- **
- * @params {string} message
- * @params {=} data
  */
-var PlurError = function(message, data) {
-    this.name = this.namepath;
-    this.message = message;
-    this.data = ( typeof data === 'undefined' ? null : data );
-
-    Error.captureStackTrace(this, this.constructor);
-};
-
-PlurError.throwIf = function(testResult, message, data) {
-    if (testResult) {
-        throw new PlurError(message, data);
-    }
-};
-
-PlurError.prototype = PlurObject.create('plur/error/Error', PlurError, Error);
-PlurObject.implement(PlurError, IModel);
-
-PlurError.fromModel = function(model) {
-   return new PlurError(model.message, model.data);
-};
-
-PlurError.prototype.toString = function() {
-    if (this.data === null)
-        return 'Error (' + this.name + '): ' + this.message;
-
-    return 'Error (' + this.name + '): ' + this.message + ' ; ' + JSON.stringify(this.data, PlurError._stringifyReplacer);
-};
-
-PlurError._stringifyReplacer = function(key, value) {
-    switch(typeof value) {
-    case 'undefined':
-        return 'undefined';
-    case 'function':
-        return '[Function]';
-    default:
-        return value;
+class PlurError extends Error {
+    static throwIf(testResult, message, data) {
+        if (testResult) {
+            throw new PlurError(message, data);
+        }
     };
-};
 
-PlurError.prototype.model = function() {
-    return {
-        message: this.message,
-        data: IModel.model(this.data)
+    static fromModel(model) {
+        return new PlurError(model.message, model.data);
     };
-};
+
+    static _stringifyReplacer(key, value) {
+        switch (typeof value) {
+            case 'undefined':
+                return 'undefined';
+            case 'function':
+                return '[Function]';
+            default:
+                return value;
+        };
+    };
+
+    /**
+     * @param {string|undefined} message
+     * @param {*} data
+     */
+    constructor(message, data) {
+        /** @type {string} **/
+        this.name = this.namepath;
+        /** @type {string|undefined} **/
+        this.message = message;
+        /** @type {*} **/
+        this.data = ( typeof data === 'undefined' ? null : data );
+
+        Error.captureStackTrace(this, this.constructor);
+    };
+
+    /**
+     * @returns {string}
+     */
+    toString() {
+        if (this.data === null)
+            return 'Error (' + this.name + '): ' + this.message;
+
+        return 'Error (' + this.name + '): ' + this.message + ' ; ' + JSON.stringify(this.data, PlurError._stringifyReplacer);
+    };
+
+    /**
+     * @returns {{message: (string|undefined), data: (*)}}
+     */
+    model() {
+        return {
+            message: this.message,
+            data: IModel.model(this.data)
+        };
+    };
+}
+
+PlurObject.purify('plur/error/Error', PlurError, [ ITransformable ]);
 
 return PlurError;
 });

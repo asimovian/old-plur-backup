@@ -1,8 +1,7 @@
 /**
  * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @module plur/service/IService
- * @requires plur/PlurObject
+ * @module plur/node/INode
  */
 'use strict';
 
@@ -20,9 +19,9 @@ function(
  * Services run within an Application, which simply a driver for starting and stopping the local Plur Node and the
  * main Application service.
  *
- * @class IService
+ * @class IPlurNode
  * @interface
- * @alias {module:plur/app/IService}
+ * @alias {module:plur/node/INode}
  */
 class IPlurNode {
     /**
@@ -33,6 +32,8 @@ class IPlurNode {
      *   OFFLINE | PAUSED | STOPPED => Service was paused before it was stopped.
      *   ONLINE | INIT | PAUSED => Service was paused during INIT
      *   OFFLINE | INIT | ERROR => Service crashed during INIT
+     *
+     * @type {int}
      */
     static Status = {
         OFFLINE:        0x00, // not ONLINE
@@ -46,6 +47,10 @@ class IPlurNode {
         DETACHED:       0x18,
         //RESERVED:     ALL THESE FLAGS ARE YOURS, EXCEPT < 0x30
     };
+
+    /**
+     * @throws {module:plur/error/Interface}
+     */
     constructor() {
         throw new InterfaceError({'this': this});
     };
