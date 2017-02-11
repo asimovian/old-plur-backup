@@ -4,7 +4,7 @@ plur
 
 (This project is in an early development stage.)
 
-Plur is a distributed application platform that is intended to scale across networks of virtual machines. The framework
+Plur is a distributed Web3 application platform that is intended to scale across networks of virtual machines. The framework
 is designed to improve cross-platform code reuse by allowing most of the same libraries to be imported on both backend and
 frontend applications.
 
@@ -15,7 +15,7 @@ Plur networks are controlled by management services that receive and react to me
 as to new directives by the network administrators. Management services start, stop, and reconfigure other plur
 services dynamically, based on changing operational requirements.
 
-Common third-party software services (e.g., PostgreSQL, Memcached, etc.) are locked down and only interacted with through plur the messaging API provided by the specific plur service controlling that software (e.g., PostgreSQLService, MemcachedService, etc.).
+Common third-party software services (e.g., PostgreSQL, Memcached, etc.) are isolated from communicating with anything other than their locally running plur node, which forwards only authorized requests from application servers.
 
 
 Contributors
@@ -38,7 +38,7 @@ Git is used to distribute open-source modules and upgrades within the platform.
 
 License (MIT)
 --------------
-Copyright (c) 2016 Asimovian LLC
+Copyright (c) 2017 Asimovian LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
