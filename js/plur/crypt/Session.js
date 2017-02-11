@@ -1,71 +1,78 @@
 /**
- * @copyright 2015 Asimovian LLC
+ * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject
+ * @module plur/crypt/Session
  */
- 'use strict';
+'use strict';
 
 define([
-    'plur/PlurObject' ],
+    'plur/PlurObject',
+    'plur/crypt/Crypt' ],
 function(
-    PlurObject ) {
+    PlurObject,
+    Crypt ) {
 
 /**
- * @constructor plur/crypt/Session
- **
+ * @class CryptSession
+ * @alias {module:plur/crypt/Session}
  */
-var CryptSession = function() {
-    this._cipherKeyMap = new PromiseMap(); // PGP => Keypair
-    this._sessionKeyMap = new PromiseMap(); // <PGP Public Key Hash> => Keyset
-};
+class CryptSession {
+    constructor() {
+        this._cipherKeyMap = new PromiseMap(); // PGP => Keypair
+        this._sessionKeyMap = new PromiseMap(); // <PGP Public Key Hash> => Keyset
+    };
 
-CryptSession.prototype = PlurObject.create('plur/crypt/Session', CryptSession);
-
-CryptSession.prototype.generateKeys = function(cipher) {
-    var promise = new PlurPromise(function(resolve, reject) {
-        Crypt.get(cipher).then(function(crypt) {
-            crypt.generateKeys().then(function(keys) {
-                resolve(keys);
-            });
-        });
-    });
-
-    __cipherKeyMap.put(cipher, promise);
-    return promise;
-};
-
-CryptSession.prototype.encryptData = function(cipher, key, data) {
-    var promise = new PlurPromise(function(resolve, reject) {
-        Crypt.get(cipher).then(function(crypt) {
-            if (!__cipherKeyMap.has(cipher)) {
-                this._cipherKeyMap.put(cipher, this.generateKeys(cipher));
-            }
-
-            __cipherKeyMap.get(cipher).then(function(keyset) {
-                crypt.encrypt(key, keyset, data).then(function(encryptedData) {
-                    resolve(encryptedData);
+    generateKeys(cipher) {
+        let promise = new PlurPromise(function (resolve, reject) {
+            Crypt.get(cipher).then(function (crypt) {
+                crypt.generateKeys().then(function (keys) {
+                    resolve(keys);
                 });
             });
         });
-    });
 
-    return promise;
-};
-
-CryptSession.prototype.decryptData = function(cipher, key, data) {
-    return Crypt.get().decrypt(keys.getPrivateKey(), publicKey, data);
-};
-
-CryptSession.prototype.createEncryptModelCallback = function(model) {
-    return function(cipher, key, modelTransformer) {
-        return encryptData(cipher, key, modelTransformer.encode(model));
+        __cipherKeyMap.put(cipher, promise);
+        return promise;
     };
-};
 
-CryptSession.prototype.createEncryptNextKeyCallback = function() {
-    return function(cipher, publicKey);
-};
+    encryptData(cipher, key, data) {
+        let promise = new PlurPromise(function (resolve, reject) {
+            Crypt.get(cipher).then(function (crypt) {
+                if (!__cipherKeyMap.has(cipher)) {
+                    this._cipherKeyMap.put(cipher, this.generateKeys(cipher));
+                }
 
-CryptSession.prototype.decryptModel = function(cipher, publicKey, data, modelTransformer) {
-    return modelTransformer.decode(__private.decryptData(cipher, publicKey, data));
-};
+                __cipherKeyMap.get(cipher).then(function (keyset) {
+                    crypt.encrypt(key, keyset, data).then(function (encryptedData) {
+                        resolve(encryptedData);
+                    });
+                });
+            });
+        });
+
+        return promise;
+    };
+
+    decryptData(cipher, key, data) {
+        return Crypt.get().decrypt(keys.getPrivateKey(), publicKey, data);
+    };
+
+    createEncryptModelCallback(model) {
+        return function (cipher, key, modelTransformer) {
+            return encryptData(cipher, key, modelTransformer.encode(model));
+        };
+    };
+
+    createEncryptNextKeyCallback() {
+        return new function (cipher, publicKey) {};
+    };
+
+    decryptModel(cipher, publicKey, data, modelTransformer) {
+        return modelTransformer.decode(__private.decryptData(cipher, publicKey, data));
+    };
+}
+
+PlurObject.plurify('plur/crypt/Session', CryptSession);
+
+return CryptSession;
+});

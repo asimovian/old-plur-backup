@@ -9,6 +9,7 @@ define([
 	'plur/event/Emitter',
     'plur/node/Node',
 	'plur/crypt/CryptSingleton',
+    'plur/crypt/Session',
     'plur/node/event/Shutdown',
     'plur/service/event/Start',
     'plur/service/event/Stop' ],
@@ -18,17 +19,20 @@ function(
     Emitter,
     PlurNode,
     Crypt,
+    CryptSession,
     PlurNodeShutdownEvent,
     ServiceStartEvent,
     ServiceStopEvent ) {
+
 //TODO: Refactor out remaining code to CryptoSession and rely on that.
+
 /**
  * Standard IService implementation that is registered with and actively runs on a PlurNode.
  * Publishes service-specific events via the emitter().
  * Internally connected to the node's encrypted CommChannel and may communicate with any other IService - local or remote.
- * Maintains an active CryptoSession for use with CommChannel, identity, and verification.
+ * Maintains an active CryptSession for use with CommChannel, identity, and verification.
  * Identified by a SHA3 hash of its public key.
- * Public keys are provided by the CryptoSession and are NOT permanent - they rotate often.
+ * Public keys are provided by the CryptSession and are NOT permanent - they rotate often.
  */
 class AService {
     constructor(plurNode, config) {
@@ -38,27 +42,16 @@ class AService {
 
         this._status = IService.Status.OFFLINE;
         this._plurNode = plurNode;
-        this._config = AService.DEFAULT_CONFIG.merge(config);
+        this._config = AService.getDefaultConfig().merge(config);
         this._emitter = new Emitter();
         this._emitterSubscriptions = [];
 
-        let __private = (function() { return {
-            cryptSession: new CryptSession(),
-            emitter: new Emitter()
-        }})();
+        let __private = new _Private(this);
 
-        this.__publicKey = function() { return __private.getPublicKey(); };
-        this.__publicKeyHash = function() { return __private.getPublicKeyHash(); };
-
-        this.__startPrivateEmitter = function() {
-            this._startPrivateEmitter(__private);
-        };
-
-        this.__destroyPrivate = function() {
-            __private.emitter.destroy();
-            __private.emitter = null;
-            __private.keys = null;
-        };
+        this._publicKey = function() { return __private.cryptSession.getPublicKey(); };
+        this._publicKeyHash = function() { return __private.cryptSession.getPublicKeyHash(); };
+        this._startPrivate = function() { __private.start(); };
+        this._destroyPrivate = function() { __private.destroy(); }; // force gc
     };
 
     _preStart = function() {
@@ -71,7 +64,7 @@ class AService {
 
         this._status = IService.Status.ONLINE | IService.Status.INIT;
 
-        this.__startPrivateEmitter();
+        this._initPrivate();
 
         // subscribe to a shutdown event from the plur node. stop on receipt.
         let subscriptionId = this._emitter.once(PlurNodeShutdownEvent, function (shutdownEvent) {
@@ -141,10 +134,10 @@ class AService {
         this._emitter.emit(stopEvent);
         this._plurNode.emitter().emit(stopEvent);
 
-        // destroy object thoroughly
+        // gc the emitter
         this._emitter.destroy();
         this._emitter = null;
-        this.__destroyPrivate();
+        this._destroyPrivate();
     };
 
     emitter() {
@@ -155,47 +148,8 @@ class AService {
         return this._emitter;
     };
 
-    getPlurNode = function() {
+    plurNode = function() {
         return this._plurNode;
-    };
-
-    _startPrivateEmitter(__private) {
-        if (this.running()) {
-            throw new NotRunningError({'this': this});
-        }
-
-        var comm = this._plurNode.comm();
-        var subscriptionId = comm.on(this.publicKeyHash(),
-            function(messageEvent) {
-                if (!PlurObject.implementing(messageEvent, IMessage)) {
-                    return;
-                }
-
-                if (messageEvent.isEncrypted()) {
-                    var connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
-                    var message = __private.decryptModel(
-                        connection.getPublicKey(),
-                        messageEvent.getMessage(),
-                        connection.getTransformer()
-                    );
-
-                    if (typeof message.__NEXTKEY !== 'undefined') {
-                        __private.cryptSession.setNextSessionKey(messageEvent.__NEXTKEY);
-                        delete messageEvent.__NEXTKEY;
-                    }
-
-                    messageEvent = new MessageEvent(message);
-                }
-
-                __private.emitter().emit(messageEvent);
-            }
-        );
-
-        // record the message event subscription for later withdrawl
-        this._subscribedToEmitter(comm, subscriptionId);
-
-        var msg = new NoopNotification(this);
-        comm.notify(msg, __private.encryptModelCallback(msg), __private.encryptNextKeyCallback());
     };
 
     publicKey() {
@@ -208,6 +162,63 @@ class AService {
 }
 
 PlurObject.plurify('plur/service/AService', AService, [ IService, IEmitterProvider, ICryptoConsumer ]);
+
+class _Private {
+    /**
+     * @param AService self
+     */
+    constructor(self) {
+        this.self = self;
+        this.privateEmitter = new Emitter();
+        this.cryptSession = new CryptSession();
+    };
+
+    start() {
+        if (this.self.running()) {
+            throw new NotRunningError({'this': this.self});
+        }
+
+        let comm = this.self.plurNode().comm();
+        let subscriptionId = comm.on(this.self.publicKeyHash(),
+            function(messageEvent) {
+                if (!PlurObject.implementing(messageEvent, IMessage)) {
+                    return;
+                }
+
+                if (messageEvent.isEncrypted()) {
+                    let connection = comm.getConnection(messageEvent.getSenderPublicKeyHash());
+                    let message = this.cryptSession.decryptModel(
+                        connection.getPublicKey(),
+                        messageEvent.getMessage(),
+                        connection.getTransformer()
+                    );
+
+                    if (typeof message.__NEXTKEY !== 'undefined') {
+                        this.cryptSession.setNextSessionKey(messageEvent.__NEXTKEY);
+                        delete messageEvent.__NEXTKEY;
+                    }
+
+                    messageEvent = new MessageEvent(message);
+                }
+
+                this.privateEmitter.emit(messageEvent);
+            }
+        );
+
+        // record the message event subscription for later withdrawl
+        this.self._subscribedToEmitter(comm, subscriptionId);
+
+        let msg = new NoopNotification(this);
+        comm.notify(msg, __private.encryptModelCallback(msg), __private.encryptNextKeyCallback());
+    };
+
+    destroy() { // trigger gc
+        this.privateEmitter.destroy();
+        this.privateEmitter = null;
+        this.self = null;
+        this.cryptSession = null;
+    };
+}
 
 return AService;
 });
