@@ -207,7 +207,7 @@ MapTreeNode.prototype.isLeaf = function() {
 };
 
 /**
- * Factory method that creates a new child branch chain, each subsequent child branch corresponding to its index in the
+ * Factory method that creates a new child branch chain, each subsequent child branch corresponding to its main in the
  * provided array.
  *
  * If the provided skeleton uses string keys as elements, children will be constructed using the constructor. Otherwise,

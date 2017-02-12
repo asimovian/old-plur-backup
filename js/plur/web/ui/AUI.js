@@ -25,7 +25,7 @@ class AWebUI  {
 
     static _DEFAULT_CONFIG = new ConstructorConfig(AWebUI, null, __FILE_CONFIG, {
         webui: {
-            rootComponent: Config.string('plur-webui/plur/web/ui/index/Body')
+            rootComponent: Config.string('plurcommander/plur/web/ui/main/Body')
         }
     });
 
@@ -50,7 +50,7 @@ class AWebUI  {
     };
 }
 
-PlurObject.plurify('plur-webui/plur/web/IWebUI', IWebUI, [ IGraphicalUI ]);
+PlurObject.plurify('plurcommander/plur/web/IWebUI', IWebUI, [ IGraphicalUI ]);
 
 return AWebUI;
 });

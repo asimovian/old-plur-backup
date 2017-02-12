@@ -11,7 +11,7 @@ define([
     'plur/app/IApplication',
     'plur/node/Node',
     'plur/node/Service',
-    'plur-webui/plur/web/ui/index/Service' ],
+    'plurcommander/plur/web/ui/main/Service' ],
 function(
     PlurObject,
     IApplication,

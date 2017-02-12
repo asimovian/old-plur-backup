@@ -30,7 +30,8 @@ function(
  */
 class PlurNode {
     /**
-     * Starts the plur node service.
+     * Creates the comm channel.
+     * Creates and registers the plur node service.
      *
      * @param {module:plur/service/IService} plurNodeService
      */

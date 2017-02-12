@@ -5,7 +5,7 @@
  * @requires plur/PlurObject plur/service/AService
  */
 define([
-    'plur/PlurObject',
+    '../../../../js/plur/PlurObject',
     'plur/service/AService' ],
 function(
     PlurObject,
@@ -16,17 +16,32 @@ function(
 /**
  * Handles core node-to-node communication, including handshakes.
  *
- * @class IndexService
+ * @class CommanderMainService
  * @extends plur/service/AService
  * @param plur/node/PlurNode
  */
-class IndexService extends AService {
+class CommanderMainService extends AService {
+    static _DEFAULT_CONFIG = new ConfigConstructor(CommanderMainService, AService, {
+        commander: {
+            foo: '<br>'
+        }
+    });
+
+    static getDefaultConfig() {
+        return CommanderMainService.DEFAULT_CONFIG;
+    };
+
     constructor(plurNode, config) {
-        super(this, plurNode, IndexService.DEFAULT_CONFIG.merge(config));
+        super(this, plurNode, CommanderMainService.getDefaultConfig().merge(config));
+
+        this._webui = plurNode.getService(WebUIService);
     };
 
     start() {
         super._preStart();
+
+        this._webui.load(this.config().root);
+
         super._postStart();
     };
 
@@ -37,7 +52,7 @@ class IndexService extends AService {
 }
 
 
-PlurObject.plurify('plur-webui/plur/web/ui/index/Service', IndexService);
+PlurObject.plurify('plurcommander/main/Service', CommanderMainService);
 
-return IndexService;
+return CommanderMainService;
 });

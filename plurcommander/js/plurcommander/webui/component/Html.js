@@ -6,7 +6,7 @@
  */
 define([
     '../../PlurObject',
-    'plur/service/AService' ],
+    '../../../../../js/plur/service/AService' ],
 function(
     PlurObject,
     IGraphicalUI ) {

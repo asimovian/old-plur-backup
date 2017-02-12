@@ -58,7 +58,7 @@ class Emitter {
         this._listening = false;
         /* Destroyed emitters are totally shutdown and cannot resume further operation. */
         this._destroyed = false;
-        /* An index of subscription Ids currently listening. */
+        /* An main of subscription Ids currently listening. */
         this._subscriptionTreeMap = {};
         /* Used for incrementally assigning subscription ids to new listeners. */
         this._subscriptionIdIndex = 0;
