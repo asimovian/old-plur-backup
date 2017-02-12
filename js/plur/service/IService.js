@@ -7,7 +7,7 @@
 
 define([
     'plur/PlurObject',
-    'plur/config/IConfigured',
+    '../config/IConfigurable',
     'plur/event/IEmittable',
     'plur/error/Interface',
     ],

@@ -1,0 +1,17 @@
+[
+  { "namepath": "plur/web/Bootstrap",
+    "paths": {
+      "plurcommander": "plurcommander/js/plurcommander",
+      "plurcommander-cfg": "plurcommander/cfg/plurcommander" },
+    "require": [
+      "plurcommander/webui/service/Main",
+      "plurcommander-cfg/webui/service/Main" ]
+  },
+  { "namepath": "plurcommander/main/Service",
+    "service": {
+      "webui": {
+        "rootComponent": "plurcommander/webui/main/component/Html.js"
+      }
+    }
+  }
+]

@@ -7,7 +7,7 @@
 
 define([
     'plur/PlurObject',
-    'plur/config/IConfigured',
+    '../../config/IConfigurable',
     'plur/security/Level',
     'plur/error/Abstract',
     'plur-config/plur/comm/msg/AMessage' ],
