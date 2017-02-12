@@ -7,17 +7,17 @@
  'use strict';
 
 define([
-    '../PlurObject',
+    'plur/PlurObject',
     'plur/app/IApplication',
-    'plur/node/Node',
+    'plur/node/INode',
     'plur/node/Service',
-    'plurcommander/plur/web/ui/main/Service' ],
+    'plur/web/ui/IService' ],
 function(
     PlurObject,
     IApplication,
-    PlurNode,
+    IPlurNode,
     PlurNodeService,
-    WebUiService ) {
+    IWebUIService ) {
 
 /**
  * Start and control a web-based plur node.
@@ -30,13 +30,14 @@ class WebUIApp {
     /**
      * Constructs a new Plur Node.
      *
-     * @param domWindow
+     * @param {function(new: (module:plur/web/ui/IService))} webuiServiceClass
+     * @param {Window} domWindow
      */
-    constructor(domWindow) {
+    constructor(webuiServiceClass, serviceConfig, domWindow) {
         /** @type {module:plur/node/Node} **/
         this._node = new PlurNode(PlurNodeService);
         /** @type {module:plur/service/IService} **/
-        this._service = new WebUIService(this._node, {
+        this._service = new applicationServiceClass(this._node, {
             service: {
                 autostart: true,
                 webui: {

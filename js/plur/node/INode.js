@@ -56,4 +56,4 @@ class IPlurNode {
     };
 }
 
-PlurObject.plurify('plur/node/INode', IPlurNode, [IConfigured, IEmittable]);
+PlurObject.plurify('plur/node/INode', IPlurNode, [ IConfigured, IEmittable ]);
