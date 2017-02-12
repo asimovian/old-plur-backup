@@ -10,10 +10,10 @@
   { "namepath": "plur/web/ui/App",
     "service": "plurcommander/webui/service/Main"
   },
-  { "namepath": "plurcommander/main/Service",
+  { "namepath": "plurcommander/webui/service/Main",
     "service": {
       "webui": {
-        "component": "plurcommander/webui/main/component/Html"
+        "component": "plurcommander/webui/component/Html"
       }
     }
   }

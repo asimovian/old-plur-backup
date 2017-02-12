@@ -1,40 +1,44 @@
 /**
- * @copyright 2016 Asimovian LLC
+ * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @requires plur/PlurObject plur/tree/MapNode
+ * @module plur/config/Config
  */
 define([
     'plur/PlurObject',
+    'plur/config/IConfig',
     'plur/tree/MapNode' ],
 function(
     PlurObject,
+    IConfig,
     MapTreeNode ) {
 
 /**
  * Maintains key/value configuration for a subject object, typically for a prototype.
  *
- * @constructor plur/config/config
- **
+ * @class Config
+ * @alias {module:plur/config/Config}
  */
-var Config = function(configurable, parentConfigurable, config) {
-	this._inheritanceTree = new MapTreeNode();
-	this._configurableNamepath = null;
-	this._parentConfigurableNamepath = null;
-	this._config = {};
+class Config {
+    /**
+     *
+     * @param IConfig config
+     * @param parentConfigurable
+     * @param config
+     */
+    constructor(config, parentConfig, override) {
+        this._inheritanceTree = new MapTreeNode();
+        this._configurableNamepath = null;
+        this._parentConfigurableNamepath = null;
+        this._config = {};
 
-    if (configurable instanceof Config) {
-    } else {
-    }
-};
+        if (config instanceof Config) {
+        } else {
+        }
+    };
+}
 
-Config.prototype = PlurObject.create('plur/config/Config', Config);
+PlurObject.plurify('plur/config/Config', Config, [ IConfig ]);
 
-//TODO: Config helper functions
-Config.string = function(regex, value);
-Config.int = function(range, value);
-Config.float = function(range, precision, value);
-Config.bool = function (value);
-Config.enum = function(values, value);
 
 Config.prototype.getConfigurableNamepath = function() {
     return this._configurableNamepath;

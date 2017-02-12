@@ -5,7 +5,7 @@
  * @requires plur/PlurObject plur/service/AService
  */
 define([
-    '../../../../js/plur/PlurObject',
+    'plur/PlurObject',
     'plur/service/AService' ],
 function(
     PlurObject,
@@ -21,18 +21,28 @@ function(
  * @param plur/node/PlurNode
  */
 class CommanderMainService extends AService {
-    static _DEFAULT_CONFIG = new ConfigConstructor(CommanderMainService, AService, {
-        commander: {
-            foo: '<br>'
+    static _CONFIG_TEMPLATE = new ConfigTemplate(CommanderMainService, AService, {
+        service: {
+            autostart: true,
+            webui: {
+                commander: {
+                    foo: '<br>'
+                }
+            }
         }
     });
 
-    static getDefaultConfig() {
-        return CommanderMainService.DEFAULT_CONFIG;
+    static configTemplate() {
+        return CommanderMainService._CONFIG_TEMPLATE;
     };
 
+    /**
+     *
+     * @param {plur/node/Node} plurNode
+     * @param config
+     */
     constructor(plurNode, config) {
-        super(this, plurNode, CommanderMainService.getDefaultConfig().merge(config));
+        super(this, plurNode, CommanderMainService.configTemplate().createConfig(config));
 
         this._webui = plurNode.getService(WebUIService);
     };

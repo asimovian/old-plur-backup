@@ -107,7 +107,7 @@ class PlurObject {
      *
      * @param {string} namepath The namepath to set both statically and on the prototype.
      * @param {class} constructor The constructor to be plurified
-     * @param {module:plur/IPlurified.prototype.constructor|module:plur/IPlurified.prototype.constructor[]|undefined} ifaces Interfaces to be implemented.
+     * @param {(module:plur/IPlurified.prototype.constructor[]|undefined)} ifaces Interfaces to be implemented.
      * @returns {string} namepath
      */
     static plurify(namepath, constructor, ifaces) {

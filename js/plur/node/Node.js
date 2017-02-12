@@ -1,7 +1,7 @@
 /**
  * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @module plur/node/Node
+ * @module plur/node
  */
 'use strict';
 
@@ -27,6 +27,8 @@ function(
  * different thread.
  *
  * There may only be one attached node per Application and exactly one node per thread.
+ *
+ * @alias Node
  */
 class PlurNode {
     /**
