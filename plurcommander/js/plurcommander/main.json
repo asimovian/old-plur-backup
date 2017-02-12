@@ -7,10 +7,13 @@
       "plurcommander/webui/service/Main",
       "plurcommander-cfg/webui/service/Main" ]
   },
+  { "namepath": "plur/web/ui/App",
+    "service": "plurcommander/webui/service/Main"
+  },
   { "namepath": "plurcommander/main/Service",
     "service": {
       "webui": {
-        "rootComponent": "plurcommander/webui/main/component/Html.js"
+        "component": "plurcommander/webui/main/component/Html"
       }
     }
   }
