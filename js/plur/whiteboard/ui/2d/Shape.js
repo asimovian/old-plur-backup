@@ -1,1 +1,0 @@
-var Shape = function() {};
