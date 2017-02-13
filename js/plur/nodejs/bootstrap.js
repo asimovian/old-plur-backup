@@ -12,7 +12,8 @@
         baseUrl: '../',
         paths: {
             'plur': 'plur/js/plur',
-            'plur-config': 'plur/cfg/json/plur',
+            'plur-cfg': 'plur/cfg/plur',
+            'plur-lib': 'plur/lib/js',
             'plur-bin': 'plur/plur-bin/js/plur-bin',
             'plur-test': 'plur/plur-tests/js/plur-tests'
         },

@@ -1,8 +1,7 @@
 /**
  * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @module plur-www/plur/www/index/Service
- * @requires plur/PlurObject plur/service/AService
+ * @module plurcommander/main
  */
 define([
     'plur/PlurObject',
@@ -16,9 +15,9 @@ function(
 /**
  * Handles core node-to-node communication, including handshakes.
  *
- * @class CommanderMainService
- * @extends plur/service/AService
- * @param plur/node/PlurNode
+ * @alias Service
+ * @extends {plur/service/AService}
+ * @implements {plur/config/IConfigurable}
  */
 class CommanderMainService extends AService {
     static _CONFIG_TEMPLATE = new ConfigTemplate(CommanderMainService, AService, {
@@ -39,7 +38,7 @@ class CommanderMainService extends AService {
     /**
      *
      * @param {plur/node/Node} plurNode
-     * @param config
+     * @param {plur/config/Config} config
      */
     constructor(plurNode, config) {
         super(this, plurNode, CommanderMainService.configTemplate().createConfig(config));

@@ -1,7 +1,7 @@
 /**
- * @copyright 2016 Asimovian LLC
+ * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @module plur/IPlurified
+ * @module plur
  */
 
 define(function() {
@@ -9,9 +9,7 @@ define(function() {
 /**
  * Standard interface for all Plur library classes.
  *
- * @class IPlurified
- * @interface IPlurified
- * @alias {module:plur/IPlurified}
+ * @interface
  */
 class IPlurified {
     constructor() {

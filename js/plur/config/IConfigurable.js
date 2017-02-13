@@ -1,5 +1,5 @@
 /**
- * @copyright 2015 Asimovian LLC
+ * @copyright 2017 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
  * @module plur/config
  */

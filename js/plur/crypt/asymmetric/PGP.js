@@ -7,7 +7,7 @@
  
 define([
     'plur/PlurObject',
-    'plur/lib/openpgpjs/openpgpjs/openpgp',
+    '../../../../lib/js/openpgpjs/openpgpjs/openpgp',
     'plur-config/plur/crypt/asymmetric/PGP' ],
 function(
     PlurObject,

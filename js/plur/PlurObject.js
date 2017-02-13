@@ -1,7 +1,7 @@
 /**
  * @copyright 2016 Asimovian LLC
  * @license MIT https://github.com/asimovian/plur/blob/master/LICENSE.txt
- * @module plur/PlurObject
+ * @module plur
  */
  'use strict';
 
@@ -13,9 +13,7 @@ function(
 /**
  * Utility for prototype object construction.
  *
- * @class PlurObject
- * @implements {module:plur/IPlurified}
- * @alias plur/PlurObject
+ * @implements {plur/IPlurified}
  */
 class PlurObject {
     static hasPlurPrototype(object) {
@@ -35,8 +33,8 @@ class PlurObject {
 
     /**
      *
-     * @param {module:plur/IPlurified} object
-     * @param {module:plur/IPlurified.prototype.constructor} interfaceConstructor
+     * @param {plur/IPlurified} object
+     * @param {function(new: plur/IPlurified)} interfaceConstructor
      * @returns {boolean}
      */
     static implementing(object, interfaceConstructor) {
@@ -107,7 +105,7 @@ class PlurObject {
      *
      * @param {string} namepath The namepath to set both statically and on the prototype.
      * @param {class} constructor The constructor to be plurified
-     * @param {(module:plur/IPlurified.prototype.constructor[]|undefined)} ifaces Interfaces to be implemented.
+     * @param {function(new: plur/IPlurified)[]} [ifaces] Interfaces to be implemented.
      * @returns {string} namepath
      */
     static plurify(namepath, constructor, ifaces) {
@@ -137,9 +135,9 @@ class PlurObject {
      * Copies the interface prototype's abstract methods in to the subject prototype.
      * Adds the interface pathname to the subject constructor.implemented variable.
      *
-     * @param {module:plur/IPlurified.prototype.constructor} constructor
-     * @param {module:plur/IPlurified.prototype.constructor} interfaceConstructor
-     * @returns {module:plur/PlurObject|null} For use in cascaded calls to PlurObject method
+     * @param {plur/IPlurified.prototype.constructor} constructor
+     * @param {plur/IPlurified.prototype.constructor} interfaceConstructor
+     * @returns {plur/PlurObject|null} For use in cascaded calls to PlurObject method
      * @throws {Error}
      */
     static implement(constructor, interfaceConstructor) {
