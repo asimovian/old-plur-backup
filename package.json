@@ -1,6 +1,6 @@
 {
-  "name": "plur-core",
-  "version": "0.0.0",
+  "name": "@asimovian/plur",
+  "version": "0.0.1",
   "description": "A distributed internet application platform",
   "main": "",
   "scripts": {
@@ -13,14 +13,12 @@
   },
   "keywords": [
     "plur",
-    "js",
-    "javascript",
-    "service",
-    "api",
-    "framework",
+    "asimovian",
+    "network",
+    "framework", 
     "platform"
   ],
-  "author": "Roy Laurie <roy.laurie@asimovian.software>",
+  "author": "roylaurie <roy.laurie@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/asimovian/plur/issues"
